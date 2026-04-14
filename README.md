@@ -21,7 +21,7 @@ See [Issue #1: Semantify CEUR-WS](https://github.com/ceurws/semantify/issues/1) 
 |-------|-------|--------|
 | [Semantification of CEUR-WS with Wikidata as a target Knowledge Graph](https://ceur-ws.org/Vol-3447/Text2KG_Paper_13.pdf) | text2kg 2023 | [accepted](https://www.wikidata.org/wiki/Q118799188) |
 | [SemPubFlow: a novel Scientific Publishing Workflow using Knowledge Graphs, Wikidata and LLMs](https://www.semantic-web-journal.net/system/files/swj3657.pdf) | Semantic Web Journal | rejected |
-| Semantify CEUR-WS | ISWC 2026 In-Use Track | to be submitted |
+| [Semantify CEUR-WS](https://github.com/WolfgangFahl/CEURWS_Semantification_ISWC2026) | [ISWC 2026 In-Use Track](https://iswc2026.semanticweb.org/call-for-in-use-track-papers/) | to be submitted |
 
 ## License
 
