@@ -1,0 +1,1007 @@
+###############################################################################
+# CEUR-WS Proceedings Ontology — Normative Version
+# Namespace: https://ceur-ws.org/rdf/schema#
+# Version:   1.0
+# Date:      2026-04-27
+#
+# Purpose
+#   Formal OWL ontology for CEUR Workshop Proceedings entities.
+#   Designed to support:
+#     - JSON-LD publishing of proceedings volumes
+#     - Crossref DOI minting (conference proceedings schema)
+#     - Crosswalk to Wikidata properties and DBLP RDF properties
+#     - Answering all 49 competency questions in
+#       resources/competency-questions.md
+#
+# Reuse strategy
+#   All primary terms are defined in the ceur: namespace.
+#   External ontology classes are referenced via rdfs:subClassOf and
+#   skos:exactMatch ONLY — no owl:imports that would create hard
+#   dependencies on external ontology availability.
+#
+# Crosswalk annotation pattern
+#   Rather than owl:equivalentProperty (full semantic commitment),
+#   each property carries lightweight annotations:
+#     ceur:wdProperty        — corresponding Wikidata direct property URI
+#     ceur:wdQualifierProp   — corresponding Wikidata qualifier property URI
+#     ceur:dblpProperty      — corresponding DBLP RDF schema property URI
+#     ceur:crossrefField     — XPath / field name in Crossref deposit schema
+#     ceur:doiMintingStatus  — present | partial | missing | not-available
+#
+# Namespace note
+#   This file uses the normative namespace https://ceur-ws.org/rdf/schema#
+#   mandated by requirements.md. The earlier experimental draft at
+#   resources/experimental/ceur-ws.ttl used https://ceur-ws.org/ontology#
+#   and is kept as a historical reference only.
+###############################################################################
+
+@prefix ceur:     <https://ceur-ws.org/rdf/schema#> .
+@prefix owl:      <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:     <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos:     <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms:  <http://purl.org/dc/terms/> .
+@prefix bibo:     <http://purl.org/ontology/bibo/> .
+@prefix foaf:     <http://xmlns.com/foaf/0.1/> .
+@prefix schema:   <https://schema.org/> .
+@prefix fabio:    <http://purl.org/spar/fabio/> .
+@prefix pro:      <http://purl.org/spar/pro/> .
+@prefix dblp:     <https://dblp.org/rdf/schema#> .
+@prefix geo:      <http://www.opengis.net/ont/geosparql#> .
+@prefix wd:       <http://www.wikidata.org/entity/> .
+@prefix wdt:      <http://www.wikidata.org/prop/direct/> .
+@prefix pq:       <http://www.wikidata.org/prop/qualifier/> .
+
+
+###############################################################################
+# 1. ONTOLOGY HEADER
+###############################################################################
+
+<https://ceur-ws.org/rdf/schema>
+    a owl:Ontology ;
+    rdfs:label "CEUR-WS Proceedings Ontology"@en ;
+    dcterms:title "CEUR-WS Proceedings Ontology"@en ;
+    dcterms:description """An OWL ontology for the CEUR Workshop Proceedings portal (ceur-ws.org). Models proceedings volumes, papers, sessions, events, persons, and organisations. Provides annotation-based crosswalks to Wikidata, DBLP, and Crossref. Answers all 49 competency questions in resources/competency-questions.md."""@en ;
+    dcterms:created "2026-04-27"^^xsd:date ;
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    dcterms:creator <https://orcid.org/0000-0003-2533-6363> ;
+    owl:versionIRI <https://ceur-ws.org/rdf/schema/1.0> ;
+    owl:versionInfo "1.0" .
+
+<https://orcid.org/0000-0003-2533-6363>
+    a foaf:Person ;
+    foaf:name "Tim Holzheim" ;
+    schema:affiliation "RWTH Aachen University" .
+
+
+###############################################################################
+# 2. CROSSWALK ANNOTATION PROPERTIES
+###############################################################################
+
+ceur:wdProperty
+    a owl:AnnotationProperty ;
+    rdfs:label "Wikidata direct property"@en ;
+    rdfs:comment """The Wikidata direct property (wdt:Pxxx) that corresponds to this ceur: property. Recorded as an annotation — not owl:equivalentProperty — to avoid over-commitment given Wikidata's open-world property semantics."""@en .
+
+ceur:wdQualifierProp
+    a owl:AnnotationProperty ;
+    rdfs:label "Wikidata qualifier property"@en ;
+    rdfs:comment """The Wikidata qualifier property (pq:Pxxx) used for this value when recorded as a qualifier on another statement."""@en .
+
+ceur:dblpProperty
+    a owl:AnnotationProperty ;
+    rdfs:label "DBLP RDF property"@en ;
+    rdfs:comment """The corresponding property in the DBLP RDF schema (https://dblp.org/rdf/schema#)."""@en .
+
+ceur:crossrefField
+    a owl:AnnotationProperty ;
+    rdfs:label "Crossref deposit field"@en ;
+    rdfs:comment """XPath or element name in the Crossref conference proceedings XML deposit schema (version 4.8 / 5.3.1) that this property maps to."""@en .
+
+ceur:doiMintingStatus
+    a owl:AnnotationProperty ;
+    rdfs:label "DOI minting status"@en ;
+    rdfs:comment """Indicates whether data for this property is currently available in the CEUR-WS data pipeline. Values: present | partial | missing | not-available."""@en .
+
+
+###############################################################################
+# 3. CLASSES
+###############################################################################
+
+# ── 3.1 Abstract bibliographic superclass ────────────────────────────────────
+
+ceur:BibliographicResource
+    a owl:Class ;
+    rdfs:label "Bibliographic Resource"@en ;
+    rdfs:comment "Abstract superclass for citable CEUR-WS artefacts (volumes and papers)."@en ;
+    rdfs:subClassOf schema:CreativeWork ;
+    skos:exactMatch bibo:Document .
+
+
+# ── 3.2 Proceedings Volume ───────────────────────────────────────────────────
+
+ceur:ProceedingsVolume
+    a owl:Class ;
+    rdfs:label "Proceedings Volume"@en ;
+    rdfs:comment """A single CEUR-WS proceedings volume (Vol-N). Each volume is published online at https://ceur-ws.org/Vol-N/ and corresponds to one or more co-located workshop events. A volume may contain one or more ceur:Session nodes when multiple workshops are jointly published or when papers are organised into topic sections."""@en ;
+    rdfs:subClassOf ceur:BibliographicResource ;
+    skos:exactMatch wd:Q1143604 ;           # proceedings (Wikidata class)
+    skos:exactMatch schema:Book ;
+    skos:exactMatch bibo:Proceedings ;
+    skos:exactMatch fabio:ConferenceProceedings ;
+    skos:scopeNote """In Wikidata, instances of this class satisfy: wdt:P31 wd:Q1143604 AND wdt:P179 wd:Q27230297."""@en .
+
+
+# ── 3.3 Paper ────────────────────────────────────────────────────────────────
+
+ceur:Paper
+    a owl:Class ;
+    rdfs:label "Paper"@en ;
+    rdfs:comment "A single contribution (article) published within a CEUR-WS proceedings volume."@en ;
+    rdfs:subClassOf ceur:BibliographicResource ;
+    skos:exactMatch wd:Q13442814 ;          # scholarly article
+    skos:exactMatch schema:ScholarlyArticle ;
+    skos:exactMatch bibo:Article ;
+    skos:exactMatch fabio:ConferencePaper .
+
+
+# ── 3.4 Academic Event ───────────────────────────────────────────────────────
+
+ceur:AcademicEvent
+    a owl:Class ;
+    rdfs:label "Academic Event"@en ;
+    rdfs:comment """A specific workshop or conference instance whose proceedings are published in CEUR-WS. Events are situated in time and space and may belong to a recurring event series. Use the subclasses ceur:Workshop and ceur:Conference where the type is known."""@en ;
+    skos:exactMatch schema:Event .
+
+
+# ── 3.5 Workshop ─────────────────────────────────────────────────────────────
+
+ceur:Workshop
+    a owl:Class ;
+    rdfs:label "Workshop"@en ;
+    rdfs:comment """A specific academic workshop instance. Subclass of ceur:AcademicEvent for workshop events, which are typically smaller in scope than conferences and co-located with a larger host conference."""@en ;
+    rdfs:subClassOf ceur:AcademicEvent ;
+    skos:exactMatch wd:Q40444998 .          # academic workshop
+
+
+# ── 3.6 Conference ───────────────────────────────────────────────────────────
+
+ceur:Conference
+    a owl:Class ;
+    rdfs:label "Conference"@en ;
+    rdfs:comment """A specific academic conference instance. Subclass of ceur:AcademicEvent for standalone conference events, often acting as the host conference for co-located CEUR-WS workshops."""@en ;
+    rdfs:subClassOf ceur:AcademicEvent ;
+    skos:exactMatch wd:Q2020153 .           # academic conference
+
+
+# ── 3.7 Event Series ─────────────────────────────────────────────────────────
+
+ceur:EventSeries
+    a owl:Class ;
+    rdfs:label "Event Series"@en ;
+    rdfs:comment """A recurring sequence of academic events (e.g. 'Wikidata Workshop' or 'International Semantic Web Conference'). Individual editions are instances of ceur:AcademicEvent with ceur:partOfSeries pointing here."""@en ;
+    skos:exactMatch schema:EventSeries ;
+    skos:closeMatch wd:Q47258130 ;          # academic conference series
+    skos:closeMatch wd:Q47459256 .          # workshop series
+
+
+# ── 3.8 Session ──────────────────────────────────────────────────────────────
+
+ceur:Session
+    a owl:Class ;
+    rdfs:label "Session"@en ;
+    rdfs:comment """Groups papers within a proceedings volume. Serves two roles: (1) in jointly published volumes, a session represents one named sub-workshop with its own editors and papers; (2) in single-workshop volumes, a session represents a topic or time-slot grouping. Sessions are ordered within their volume via ceur:sessionOrder."""@en ;
+    ceur:doiMintingStatus "partial" ;
+    skos:scopeNote """Corresponds to the CEURSESSION element in CEUR-WS HTML volume pages and to schema:hasPart sections in Vol-2549-style semantic markup."""@en .
+
+
+# ── 3.9 Agent superclass ─────────────────────────────────────────────────────
+
+ceur:Agent
+    a owl:Class ;
+    rdfs:label "Agent"@en ;
+    rdfs:comment "Abstract superclass for persons and organisations."@en ;
+    skos:exactMatch foaf:Agent .
+
+
+# ── 3.10 Person ──────────────────────────────────────────────────────────────
+
+ceur:Person
+    a owl:Class ;
+    rdfs:label "Person"@en ;
+    rdfs:comment "A person who acts as author, editor, or programme committee member for a CEUR-WS paper or volume."@en ;
+    rdfs:subClassOf ceur:Agent ;
+    skos:exactMatch schema:Person ;
+    skos:exactMatch foaf:Person .
+
+
+# ── 3.11 Organization ────────────────────────────────────────────────────────
+
+ceur:Organization
+    a owl:Class ;
+    rdfs:label "Organization"@en ;
+    rdfs:comment "An academic or research institution to which a person is affiliated at the time of publication."@en ;
+    rdfs:subClassOf ceur:Agent ;
+    skos:exactMatch schema:Organization ;
+    skos:exactMatch foaf:Organization .
+
+
+# ── 3.12 Contribution (reification) ──────────────────────────────────────────
+
+ceur:Contribution
+    a owl:Class ;
+    rdfs:label "Contribution"@en ;
+    rdfs:comment """A reification node capturing a person's credit on a specific work: who contributed (ceur:contributor), in what role (subclass), to which work (ceur:contributorOf), with which affiliation (ceur:affiliatedWith), ORCID (ceur:orcid), author-order position (ceur:ordinal), and name as it appeared in print (ceur:nameAsListed)."""@en ;
+    skos:exactMatch pro:RoleInTime ;        # SPAR Publishing Roles Ontology
+    skos:scopeNote """Mirrors the Wikidata qualified-statement pattern (p:P50 [ ps:P50 ?person; pq:P1416 ?org; pq:P1545 ?ordinal ]) and the DBLP dblp:hasSignature / dblp:AuthorSignature pattern."""@en .
+
+
+ceur:Authorship
+    a owl:Class ;
+    rdfs:label "Authorship"@en ;
+    rdfs:comment "A Contribution node representing the author role of a ceur:Person on a ceur:Paper."@en ;
+    rdfs:subClassOf ceur:Contribution .
+
+
+ceur:Editorship
+    a owl:Class ;
+    rdfs:label "Editorship"@en ;
+    rdfs:comment "A Contribution node representing the editor role of a ceur:Person on a ceur:ProceedingsVolume or ceur:Session."@en ;
+    rdfs:subClassOf ceur:Contribution .
+
+
+# ── 3.13 Grant ───────────────────────────────────────────────────────────────
+
+ceur:Grant
+    a owl:Class ;
+    rdfs:label "Grant"@en ;
+    rdfs:comment """A funding grant that supported the research presented in a paper. Links a ceur:Paper (via ceur:fundedBy) to a funding agency (ceur:Organization via ceur:fundingAgency) and carries grant identifiers."""@en ;
+    skos:exactMatch schema:MonetaryGrant ;
+    ceur:doiMintingStatus "not-available" ;
+    skos:scopeNote """Populated from paper acknowledgement sections via full-text extraction. Not available in Wikidata or DBLP. Crossref maps funding to the Fundref (fr:) schema."""@en .
+
+
+###############################################################################
+# 4. NAMED INDIVIDUALS
+###############################################################################
+
+# ── 4.1 CEUR-WS as a series ──────────────────────────────────────────────────
+
+ceur:CeurWsSeries
+    a ceur:EventSeries, owl:NamedIndividual ;
+    rdfs:label "CEUR Workshop Proceedings"@en ;
+    dcterms:description "The overarching CEUR Workshop Proceedings publication series, encompassing all Vol-N volumes published at ceur-ws.org."@en ;
+    schema:url <https://ceur-ws.org> ;
+    owl:sameAs wd:Q27230297 ;
+    skos:exactMatch <https://dblp.org/streams/conf/ceur> ;
+    skos:scopeNote "CEUR-WS does not hold a formal ISSN for this series. Each volume may receive an individual ISBN from the publisher."@en .
+
+
+# ── 4.2 CEUR-WS as publisher ─────────────────────────────────────────────────
+
+ceur:CeurWsPublisher
+    a ceur:Organization, owl:NamedIndividual ;
+    rdfs:label "CEUR-WS.org"@en ;
+    dcterms:description "The CEUR Workshop Proceedings online publisher. Required as the publisher entity for Crossref DOI deposit."@en ;
+    schema:url <https://ceur-ws.org> ;
+    schema:name "CEUR-WS.org"@en .
+
+
+# ── 4.3 Article type SKOS scheme ─────────────────────────────────────────────
+
+ceur:ArticleTypeScheme
+    a skos:ConceptScheme ;
+    rdfs:label "CEUR-WS Article Type Scheme"@en ;
+    dcterms:description "Controlled vocabulary for the type of contribution within a CEUR-WS proceedings volume. Values are populated from section headings in the volume HTML table of contents."@en .
+
+ceur:FullPaper
+    a skos:Concept ;
+    skos:inScheme ceur:ArticleTypeScheme ;
+    skos:prefLabel "Full Paper"@en ;
+    skos:definition "A full-length research paper, typically 10–16 pages."@en .
+
+ceur:ShortPaper
+    a skos:Concept ;
+    skos:inScheme ceur:ArticleTypeScheme ;
+    skos:prefLabel "Short Paper"@en ;
+    skos:definition "A short research contribution, typically 4–6 pages."@en .
+
+ceur:ExtendedAbstract
+    a skos:Concept ;
+    skos:inScheme ceur:ArticleTypeScheme ;
+    skos:prefLabel "Extended Abstract"@en ;
+    skos:definition "An extended abstract, typically 2–4 pages."@en .
+
+ceur:InvitedPaper
+    a skos:Concept ;
+    skos:inScheme ceur:ArticleTypeScheme ;
+    skos:prefLabel "Invited Paper"@en ;
+    skos:definition "A paper contributed by an invited speaker."@en .
+
+ceur:SystemDescription
+    a skos:Concept ;
+    skos:inScheme ceur:ArticleTypeScheme ;
+    skos:prefLabel "System Description"@en ;
+    skos:definition "A paper describing a software system or tool."@en .
+
+ceur:DemoDescription
+    a skos:Concept ;
+    skos:inScheme ceur:ArticleTypeScheme ;
+    skos:prefLabel "Demo Description"@en ;
+    skos:definition "A paper accompanying a live demonstration."@en .
+
+ceur:PositionPaper
+    a skos:Concept ;
+    skos:inScheme ceur:ArticleTypeScheme ;
+    skos:prefLabel "Position Paper"@en ;
+    skos:definition "A paper presenting a position or vision."@en .
+
+
+# ── 4.4 Citation type SKOS scheme (Q2.5) ─────────────────────────────────────
+
+ceur:CitationTypeScheme
+    a skos:ConceptScheme ;
+    rdfs:label "CEUR-WS Citation Type Scheme"@en ;
+    dcterms:description "Controlled vocabulary for the publication type of works cited by CEUR-WS papers. Used with ceur:citationType to distinguish journal papers from conference papers etc. (competency question Q2.5)."@en ;
+    ceur:doiMintingStatus "not-available" ;
+    skos:scopeNote "Populated via full-text extraction of reference lists."@en .
+
+ceur:JournalArticle
+    a skos:Concept ;
+    skos:inScheme ceur:CitationTypeScheme ;
+    skos:prefLabel "Journal Article"@en ;
+    skos:definition "A paper published in a peer-reviewed journal."@en ;
+    skos:exactMatch bibo:AcademicArticle .
+
+ceur:ConferencePaper
+    a skos:Concept ;
+    skos:inScheme ceur:CitationTypeScheme ;
+    skos:prefLabel "Conference Paper"@en ;
+    skos:definition "A paper published in conference or workshop proceedings."@en .
+
+ceur:BookChapter
+    a skos:Concept ;
+    skos:inScheme ceur:CitationTypeScheme ;
+    skos:prefLabel "Book Chapter"@en ;
+    skos:definition "A chapter in an edited book or monograph."@en ;
+    skos:exactMatch bibo:BookSection .
+
+ceur:Book
+    a skos:Concept ;
+    skos:inScheme ceur:CitationTypeScheme ;
+    skos:prefLabel "Book"@en ;
+    skos:definition "A monograph or edited book."@en ;
+    skos:exactMatch bibo:Book .
+
+ceur:TechnicalReport
+    a skos:Concept ;
+    skos:inScheme ceur:CitationTypeScheme ;
+    skos:prefLabel "Technical Report"@en ;
+    skos:definition "A technical or research report."@en ;
+    skos:exactMatch bibo:Report .
+
+ceur:Preprint
+    a skos:Concept ;
+    skos:inScheme ceur:CitationTypeScheme ;
+    skos:prefLabel "Preprint"@en ;
+    skos:definition "A manuscript not yet formally peer-reviewed (e.g. arXiv)."@en .
+
+
+###############################################################################
+# 5. DATATYPE PROPERTIES
+###############################################################################
+
+# ── 5.1 ProceedingsVolume properties ─────────────────────────────────────────
+
+ceur:volumeNumber
+    a owl:DatatypeProperty ;
+    rdfs:label "volume number"@en ;
+    rdfs:comment "The sequential CEUR-WS volume number (Vol-N). Should be unique across all volumes."@en ;
+    rdfs:domain ceur:ProceedingsVolume ;
+    rdfs:range xsd:positiveInteger ;
+    ceur:wdProperty wdt:P478 ;
+    ceur:wdQualifierProp pq:P478 ;
+    ceur:dblpProperty dblp:publishedInSeriesVolume ;
+    ceur:crossrefField "proceedings_metadata/volume" ;
+    ceur:doiMintingStatus "present" .
+
+ceur:shortName
+    a owl:DatatypeProperty ;
+    rdfs:label "short name"@en ;
+    rdfs:comment "Abbreviated title or acronym for a proceedings volume or event (e.g. 'WikidataWorkshop2023')."@en ;
+    rdfs:domain [
+        owl:unionOf ( ceur:ProceedingsVolume ceur:AcademicEvent ceur:EventSeries )
+    ] ;
+    rdfs:range xsd:string ;
+    ceur:wdProperty wdt:P1813 ;
+    ceur:doiMintingStatus "present" .
+
+ceur:urn
+    a owl:DatatypeProperty ;
+    rdfs:label "URN-NBN"@en ;
+    rdfs:comment "Uniform Resource Name (NBN namespace) assigned to the volume."@en ;
+    rdfs:domain ceur:ProceedingsVolume ;
+    rdfs:range xsd:string ;
+    ceur:wdProperty wdt:P4109 ;
+    ceur:crossrefField "proceedings_metadata/isbn" ;
+    ceur:doiMintingStatus "present" .
+
+ceur:doi
+    a owl:DatatypeProperty ;
+    rdfs:label "DOI"@en ;
+    rdfs:comment "Digital Object Identifier assigned to a volume or paper. This is the primary target of the Crossref DOI minting process."@en ;
+    rdfs:domain [
+        owl:unionOf ( ceur:ProceedingsVolume ceur:Paper )
+    ] ;
+    rdfs:range xsd:string ;
+    ceur:wdProperty wdt:P356 ;
+    ceur:dblpProperty dblp:doi ;
+    ceur:crossrefField "doi_data/doi" ;
+    ceur:doiMintingStatus "missing" ;
+    skos:scopeNote "P356 (DOI) is absent from all existing CEUR-WS Wikidata SPARQL queries. Add OPTIONAL { ?item wdt:P356 ?doi } to AllVolumes and AllPapers."@en .
+
+ceur:dblpPublicationId
+    a owl:DatatypeProperty ;
+    rdfs:label "DBLP publication ID"@en ;
+    rdfs:comment "The DBLP identifier string for this proceedings volume or paper."@en ;
+    rdfs:domain [
+        owl:unionOf ( ceur:ProceedingsVolume ceur:Paper )
+    ] ;
+    rdfs:range xsd:string ;
+    ceur:wdProperty wdt:P8978 ;
+    ceur:doiMintingStatus "present" .
+
+ceur:k10plusId
+    a owl:DatatypeProperty ;
+    rdfs:label "K10plus ID"@en ;
+    rdfs:comment "Identifier in the K10plus union catalogue (German library network)."@en ;
+    rdfs:domain ceur:ProceedingsVolume ;
+    rdfs:range xsd:string ;
+    ceur:wdProperty wdt:P6721 ;
+    ceur:doiMintingStatus "present" .
+
+ceur:fullWorkUrl
+    a owl:DatatypeProperty ;
+    rdfs:label "full work URL"@en ;
+    rdfs:comment "URL where the full text of the volume is available (Wikidata P953)."@en ;
+    rdfs:domain ceur:ProceedingsVolume ;
+    rdfs:range xsd:anyURI ;
+    ceur:wdProperty wdt:P953 ;
+    ceur:doiMintingStatus "present" .
+
+
+# ── 5.2 Paper properties ─────────────────────────────────────────────────────
+
+ceur:stringAuthorName
+    a owl:DatatypeProperty ;
+    rdfs:label "author name string"@en ;
+    rdfs:comment "Author name as a plain string, used when the author does not have a Wikidata item (fallback for unresolved authors)."@en ;
+    rdfs:domain ceur:Paper ;
+    rdfs:range xsd:string ;
+    ceur:wdProperty wdt:P2093 ;
+    ceur:dblpProperty dblp:signatureDblpName ;
+    ceur:crossrefField "contributors/person_name/surname" ;
+    ceur:doiMintingStatus "partial" ;
+    skos:scopeNote "Use ceur:Contribution with ceur:nameAsListed in preference whenever a person entity is available."@en .
+
+ceur:articleType
+    a owl:DatatypeProperty ;
+    rdfs:label "article type"@en ;
+    rdfs:comment "Type of contribution within the volume, drawn from ceur:ArticleTypeScheme. Stored as the URI of the SKOS concept."@en ;
+    rdfs:domain ceur:Paper ;
+    rdfs:range xsd:anyURI ;
+    ceur:crossrefField "conference_paper/@article-type" ;
+    ceur:doiMintingStatus "missing" ;
+    skos:scopeNote "Not available in Wikidata or DBLP. Populate from CEUR-WS volume TOC section headings (e.g. 'Full Papers', 'Short Papers')."@en .
+
+ceur:citationType
+    a owl:DatatypeProperty ;
+    rdfs:label "citation type"@en ;
+    rdfs:comment "Publication type of a cited work, drawn from ceur:CitationTypeScheme. Stored as the URI of the SKOS concept. Enables Q2.5 (identify journal papers cited by paper X)."@en ;
+    rdfs:range xsd:anyURI ;
+    ceur:doiMintingStatus "not-available" ;
+    skos:scopeNote "Populated from reference-list parsing via full-text extraction. Not available in Wikidata or DBLP."@en .
+
+ceur:mentionsOntology
+    a owl:DatatypeProperty ;
+    rdfs:label "mentions ontology"@en ;
+    rdfs:comment "IRI of an ontology mentioned in the abstract of this paper (Q2.9)."@en ;
+    rdfs:domain ceur:Paper ;
+    rdfs:range xsd:anyURI ;
+    ceur:doiMintingStatus "not-available" ;
+    skos:scopeNote "Populated via NLP-based abstract analysis. Not available in Wikidata or DBLP."@en .
+
+ceur:introducesOntology
+    a owl:DatatypeProperty ;
+    rdfs:label "introduces ontology"@en ;
+    rdfs:comment "IRI of an ontology introduced as a contribution of this paper according to its abstract (Q2.10)."@en ;
+    rdfs:domain ceur:Paper ;
+    rdfs:range xsd:anyURI ;
+    ceur:doiMintingStatus "not-available" ;
+    skos:scopeNote "Populated via NLP-based abstract analysis. Not available in Wikidata or DBLP."@en .
+
+
+# ── 5.3 Contribution properties ──────────────────────────────────────────────
+
+ceur:orcid
+    a owl:DatatypeProperty ;
+    rdfs:label "ORCID"@en ;
+    rdfs:comment "ORCID identifier of the person (format: 0000-0000-0000-0000)."@en ;
+    rdfs:domain [
+        owl:unionOf ( ceur:Person ceur:Contribution )
+    ] ;
+    rdfs:range xsd:string ;
+    ceur:wdProperty wdt:P496 ;
+    ceur:dblpProperty dblp:orcid ;
+    ceur:crossrefField "contributors/person_name/ORCID" ;
+    ceur:doiMintingStatus "missing" ;
+    skos:scopeNote "P496 (ORCID) is absent from AllScholars and AllAuthorsOfPapersOfProceedings SPARQL queries. Add OPTIONAL { ?person wdt:P496 ?orcid }."@en .
+
+ceur:nameAsListed
+    a owl:DatatypeProperty ;
+    rdfs:label "name as listed"@en ;
+    rdfs:comment "The person's name exactly as it appears in the proceedings, used for Crossref deposit and citation purposes."@en ;
+    rdfs:domain ceur:Contribution ;
+    rdfs:range xsd:string ;
+    ceur:dblpProperty dblp:signatureDblpName ;
+    ceur:crossrefField "contributors/person_name" ;
+    ceur:doiMintingStatus "partial" .
+
+ceur:ordinal
+    a owl:DatatypeProperty ;
+    rdfs:label "ordinal"@en ;
+    rdfs:comment "Author/editor order position (1 = first) within a Contribution, or edition number of an AcademicEvent within its series."@en ;
+    rdfs:domain [
+        owl:unionOf ( ceur:Contribution ceur:AcademicEvent )
+    ] ;
+    rdfs:range xsd:positiveInteger ;
+    ceur:wdQualifierProp pq:P1545 ;
+    ceur:dblpProperty dblp:signatureOrdinal ;
+    ceur:crossrefField "contributors/person_name/@sequence" ;
+    ceur:doiMintingStatus "partial" .
+
+
+# ── 5.4 Session properties ────────────────────────────────────────────────────
+
+ceur:sessionOrder
+    a owl:DatatypeProperty ;
+    rdfs:label "session order"@en ;
+    rdfs:comment "Ordinal position of this session within its proceedings volume (1 = first). Required for ordered session listing (requirements.md)."@en ;
+    rdfs:domain ceur:Session ;
+    rdfs:range xsd:positiveInteger ;
+    ceur:doiMintingStatus "partial" .
+
+
+# ── 5.5 Person properties ────────────────────────────────────────────────────
+
+ceur:wikidataId
+    a owl:DatatypeProperty ;
+    rdfs:label "Wikidata ID"@en ;
+    rdfs:comment "Wikidata entity URI for this person or organisation."@en ;
+    rdfs:domain ceur:Agent ;
+    rdfs:range xsd:anyURI ;
+    ceur:doiMintingStatus "present" .
+
+ceur:dblpAuthorId
+    a owl:DatatypeProperty ;
+    rdfs:label "DBLP author ID"@en ;
+    rdfs:comment "DBLP author identifier (e.g. 'hartig-olaf')."@en ;
+    rdfs:domain ceur:Person ;
+    rdfs:range xsd:string ;
+    ceur:wdProperty wdt:P2456 ;
+    ceur:dblpProperty dblp:primaryCreatorName ;
+    ceur:doiMintingStatus "missing" ;
+    skos:scopeNote "P2456 (DBLP author ID) is not captured in any existing SPARQL query. Available from DBLP linked data."@en .
+
+ceur:gndId
+    a owl:DatatypeProperty ;
+    rdfs:label "GND ID"@en ;
+    rdfs:comment "Gemeinsame Normdatei (GND) identifier, used for persons and organisations in German-speaking library systems."@en ;
+    rdfs:domain [
+        owl:unionOf ( ceur:Person ceur:Organization )
+    ] ;
+    rdfs:range xsd:string ;
+    ceur:wdProperty wdt:P227 ;
+    ceur:doiMintingStatus "present" .
+
+
+# ── 5.6 Organization properties ──────────────────────────────────────────────
+
+ceur:rorId
+    a owl:DatatypeProperty ;
+    rdfs:label "ROR ID"@en ;
+    rdfs:comment "Research Organization Registry (ROR) identifier for the organisation. Used in Crossref affiliation metadata."@en ;
+    rdfs:domain ceur:Organization ;
+    rdfs:range xsd:string ;
+    ceur:wdProperty wdt:P6782 ;
+    ceur:crossrefField "contributors/person_name/affiliation/@affiliationIdentifier" ;
+    ceur:doiMintingStatus "missing" ;
+    skos:scopeNote "P6782 (ROR ID) is absent from AllInstitutions query. Add OPTIONAL { ?institution wdt:P6782 ?rorId }."@en .
+
+
+# ── 5.7 Event / Organization shared properties ────────────────────────────────
+
+ceur:country
+    a owl:DatatypeProperty ;
+    rdfs:label "country"@en ;
+    rdfs:comment """Country in which the organisation is located or the event took place. Stored as the IRI of a country resource (Wikidata, DBpedia). Enables CQs Q0.3, Q0.6, Q0.10, Q1.19, Q2.2."""@en ;
+    rdfs:domain [
+        owl:unionOf ( ceur:Organization ceur:AcademicEvent )
+    ] ;
+    rdfs:range xsd:anyURI ;
+    owl:equivalentProperty schema:addressCountry ;
+    ceur:wdProperty wdt:P17 ;
+    ceur:crossrefField "conference_location/country" ;
+    ceur:doiMintingStatus "present" .
+
+ceur:coordinates
+    a owl:DatatypeProperty ;
+    rdfs:label "coordinates"@en ;
+    rdfs:comment """Geographic coordinates of an organisation's location or an event's location. Stored as a WKT point literal (e.g. \"POINT(8.68 50.11)\"^^geo:wktLiteral). Enables Q0.10 map view."""@en ;
+    rdfs:domain [
+        owl:unionOf ( ceur:Organization ceur:AcademicEvent )
+    ] ;
+    rdfs:range geo:wktLiteral ;
+    owl:equivalentProperty schema:geo ;
+    ceur:wdProperty wdt:P625 ;
+    ceur:doiMintingStatus "present" .
+
+
+# ── 5.8 Event properties ─────────────────────────────────────────────────────
+
+ceur:acronym
+    a owl:DatatypeProperty ;
+    rdfs:label "acronym"@en ;
+    rdfs:comment "Short acronym for an academic event or event series (e.g. 'ISWC2023')."@en ;
+    rdfs:domain [
+        owl:unionOf ( ceur:AcademicEvent ceur:EventSeries )
+    ] ;
+    rdfs:range xsd:string ;
+    ceur:wdProperty wdt:P1813 ;
+    ceur:crossrefField "conference_date/conference_name" ;
+    ceur:doiMintingStatus "present" .
+
+ceur:officialWebsite
+    a owl:DatatypeProperty ;
+    rdfs:label "official website"@en ;
+    rdfs:comment "URL of the official website of the academic event or event series. Enables Q3.4."@en ;
+    rdfs:domain [
+        owl:unionOf ( ceur:AcademicEvent ceur:EventSeries )
+    ] ;
+    rdfs:range xsd:anyURI ;
+    owl:equivalentProperty schema:url ;
+    ceur:wdProperty wdt:P856 ;
+    ceur:doiMintingStatus "present" .
+
+ceur:callForPapersUrl
+    a owl:DatatypeProperty ;
+    rdfs:label "call for papers URL"@en ;
+    rdfs:comment "Direct URL to the call for papers announcement for this event on WikiCfP or EventSeer. Enables Q3.3."@en ;
+    rdfs:domain ceur:AcademicEvent ;
+    rdfs:range xsd:anyURI ;
+    ceur:doiMintingStatus "not-available" ;
+    skos:scopeNote "Derived from ceur:wikiCfpId or ceur:dblpEventId; may be stored directly when known."@en .
+
+ceur:dblpEventId
+    a owl:DatatypeProperty ;
+    rdfs:label "DBLP event ID"@en ;
+    rdfs:comment "DBLP identifier for the event (e.g. 'conf/wikidata/2023')."@en ;
+    rdfs:domain ceur:AcademicEvent ;
+    rdfs:range xsd:string ;
+    ceur:wdProperty wdt:P10692 ;
+    ceur:doiMintingStatus "present" .
+
+ceur:wikiCfpId
+    a owl:DatatypeProperty ;
+    rdfs:label "WikiCFP ID"@en ;
+    rdfs:comment "Identifier in the WikiCFP call-for-papers database."@en ;
+    rdfs:domain ceur:AcademicEvent ;
+    rdfs:range xsd:string ;
+    ceur:wdProperty wdt:P5124 ;
+    ceur:doiMintingStatus "present" .
+
+ceur:dblpVenueId
+    a owl:DatatypeProperty ;
+    rdfs:label "DBLP venue ID"@en ;
+    rdfs:comment "DBLP venue/stream identifier for an event series."@en ;
+    rdfs:domain ceur:EventSeries ;
+    rdfs:range xsd:string ;
+    ceur:wdProperty wdt:P8926 ;
+    ceur:doiMintingStatus "present" .
+
+ceur:wikiCfpSeriesId
+    a owl:DatatypeProperty ;
+    rdfs:label "WikiCFP series ID"@en ;
+    rdfs:comment "WikiCFP series identifier."@en ;
+    rdfs:domain ceur:EventSeries ;
+    rdfs:range xsd:string ;
+    ceur:wdProperty wdt:P5127 ;
+    ceur:doiMintingStatus "present" .
+
+
+# ── 5.9 Grant properties (Task 2 stubs) ──────────────────────────────────────
+
+ceur:grantId
+    a owl:DatatypeProperty ;
+    rdfs:label "grant ID"@en ;
+    rdfs:comment "Award or grant number assigned by the funding agency (e.g. 'NSF-1234567')."@en ;
+    rdfs:domain ceur:Grant ;
+    rdfs:range xsd:string ;
+    ceur:crossrefField "fr:award-number" ;
+    ceur:doiMintingStatus "not-available" ;
+    skos:scopeNote "Extracted from paper acknowledgement sections."@en .
+
+ceur:euProjectId
+    a owl:DatatypeProperty ;
+    rdfs:label "EU project ID"@en ;
+    rdfs:comment "EU Cordis project identifier (grant number) for EU-funded research. Enables Q2.8."@en ;
+    rdfs:domain ceur:Grant ;
+    rdfs:range xsd:string ;
+    ceur:doiMintingStatus "not-available" ;
+    skos:scopeNote "Cordis project IDs are typically 6–9 digit numbers (e.g. '101093003')."@en .
+
+
+###############################################################################
+# 6. OBJECT PROPERTIES
+###############################################################################
+
+# ── 6.1 Contribution properties ──────────────────────────────────────────────
+
+ceur:hasContributor
+    a owl:ObjectProperty ;
+    rdfs:label "has contributor"@en ;
+    rdfs:comment "Links a bibliographic resource (volume or paper) or a session to a Contribution node describing one author or editor credit."@en ;
+    rdfs:domain [
+        owl:unionOf ( ceur:BibliographicResource ceur:Session )
+    ] ;
+    rdfs:range ceur:Contribution ;
+    ceur:wdProperty wdt:P50 ;
+    ceur:dblpProperty dblp:hasSignature ;
+    ceur:crossrefField "contributors/person_name" ;
+    ceur:doiMintingStatus "partial" ;
+    skos:scopeNote "Use ceur:Authorship for papers (maps to wdt:P50) and ceur:Editorship for volumes or sessions (maps to wdt:P98). Session-level editorship occurs in jointly published volumes."@en .
+
+ceur:contributor
+    a owl:ObjectProperty ;
+    rdfs:label "contributor"@en ;
+    rdfs:comment "The person named in this Contribution node."@en ;
+    rdfs:domain ceur:Contribution ;
+    rdfs:range ceur:Person ;
+    ceur:dblpProperty dblp:signatureCreator ;
+    ceur:crossrefField "contributors/person_name" ;
+    ceur:doiMintingStatus "present" .
+
+ceur:contributorOf
+    a owl:ObjectProperty ;
+    rdfs:label "contributor of"@en ;
+    rdfs:comment "Inverse of ceur:hasContributor."@en ;
+    rdfs:domain ceur:Contribution ;
+    rdfs:range [
+        owl:unionOf ( ceur:BibliographicResource ceur:Session )
+    ] ;
+    owl:inverseOf ceur:hasContributor .
+
+ceur:affiliatedWith
+    a owl:ObjectProperty ;
+    rdfs:label "affiliated with"@en ;
+    rdfs:comment "The organisation with which the contributor was affiliated at the time of publication."@en ;
+    rdfs:domain ceur:Contribution ;
+    rdfs:range ceur:Organization ;
+    ceur:wdQualifierProp pq:P1416 ;
+    ceur:crossrefField "contributors/person_name/affiliation" ;
+    ceur:doiMintingStatus "partial" .
+
+
+# ── 6.2 Volume → Session / Event / Series ────────────────────────────────────
+
+ceur:hasSession
+    a owl:ObjectProperty ;
+    rdfs:label "has session"@en ;
+    rdfs:comment """Links a proceedings volume to a ceur:Session it contains. Use for jointly published volumes (one session per co-published workshop) and for single-workshop volumes that group papers into topic or time-slot sections."""@en ;
+    rdfs:domain ceur:ProceedingsVolume ;
+    rdfs:range ceur:Session ;
+    ceur:doiMintingStatus "partial" .
+
+ceur:associatedEvent
+    a owl:ObjectProperty ;
+    rdfs:label "associated event"@en ;
+    rdfs:comment "The academic event (workshop or conference) whose proceedings are published in this volume."@en ;
+    rdfs:domain ceur:ProceedingsVolume ;
+    rdfs:range ceur:AcademicEvent ;
+    ceur:wdProperty wdt:P4745 ;
+    ceur:crossrefField "conference" ;
+    ceur:doiMintingStatus "present" .
+
+ceur:partOfSeries
+    a owl:ObjectProperty ;
+    rdfs:label "part of series"@en ;
+    rdfs:comment "The event series of which this academic event is one edition."@en ;
+    rdfs:domain ceur:AcademicEvent ;
+    rdfs:range ceur:EventSeries ;
+    ceur:wdProperty wdt:P179 ;
+    ceur:doiMintingStatus "present" .
+
+
+# ── 6.3 Session → Paper ──────────────────────────────────────────────────────
+
+ceur:containsPaper
+    a owl:ObjectProperty ;
+    rdfs:label "contains paper"@en ;
+    rdfs:comment """Links a ceur:Session to the ceur:Paper instances it groups. Together with ceur:hasSession and dcterms:isPartOf, this forms the chain: ProceedingsVolume → Session → Paper."""@en ;
+    rdfs:domain ceur:Session ;
+    rdfs:range ceur:Paper ;
+    ceur:doiMintingStatus "partial" .
+
+
+# ── 6.4 Paper properties ─────────────────────────────────────────────────────
+
+ceur:presentedAt
+    a owl:ObjectProperty ;
+    rdfs:label "presented at"@en ;
+    rdfs:comment "The academic event at which this paper was presented."@en ;
+    rdfs:domain ceur:Paper ;
+    rdfs:range ceur:AcademicEvent ;
+    ceur:wdProperty wdt:P5072 ;
+    ceur:doiMintingStatus "present" .
+
+
+# ── 6.5 Event properties ─────────────────────────────────────────────────────
+
+ceur:colocatedWith
+    a owl:ObjectProperty ;
+    rdfs:label "co-located with"@en ;
+    rdfs:comment "A larger event (conference) with which this workshop is co-located."@en ;
+    rdfs:domain ceur:AcademicEvent ;
+    rdfs:range ceur:AcademicEvent ;
+    ceur:wdProperty wdt:P11633 ;
+    ceur:doiMintingStatus "present" .
+
+ceur:programCommitteeChair
+    a owl:ObjectProperty ;
+    rdfs:label "programme committee chair"@en ;
+    rdfs:comment "A person who chairs the programme committee of this event."@en ;
+    rdfs:domain ceur:AcademicEvent ;
+    rdfs:range ceur:Person ;
+    ceur:wdProperty wdt:P5804 ;
+    ceur:doiMintingStatus "present" .
+
+
+# ── 6.6 Grant properties ─────────────────────────────────────────────────────
+
+ceur:fundedBy
+    a owl:ObjectProperty ;
+    rdfs:label "funded by"@en ;
+    rdfs:comment "Links a paper to a ceur:Grant that supported the research it presents. Enables Q2.6–Q2.8."@en ;
+    rdfs:domain ceur:Paper ;
+    rdfs:range ceur:Grant ;
+    skos:exactMatch schema:funding ;
+    ceur:crossrefField "fr:program" ;
+    ceur:doiMintingStatus "not-available" ;
+    skos:scopeNote "Populated from paper acknowledgement sections via full-text extraction."@en .
+
+ceur:fundingAgency
+    a owl:ObjectProperty ;
+    rdfs:label "funding agency"@en ;
+    rdfs:comment "The organisation that administers the grant. Enables Q2.7."@en ;
+    rdfs:domain ceur:Grant ;
+    rdfs:range ceur:Organization ;
+    ceur:crossrefField "fr:funder" ;
+    ceur:doiMintingStatus "not-available" .
+
+
+###############################################################################
+# 7. REUSED EXTERNAL PROPERTIES
+#    Crosswalk annotations on standard vocabulary terms already used in
+#    CEUR-WS modelling. No new semantics are added here — only annotation
+#    properties document the mappings.
+###############################################################################
+
+dcterms:title
+    ceur:wdProperty wdt:P1476 ;
+    ceur:dblpProperty dblp:title ;
+    ceur:crossrefField "titles/title" ;
+    ceur:doiMintingStatus "present" .
+
+dcterms:issued
+    ceur:wdProperty wdt:P577 ;
+    ceur:dblpProperty dblp:yearOfPublication ;
+    ceur:crossrefField "publication_date/year" ;
+    ceur:doiMintingStatus "present" .
+
+dcterms:language
+    ceur:wdProperty wdt:P407 ;
+    ceur:crossrefField "language" ;
+    ceur:doiMintingStatus "present" .
+
+dcterms:abstract
+    ceur:crossrefField "jats:abstract" ;
+    ceur:doiMintingStatus "missing" ;
+    skos:scopeNote """Not available in Wikidata or DBLP for CEUR-WS content. Populate from CEUR-WS HTML volume index page (description element) or from paper PDFs."""@en .
+
+dcterms:license
+    ceur:crossrefField "license_ref" ;
+    ceur:doiMintingStatus "missing" ;
+    skos:scopeNote """Default to https://creativecommons.org/licenses/by/4.0/ for volumes published from 2020 onward; earlier volumes require per-volume verification."""@en .
+
+dcterms:publisher
+    ceur:dblpProperty dblp:publishedBy ;
+    ceur:crossrefField "proceedings_metadata/publisher/publisher_name" ;
+    ceur:doiMintingStatus "partial" ;
+    skos:scopeNote "The publisher for all CEUR-WS volumes is ceur:CeurWsPublisher."@en .
+
+dcterms:isPartOf
+    ceur:wdProperty wdt:P1433 ;
+    ceur:dblpProperty dblp:publishedAsPartOf ;
+    ceur:doiMintingStatus "present" .
+
+dcterms:references
+    ceur:wdProperty wdt:P2860 ;
+    ceur:crossrefField "citation_list/citation" ;
+    ceur:doiMintingStatus "partial" .
+
+bibo:isbn13
+    ceur:wdProperty wdt:P212 ;
+    ceur:crossrefField "proceedings_metadata/isbn" ;
+    ceur:doiMintingStatus "missing" ;
+    skos:scopeNote "P212 (ISBN-13) is not queried in AllVolumes. Add OPTIONAL { ?proceeding wdt:P212 ?isbn }."@en .
+
+bibo:pageStart
+    ceur:dblpProperty dblp:pagination ;
+    ceur:crossrefField "pages/first_page" ;
+    ceur:doiMintingStatus "missing" ;
+    skos:scopeNote "Not available in Wikidata (P1104 = total pages only). Parse from DBLP dblp:pagination (e.g. '1-15' => first_page=1)."@en .
+
+bibo:pageEnd
+    ceur:dblpProperty dblp:pagination ;
+    ceur:crossrefField "pages/last_page" ;
+    ceur:doiMintingStatus "missing" ;
+    skos:scopeNote "Not available in Wikidata. Parse from DBLP dblp:pagination (e.g. '1-15' => last_page=15)."@en .
+
+bibo:numPages
+    ceur:wdProperty wdt:P1104 ;
+    ceur:doiMintingStatus "present" .
+
+schema:url
+    ceur:wdProperty wdt:P973 ;
+    ceur:dblpProperty dblp:primaryDocumentPage ;
+    ceur:crossrefField "doi_data/resource" ;
+    ceur:doiMintingStatus "present" .
+
+schema:startDate
+    ceur:wdProperty wdt:P580 ;
+    ceur:crossrefField "conference_date/start_month" ;
+    ceur:doiMintingStatus "present" .
+
+schema:endDate
+    ceur:wdProperty wdt:P582 ;
+    ceur:crossrefField "conference_date/end_month" ;
+    ceur:doiMintingStatus "present" .
+
+schema:location
+    ceur:wdProperty wdt:P276 ;
+    ceur:crossrefField "conference_location/conference_location_raw" ;
+    ceur:doiMintingStatus "present" .
+
+schema:logo
+    ceur:wdProperty wdt:P154 ;
+    ceur:doiMintingStatus "present" .
+
+schema:funding
+    ceur:crossrefField "fr:program" ;
+    ceur:doiMintingStatus "not-available" ;
+    skos:scopeNote "Use ceur:fundedBy → ceur:Grant in preference to schema:funding for structured grant data."@en .
+
+schema:addressCountry
+    ceur:wdProperty wdt:P17 ;
+    ceur:crossrefField "conference_location/country" ;
+    ceur:doiMintingStatus "present" .
+
+schema:geo
+    ceur:wdProperty wdt:P625 ;
+    ceur:doiMintingStatus "present" .
+
+foaf:name
+    ceur:dblpProperty dblp:primaryCreatorName ;
+    ceur:crossrefField "contributors/person_name" ;
+    ceur:doiMintingStatus "present" .

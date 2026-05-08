@@ -1,0 +1,316 @@
+{
+  "@context": {
+    "@version": 1.1,
+
+    "_comment": "CEUR-WS Proceedings JSON-LD Context v1.0 (2026-04-27) — normative namespace https://ceur-ws.org/rdf/schema#",
+
+    "ceur":     "https://ceur-ws.org/rdf/schema#",
+    "dcterms":  "http://purl.org/dc/terms/",
+    "bibo":     "http://purl.org/ontology/bibo/",
+    "foaf":     "http://xmlns.com/foaf/0.1/",
+    "schema":   "https://schema.org/",
+    "skos":     "http://www.w3.org/2004/02/skos/core#",
+    "geo":      "http://www.opengis.net/ont/geosparql#",
+    "xsd":      "http://www.w3.org/2001/XMLSchema#",
+    "wd":       "http://www.wikidata.org/entity/",
+
+    "__classes__": "─── Type keywords ────────────────────────────────────────",
+
+    "ProceedingsVolume": "ceur:ProceedingsVolume",
+    "Paper":             "ceur:Paper",
+    "AcademicEvent":     "ceur:AcademicEvent",
+    "Workshop":          "ceur:Workshop",
+    "Conference":        "ceur:Conference",
+    "EventSeries":       "ceur:EventSeries",
+    "Session":           "ceur:Session",
+    "Person":            "ceur:Person",
+    "Organization":      "ceur:Organization",
+    "Contribution":      "ceur:Contribution",
+    "Authorship":        "ceur:Authorship",
+    "Editorship":        "ceur:Editorship",
+    "Grant":             "ceur:Grant",
+
+    "__volume__": "─── ProceedingsVolume properties ─────────────────────────",
+
+    "volumeNumber": {
+      "@id":   "ceur:volumeNumber",
+      "@type": "xsd:positiveInteger"
+    },
+    "title": {
+      "@id":        "http://purl.org/dc/terms/title",
+      "@container": "@language"
+    },
+    "shortName": {
+      "@id": "ceur:shortName"
+    },
+    "pubDate": {
+      "@id":   "http://purl.org/dc/terms/issued",
+      "@type": "xsd:date"
+    },
+    "url": {
+      "@id":   "https://schema.org/url",
+      "@type": "@id"
+    },
+    "fullWorkUrl": {
+      "@id":   "ceur:fullWorkUrl",
+      "@type": "@id"
+    },
+    "urn": {
+      "@id": "ceur:urn"
+    },
+    "doi": {
+      "@id": "ceur:doi"
+    },
+    "dblpPublicationId": {
+      "@id": "ceur:dblpPublicationId"
+    },
+    "k10plusId": {
+      "@id": "ceur:k10plusId"
+    },
+    "isbn": {
+      "@id": "http://purl.org/ontology/bibo/isbn13"
+    },
+    "language": {
+      "@id":   "http://purl.org/dc/terms/language",
+      "@type": "@id"
+    },
+    "abstract": {
+      "@id":        "http://purl.org/dc/terms/abstract",
+      "@container": "@language"
+    },
+    "license": {
+      "@id":   "http://purl.org/dc/terms/license",
+      "@type": "@id"
+    },
+    "publisher": {
+      "@id":   "http://purl.org/dc/terms/publisher",
+      "@type": "@id"
+    },
+    "isPartOf": {
+      "@id":   "http://purl.org/dc/terms/isPartOf",
+      "@type": "@id"
+    },
+    "associatedEvent": {
+      "@id":   "ceur:associatedEvent",
+      "@type": "@id"
+    },
+    "hasContributor": {
+      "@id":        "ceur:hasContributor",
+      "@type":      "@id",
+      "@container": "@set"
+    },
+    "hasSession": {
+      "@id":        "ceur:hasSession",
+      "@type":      "@id",
+      "@container": "@set"
+    },
+
+    "__session__": "─── Session properties ────────────────────────────────────",
+
+    "sessionOrder": {
+      "@id":   "ceur:sessionOrder",
+      "@type": "xsd:positiveInteger"
+    },
+    "containsPaper": {
+      "@id":        "ceur:containsPaper",
+      "@type":      "@id",
+      "@container": "@set"
+    },
+
+    "__paper__": "─── Paper properties ──────────────────────────────────────",
+
+    "publishedIn": {
+      "@id":   "http://purl.org/dc/terms/isPartOf",
+      "@type": "@id"
+    },
+    "presentedAt": {
+      "@id":   "ceur:presentedAt",
+      "@type": "@id"
+    },
+    "pageStart": {
+      "@id": "http://purl.org/ontology/bibo/pageStart"
+    },
+    "pageEnd": {
+      "@id": "http://purl.org/ontology/bibo/pageEnd"
+    },
+    "numPages": {
+      "@id":   "http://purl.org/ontology/bibo/numPages",
+      "@type": "xsd:positiveInteger"
+    },
+    "articleType": {
+      "@id":   "ceur:articleType",
+      "@type": "@id"
+    },
+    "citationType": {
+      "@id":   "ceur:citationType",
+      "@type": "@id"
+    },
+    "stringAuthorName": {
+      "@id": "ceur:stringAuthorName"
+    },
+    "references": {
+      "@id":        "http://purl.org/dc/terms/references",
+      "@type":      "@id",
+      "@container": "@set"
+    },
+    "fundedBy": {
+      "@id":        "ceur:fundedBy",
+      "@type":      "@id",
+      "@container": "@set"
+    },
+    "mentionsOntology": {
+      "@id":        "ceur:mentionsOntology",
+      "@type":      "@id",
+      "@container": "@set"
+    },
+    "introducesOntology": {
+      "@id":        "ceur:introducesOntology",
+      "@type":      "@id",
+      "@container": "@set"
+    },
+
+    "__contribution__": "─── Contribution (Authorship / Editorship) ────────",
+
+    "contributor": {
+      "@id":   "ceur:contributor",
+      "@type": "@id"
+    },
+    "contributorOf": {
+      "@id":   "ceur:contributorOf",
+      "@type": "@id"
+    },
+    "affiliatedWith": {
+      "@id":   "ceur:affiliatedWith",
+      "@type": "@id"
+    },
+    "nameAsListed": {
+      "@id": "ceur:nameAsListed"
+    },
+    "orcid": {
+      "@id": "ceur:orcid"
+    },
+    "ordinal": {
+      "@id":   "ceur:ordinal",
+      "@type": "xsd:positiveInteger"
+    },
+
+    "__person__": "─── Person properties ─────────────────────────────────────",
+
+    "name": {
+      "@id": "http://xmlns.com/foaf/0.1/name"
+    },
+    "wikidataId": {
+      "@id":   "ceur:wikidataId",
+      "@type": "@id"
+    },
+    "dblpAuthorId": {
+      "@id": "ceur:dblpAuthorId"
+    },
+    "gndId": {
+      "@id": "ceur:gndId"
+    },
+
+    "__organization__": "─── Organization properties ────────────────────────",
+
+    "rorId": {
+      "@id": "ceur:rorId"
+    },
+    "logo": {
+      "@id":   "https://schema.org/logo",
+      "@type": "@id"
+    },
+    "country": {
+      "@id":   "ceur:country",
+      "@type": "@id"
+    },
+    "coordinates": {
+      "@id":   "ceur:coordinates",
+      "@type": "geo:wktLiteral"
+    },
+
+    "__event__": "─── AcademicEvent properties ──────────────────────────────",
+
+    "acronym": {
+      "@id": "ceur:acronym"
+    },
+    "startDate": {
+      "@id":   "https://schema.org/startDate",
+      "@type": "xsd:date"
+    },
+    "endDate": {
+      "@id":   "https://schema.org/endDate",
+      "@type": "xsd:date"
+    },
+    "location": {
+      "@id": "https://schema.org/location"
+    },
+    "officialWebsite": {
+      "@id":   "ceur:officialWebsite",
+      "@type": "@id"
+    },
+    "callForPapersUrl": {
+      "@id":   "ceur:callForPapersUrl",
+      "@type": "@id"
+    },
+    "colocatedWith": {
+      "@id":   "ceur:colocatedWith",
+      "@type": "@id"
+    },
+    "dblpEventId": {
+      "@id": "ceur:dblpEventId"
+    },
+    "wikiCfpId": {
+      "@id": "ceur:wikiCfpId"
+    },
+    "partOfSeries": {
+      "@id":   "ceur:partOfSeries",
+      "@type": "@id"
+    },
+    "programCommitteeChair": {
+      "@id":        "ceur:programCommitteeChair",
+      "@type":      "@id",
+      "@container": "@set"
+    },
+
+    "__series__": "─── EventSeries properties ────────────────────────────────",
+
+    "dblpVenueId": {
+      "@id": "ceur:dblpVenueId"
+    },
+    "wikiCfpSeriesId": {
+      "@id": "ceur:wikiCfpSeriesId"
+    },
+
+    "__grant__": "─── Grant properties ──────────────────────────────────────",
+
+    "grantId": {
+      "@id": "ceur:grantId"
+    },
+    "fundingAgency": {
+      "@id":   "ceur:fundingAgency",
+      "@type": "@id"
+    },
+    "euProjectId": {
+      "@id": "ceur:euProjectId"
+    },
+
+    "__article_types__": "─── Article type concept URIs (SKOS) ──────────────",
+
+    "FullPaper":         "ceur:FullPaper",
+    "ShortPaper":        "ceur:ShortPaper",
+    "ExtendedAbstract":  "ceur:ExtendedAbstract",
+    "InvitedPaper":      "ceur:InvitedPaper",
+    "SystemDescription": "ceur:SystemDescription",
+    "DemoDescription":   "ceur:DemoDescription",
+    "PositionPaper":     "ceur:PositionPaper",
+
+    "__citation_types__": "─── Citation type concept URIs (SKOS) ─────────────",
+
+    "JournalArticle":   "ceur:JournalArticle",
+    "ConferencePaper":  "ceur:ConferencePaper",
+    "BookChapter":      "ceur:BookChapter",
+    "Book":             "ceur:Book",
+    "TechnicalReport":  "ceur:TechnicalReport",
+    "Preprint":         "ceur:Preprint"
+  }
+}
