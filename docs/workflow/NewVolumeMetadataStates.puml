@@ -1,0 +1,72 @@
+@startuml
+' draft for https://github.com/ceurws/semantify/issues/19
+' sources: HOWTOSUBMIT, Vol-XXX/index.html template, semantify #16,
+' CEUR-WS task force meeting 2026-09-22 (Workflow, Commit)
+skinparam backgroundColor #EEEBDA
+title New volume: states of the metadata - draft for discussion (semantify #19)
+
+state "Preparation - Workshop Proceedings Chair" as Prep {
+  state entry <<choice>>
+  state "index.html hand-written" as HtmlHand
+  HtmlHand : Vol-XXX template
+  HtmlHand : CEUR class tags
+  state "JSON-LD" as JsonLd
+  state "index.html with fenced JSON-LD" as Combo
+  state "Round trip checked" as RoundTrip
+
+  [*] --> entry
+  entry --> HtmlHand : HTML first
+  entry --> JsonLd : JSON-LD first
+  HtmlHand --> JsonLd : parse
+  JsonLd --> Combo : generate
+  Combo --> RoundTrip : extract fenced JSON-LD (semantify3)\nand compare
+  RoundTrip --> JsonLd : differs: curate
+}
+
+state "Submitted" as Submitted
+Submitted : ZIP: PDFs, index.html, author agreements
+Submitted : ticket number
+
+state "In check - CEUR editor" as InCheck
+InCheck : checking, collecting, generating
+InCheck : volume number, URN, publication date set
+InCheck : DOI preparation
+InCheck : decision
+
+state "Rejected" as Rejected
+
+state "Preview" as Preview
+Preview : e.g. git branch ?
+
+state "Published" as Published
+Published : git commit = official publication
+
+state "Downstream triggered" as Triggered
+Triggered : ticket closed
+Triggered : DOI registration
+Triggered : URN
+Triggered : endpoints update
+Triggered : Wikidata
+
+state "Indexed" as Indexed
+Indexed : dblp, GND passive ?
+Indexed : TIB passive ?
+
+[*] --> Prep
+RoundTrip --> Submitted : open ticket
+Submitted --> InCheck
+InCheck --> Prep : corrections requested
+InCheck --> Rejected : not accepted
+Rejected --> [*]
+InCheck --> Preview : accepted
+Preview --> Published : git commit
+Published --> InCheck : correction request\nwithin two working days
+Published --> Triggered
+Triggered --> Indexed
+Indexed --> [*]
+
+legend right
+  Transition labels are operations.
+  Which component implements them is open.
+endlegend
+@enduml
