@@ -11,16 +11,32 @@ Semantification of the CEUR-WS publication workflow
 See [Issue #1: Semantify CEUR-WS](https://github.com/ceurws/semantify/issues/1) for the project vision and definition of done.
 
 ## Generator
-`ceursemantify` generates year and volume pages from the JSON-LD of volumes, see [#24](https://github.com/ceurws/semantify/issues/24).
-The year of a volume is the year of the start date of its event.
+`ceursemantify` generates year, volume and paper pages for volume numbers and ranges, see [#24](https://github.com/ceurws/semantify/issues/24).
+The JSON-LD of each volume is fetched from [ceur-spt](https://github.com/ceurws/ceur-spt) and mapped to the research model of
+[cr.bitplan.com](https://cr.bitplan.com/index.php/CoreEntities). The year of a volume is the year of the start date of its event.
 
 ```bash
-ceursemantify examples/Vol-*.jsonld -o /tmp/ceur-ws-yyyy
+# generate volumes into the year of their event
+ceursemantify 3649-4202 -o /tmp/ceur-ws-yyyy --progress
+# rebuild the page of a year from the volumes present
+ceursemantify --year 2024 -o /tmp/ceur-ws-yyyy
+# fetch and write the volumes of a year again and rebuild its page
+ceursemantify --year 2024 --regenerate -o /tmp/ceur-ws-yyyy --progress
+# load all JSON-LD files into memory and serve them as SPARQL endpoint, see #18
+ceursemantify --serve -o /tmp/ceur-ws-yyyy
 ```
 
-Per volume `yyyy/Vol-N/index.html` and `yyyy/Vol-N/index.jsonld` are written, per year `yyyy/index.html`.
-Each volume page carries its JSON-LD as a `json-ld` fence in an HTML comment that
+Written are `yyyy/index.html`, `yyyy/Vol-N/index.html` and `yyyy/Vol-N/paperK/index.html`, each volume and paper page with an
+`index.jsonld` beside it and the same JSON-LD as a `json-ld` fence in an HTML comment that
 [semantify3](https://github.com/BITPlan/semantify3) extracts again.
+
+| File | Role |
+|------|------|
+| `ceursemantify/model.py` | research model: Proceedings, Paper, Event, Scholar, Publisher, City, Country |
+| `ceursemantify/resources/ceurspt_mapping.yaml` | the one input mapping: ceur-spt JSON-LD to the research model |
+| `ceursemantify/resources/context.yaml` | JSON-LD context of the research model, with the terms the ontology does not have yet |
+| `ceursemantify/resources/site.yaml` | site configuration |
+
 Prototype: [2023](https://ceur-ws.wikidata.dbis.rwth-aachen.de/2023/), [2024](https://ceur-ws.wikidata.dbis.rwth-aachen.de/2024/),
 [2025](https://ceur-ws.wikidata.dbis.rwth-aachen.de/2025/), [2026](https://ceur-ws.wikidata.dbis.rwth-aachen.de/2026/)
 

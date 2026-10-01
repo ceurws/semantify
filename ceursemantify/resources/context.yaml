@@ -1,0 +1,100 @@
+# JSON-LD context of the research model
+# per class of ceursemantify/model.py: the type IRI, the field that gives the
+# node its IRI and per field the term definition
+#   id:        IRI of the property
+#   type:      datatype or @id for links
+#   container: @list where the order matters
+#   reverse:   IRI of the property that points back to the node
+# Terms of the ceur namespace that the ontology in ontology/ceur-ws.ttl does
+# not have yet are listed under provisional; tests/test_context.py checks
+# that every other ceur term exists in the ontology.
+namespaces:
+  ceur: "https://ceur-ws.org/rdf/schema#"
+  dcterms: "http://purl.org/dc/terms/"
+  schema: "https://schema.org/"
+  foaf: "http://xmlns.com/foaf/0.1/"
+  bibo: "http://purl.org/ontology/bibo/"
+  xsd: "http://www.w3.org/2001/XMLSchema#"
+provisional:
+  - "ceur:City"
+  - "ceur:Country"
+  - "ceur:archive"
+  - "ceur:pubYear"
+  - "ceur:editor"
+  - "ceur:author"
+  - "ceur:virtual"
+  - "ceur:city"
+  - "ceur:familyName"
+  - "ceur:givenName"
+  - "ceur:session"
+classes:
+  Proceedings:
+    type: "ceur:ProceedingsVolume"
+    id_field: url
+    terms:
+      wikidataid: {id: "ceur:wikidataId"}
+      title: {id: "dcterms:title"}
+      volumeNumber: {id: "ceur:volumeNumber", type: "xsd:positiveInteger"}
+      urn: {id: "ceur:urn"}
+      pubDate: {id: "dcterms:issued", type: "xsd:date"}
+      pubYear: {id: "ceur:pubYear", type: "xsd:gYear"}
+      url: {id: "schema:url", type: "@id"}
+      archive: {id: "ceur:archive", type: "@id"}
+      license: {id: "dcterms:license", type: "@id"}
+      publisher: {id: "dcterms:publisher"}
+      event: {id: "ceur:associatedEvent"}
+      editors: {id: "ceur:editor", container: "@list"}
+      papers: {reverse: "dcterms:isPartOf"}
+  Event:
+    type: "ceur:AcademicEvent"
+    terms:
+      acronym: {id: "ceur:acronym"}
+      ordinal: {id: "ceur:ordinal", type: "xsd:positiveInteger"}
+      title: {id: "dcterms:title"}
+      homepage: {id: "ceur:officialWebsite", type: "@id"}
+      wikidataid: {id: "ceur:wikidataId"}
+      startDate: {id: "schema:startDate", type: "xsd:date"}
+      endDate: {id: "schema:endDate", type: "xsd:date"}
+      location: {id: "schema:location"}
+      virtual: {id: "ceur:virtual", type: "xsd:boolean"}
+      city: {id: "ceur:city"}
+      country: {id: "ceur:country"}
+      colocated_with: {id: "ceur:colocatedWith"}
+  Paper:
+    type: "ceur:Paper"
+    id_field: pdfUrl
+    terms:
+      id: {id: "dcterms:identifier"}
+      wikidataid: {id: "ceur:wikidataId"}
+      title: {id: "dcterms:title"}
+      pdfUrl: {id: "schema:url", type: "@id"}
+      pageStart: {id: "bibo:pageStart"}
+      pageEnd: {id: "bibo:pageEnd"}
+      dblpPublicationId: {id: "ceur:dblpPublicationId"}
+      session: {id: "ceur:session"}
+      publishedIn: {id: "dcterms:isPartOf", type: "@id"}
+      authors: {id: "ceur:author", container: "@list"}
+  Scholar:
+    type: "ceur:Person"
+    terms:
+      name: {id: "ceur:familyName"}
+      firstName: {id: "ceur:givenName"}
+      orcid: {id: "ceur:orcid"}
+      dblpId: {id: "ceur:dblpAuthorId"}
+      wikiDataId: {id: "ceur:wikidataId"}
+      gndId: {id: "ceur:gndId"}
+  Publisher:
+    type: "ceur:Organization"
+    terms:
+      name: {id: "foaf:name"}
+      wikidataid: {id: "ceur:wikidataId"}
+  City:
+    type: "ceur:City"
+    terms:
+      name: {id: "foaf:name"}
+      wikidataid: {id: "ceur:wikidataId"}
+  Country:
+    type: "ceur:Country"
+    terms:
+      name: {id: "foaf:name"}
+      wikidataid: {id: "ceur:wikidataId"}

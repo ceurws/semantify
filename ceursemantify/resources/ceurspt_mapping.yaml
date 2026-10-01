@@ -1,0 +1,85 @@
+# Mapping of the JSON-LD served by ceur-spt to the research model
+# source: https://ceurspt.wikidata.dbis.rwth-aachen.de/Vol-N.jsonld
+# target: ceursemantify/model.py
+#
+# per target class:
+#   fields:  target field -> from: source key
+#                            as: conversion (see ceursemantify/convert.py)
+#                            class: target class of a nested value
+#                            into: field of the nested class that takes a plain source value
+#   ignore:  source keys that are deliberately not mapped, with the reason
+Proceedings:
+  fields:
+    volumeNumber: {from: "ceur:volume_nr", as: volume_number}
+    title: {from: "ceur:proceedings_title", as: text}
+    pubDate: {from: "ceur:publication_date", as: iso_date}
+    pubYear: {from: "ceur:publication_year", as: integer}
+    url: {from: "ceur:landing_page"}
+    urn: {from: "ceur:urn"}
+    archive: {from: "ceur:archive"}
+    license: {from: "ceur:license"}
+    wikidataid: {from: "ceur:wikidata", as: wikidata_id}
+    publisher: {from: "ceur:publisher", class: Publisher, into: name}
+    event: {from: "ceur:event", class: Event}
+    editors: {from: "ceur:editors", class: Scholar}
+    papers: {from: "ceur:has_paper", class: Paper}
+  ignore:
+    "@context": vocabulary of ceur-spt, replaced by the context of the research model
+    "@id": same as ceur:landing_page
+    "@type": given by the target class
+    "ceur:series": constant CEUR Workshop Proceedings, not a core entity
+    "ceur:language": no field in the research model yet
+    "ceur:errors": diagnostics of ceur-spt
+Event:
+  fields:
+    acronym: {from: "ceur:conference_acronym", as: text}
+    ordinal: {from: "ceur:conference_number", as: integer}
+    title: {from: "ceur:conference_name", as: text}
+    homepage: {from: "ceur:conference_homepage"}
+    startDate: {from: "ceur:conference_date_start", as: iso_date}
+    endDate: {from: "ceur:conference_date_end", as: iso_date}
+    location: {from: "ceur:conference_location", as: text}
+    virtual: {from: "ceur:conference_virtual"}
+    city: {from: "ceur:conference_city", class: City, into: name}
+    country: {from: "ceur:conference_country", class: Country, into: name}
+    colocated_with: {from: "ceur:conference_colocated_with", class: Event, into: acronym}
+  ignore:
+    "@type": given by the target class
+    "ceur:errors": diagnostics of ceur-spt
+Scholar:
+  fields:
+    name: {from: "ceur:family_name", as: text}
+    firstName: {from: "ceur:given_name", as: text}
+    orcid: {from: "ceur:orcid"}
+    dblpId: {from: "ceur:dblp", as: dblp_person_id}
+    wikiDataId: {from: "ceur:wikidata", as: wikidata_id}
+    gndId: {from: "ceur:gnd"}
+  ignore:
+    "@type": given by the target class
+    "ceur:sequence": the order is the position in the list
+    "ceur:errors": diagnostics of ceur-spt
+Paper:
+  fields:
+    id: {from: "@id", as: file_stem}
+    pdfUrl: {from: "ceur:landing_page"}
+    title: {from: "ceur:title", as: text}
+    pageStart: {from: "ceur:pages", as: page_start}
+    pageEnd: {from: "ceur:pages", as: page_end}
+    dblpPublicationId: {from: "ceur:dblp", as: dblp_record_id}
+    wikidataid: {from: "ceur:wikidata", as: wikidata_id}
+    session: {from: "ceur:session", as: text}
+    authors: {from: "ceur:contributors", class: Scholar}
+  ignore:
+    "@type": given by the target class
+    "ceur:page_first": taken from ceur:pages
+    "ceur:page_last": taken from ceur:pages
+    "ceur:errors": diagnostics of ceur-spt
+Publisher:
+  fields: {}
+  ignore: {}
+City:
+  fields: {}
+  ignore: {}
+Country:
+  fields: {}
+  ignore: {}

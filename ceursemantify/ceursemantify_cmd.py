@@ -4,7 +4,6 @@ Created on 2026-10-01
 @author: wf
 """
 
-import glob
 import sys
 from argparse import ArgumentParser, Namespace
 from dataclasses import dataclass
@@ -13,7 +12,9 @@ from typing import List, Optional
 from basemkit.base_cmd import BaseCmd
 
 import ceursemantify
-from ceursemantify.generator import PageGenerator, Volume
+from ceursemantify.endpoint import SptEndpoint
+from ceursemantify.generator import Generator
+from ceursemantify.site import SiteConfig, SiteReport, VolumeRanges
 
 
 @dataclass
@@ -35,7 +36,8 @@ class Version:
 
 class CeurSemantifyCmd(BaseCmd):
     """
-    command line interface to generate CEUR-WS year and volume pages from JSON-LD
+    command line interface of pyCEURsemantify:
+    generate volume pages, rebuild year pages, serve the endpoint
     """
 
     def __init__(self):
@@ -46,40 +48,62 @@ class CeurSemantifyCmd(BaseCmd):
 
     def add_arguments(self, parser: ArgumentParser) -> None:
         """
-        add the arguments of the generator to the given parser
+        add the arguments to the given parser
 
         Args:
             parser: the argument parser
         """
         super().add_arguments(parser)
-        parser.add_argument("files", nargs="*", help="JSON-LD files of volumes or glob patterns")
+        parser.add_argument(
+            "volumes",
+            nargs="*",
+            help="volume numbers and ranges to generate, e.g. 3889 3887-3912",
+        )
+        parser.add_argument(
+            "-y",
+            "--year",
+            type=int,
+            action="append",
+            dest="years",
+            help="rebuild the page of the given year from the volumes present (can be given several times)",
+        )
+        parser.add_argument(
+            "--regenerate",
+            action="store_true",
+            help="with --year: fetch and write the volumes present for the year again before rebuilding its page",
+        )
+        parser.add_argument("--progress", action="store_true", help="show a progress bar while generating volumes")
+        parser.add_argument(
+            "--serve",
+            action="store_true",
+            help="load all JSON-LD files into memory and serve them as SPARQL endpoint",
+        )
+        parser.add_argument("--host", default="127.0.0.1", help="host of the endpoint (default: %(default)s)")
+        parser.add_argument("--port", type=int, default=9987, help="port of the endpoint (default: %(default)s)")
         parser.add_argument(
             "-o",
             "--output",
             default=".",
-            help="directory to write the year directories to (default: current directory)",
+            help="directory that holds the year directories (default: current directory)",
         )
-        parser.add_argument(
-            "--base-url",
-            default="https://ceur-ws.wikidata.dbis.rwth-aachen.de",
-            help="url the generated pages are served from (default: %(default)s)",
-        )
+        parser.add_argument("--config", help="site configuration yaml file (default: the packaged site.yaml)")
 
-    def expand_files(self, patterns: List[str]) -> List[str]:
+    def show_report(self, title: str, report: SiteReport, args: Namespace) -> None:
         """
-        expand the given file names and glob patterns
+        show the given report: problems always, written files if verbose
 
         Args:
-            patterns: file names or glob patterns
-
-        Returns:
-            List[str]: the sorted list of matching files
+            title: what the report is about
+            report: the report
+            args: the parsed arguments
         """
-        files = set()
-        for pattern in patterns:
-            files.update(glob.glob(pattern, recursive=True))
-        expanded = sorted(files)
-        return expanded
+        for problem in report.problems:
+            print(problem, file=sys.stderr)
+        if args.verbose:
+            for path in report.written:
+                print(path)
+        if not args.quiet:
+            print(f"{title}: {len(report.written)} files, {len(report.problems)} problems, {report.seconds:.1f} s")
 
     def handle_args(self, args: Namespace) -> bool:
         """
@@ -92,16 +116,31 @@ class CeurSemantifyCmd(BaseCmd):
             bool: True if the arguments were handled
         """
         handled = super().handle_args(args)
-        if not handled and args.files:
-            volumes = [Volume.of_file(path) for path in self.expand_files(args.files)]
-            generator = PageGenerator(base_url=args.base_url)
-            report = generator.generate(volumes, args.output)
-            if not args.quiet:
-                for path in report.files:
-                    print(path)
-                for skipped in report.skipped:
-                    print(f"skipped, no event start date: {skipped}", file=sys.stderr)
-            handled = True
+        if not handled:
+            config = SiteConfig.of_yaml(args.config)
+            generator = Generator.of_output(args.output, config)
+            if args.volumes:
+                numbers = VolumeRanges.numbers(args.volumes)
+                report = generator.generate_volumes(numbers, progress=args.progress)
+                self.show_report(f"{len(numbers)} volumes", report, args)
+                handled = True
+            for year in args.years or []:
+                if args.regenerate:
+                    report = generator.regenerate_year(year, progress=args.progress)
+                else:
+                    report = generator.rebuild_year(year)
+                self.show_report(f"year {year}", report, args)
+                handled = True
+            if args.serve:
+                endpoint = SptEndpoint(generator.site)
+                load_report = endpoint.load()
+                if not args.quiet:
+                    print(
+                        f"endpoint: {load_report.files} files, {load_report.triples} triples, "
+                        f"{load_report.seconds:.1f} s, http://{args.host}:{args.port}/npq/{endpoint.name}"
+                    )
+                endpoint.serve(host=args.host, port=args.port)
+                handled = True
         return handled
 
 

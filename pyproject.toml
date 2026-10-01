@@ -24,6 +24,21 @@ dependencies = [
   # https://pypi.org/project/semantify3/
   # extraction of the fenced JSON-LD for the round trip check
   "semantify3>=0.1.0",
+  # https://pypi.org/project/pyLodStorage/
+  # NPQ endpoint serving the JSON-LD files over the SPARQL protocol
+  "pyLodStorage[endpoint]>=0.19.9",
+  # https://pypi.org/project/rdflib/
+  # RDF library: parsing of the JSON-LD files into the endpoint graph
+  "rdflib>=7.0.0",
+  # https://pypi.org/project/requests/
+  # one kept alive connection for fetching the JSON-LD of many volumes
+  "requests>=2.31.0",
+  # https://pypi.org/project/tqdm/
+  # progress bar while generating volumes
+  "tqdm>=4.66.0",
+  # https://pypi.org/project/PyYAML/
+  # mapping table, context table and site configuration
+  "PyYAML>=6.0",
 ]
 
 classifiers = [

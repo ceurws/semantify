@@ -1,0 +1,14 @@
+# Site configuration of the generated CEUR-WS pages
+# the url the generated pages are served from
+base_url: "https://ceur-ws.wikidata.dbis.rwth-aachen.de"
+# the url of the original site
+original_url: "https://ceur-ws.org"
+# the service that provides the JSON-LD of a volume as <spt_url>/Vol-<number>.jsonld
+spt_url: "https://ceurspt.wikidata.dbis.rwth-aachen.de"
+# the stylesheet of the pages
+stylesheet: "/ceur-ws.css"
+# the series the proceedings are published in
+series_title: "CEUR Workshop Proceedings"
+series_issn: "1613-0073"
+# the checker linked from each page
+validator_url: "https://validator.w3.org/nu/"
