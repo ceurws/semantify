@@ -21,6 +21,9 @@ dependencies = [
   # https://pypi.org/project/pybasemkit/
   # Python base module kit: YAML/JSON I/O, structured logging, CLI tooling
   "pybasemkit>=0.2.0",
+  # https://pypi.org/project/semantify3/
+  # extraction of the fenced JSON-LD for the round trip check
+  "semantify3>=0.1.0",
 ]
 
 classifiers = [
@@ -40,6 +43,9 @@ classifiers = [
 Home = "https://github.com/ceurws/semantify"
 Documentation = "https://github.com/ceurws/semantify"
 Source = "https://github.com/ceurws/semantify"
+
+[project.scripts]
+ceursemantify = "ceursemantify.ceursemantify_cmd:main"
 
 [project.optional-dependencies]
 test = [

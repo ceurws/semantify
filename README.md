@@ -10,6 +10,20 @@ Semantification of the CEUR-WS publication workflow
 
 See [Issue #1: Semantify CEUR-WS](https://github.com/ceurws/semantify/issues/1) for the project vision and definition of done.
 
+## Generator
+`ceursemantify` generates year and volume pages from the JSON-LD of volumes, see [#24](https://github.com/ceurws/semantify/issues/24).
+The year of a volume is the year of the start date of its event.
+
+```bash
+ceursemantify examples/Vol-*.jsonld -o /tmp/ceur-ws-yyyy
+```
+
+Per volume `yyyy/Vol-N/index.html` and `yyyy/Vol-N/index.jsonld` are written, per year `yyyy/index.html`.
+Each volume page carries its JSON-LD as a `json-ld` fence in an HTML comment that
+[semantify3](https://github.com/BITPlan/semantify3) extracts again.
+Prototype: [2023](https://ceur-ws.wikidata.dbis.rwth-aachen.de/2023/), [2024](https://ceur-ws.wikidata.dbis.rwth-aachen.de/2024/),
+[2025](https://ceur-ws.wikidata.dbis.rwth-aachen.de/2025/), [2026](https://ceur-ws.wikidata.dbis.rwth-aachen.de/2026/)
+
 ## Related Projects
 
 | Project | Role |
