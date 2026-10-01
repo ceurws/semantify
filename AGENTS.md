@@ -21,3 +21,33 @@ Each set of intended actions needs to be explained in the format:
 ## Security
 
 **CRITICAL: NEVER leak credentials, passwords, hashes, internal hostnames, IPs, or any infrastructure details to public platforms (GitHub, Discourse, etc.). Firing offense.**
+
+## Project
+
+Python project `pyCEURsemantify`, package `ceursemantify`. General conventions: Agent/Guido/BITPlan on the BITPlan wiki; this section holds the project specifics.
+
+## Build, test, format
+
+```bash
+scripts/install      # pip install .
+scripts/test         # unittest discover; -g green, -m modulewise, -t tox
+scripts/blackisort   # isort + black on ceursemantify and tests, before every commit
+scripts/doc          # API documentation with mkdocs
+checkos -o ceurws -p semantify --local -v   # compliance check
+```
+
+## Style
+
+- hatchling build, version in `ceursemantify/__init__.py`
+- black with line length 120, isort
+- unittest with `basemkit.basetest.Basetest`, files `tests/test_<module>.py`, no pytest fixtures
+- type hints and Google style docstrings on every public function and class
+- every command line interface subclasses `basemkit.base_cmd.BaseCmd`
+
+## Structure
+
+- `ceursemantify/` package
+- `tests/` unit tests
+- `ontology/` CEUR-WS proceedings ontology and JSON-LD context
+- `docs/workflow/` workflow diagrams
+

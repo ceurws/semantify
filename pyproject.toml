@@ -1,0 +1,75 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pyCEURsemantify"
+description = "Semantification of the CEUR-WS publication workflow"
+keywords = ["CEUR-WS", "proceedings", "JSON-LD", "semantification", "metadata"]
+authors = [
+  { name = "Wolfgang Fahl", email = "wf@bitplan.com" }
+]
+maintainers = [
+  { name = "Wolfgang Fahl", email = "wf@bitplan.com" }
+]
+readme = "README.md"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.10"
+dynamic = ["version"]
+
+dependencies = [
+  # https://pypi.org/project/pybasemkit/
+  # Python base module kit: YAML/JSON I/O, structured logging, CLI tooling
+  "pybasemkit>=0.2.0",
+]
+
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+  "Intended Audience :: Science/Research",
+  "Topic :: Software Development :: Libraries :: Python Modules"
+]
+
+[project.urls]
+Home = "https://github.com/ceurws/semantify"
+Documentation = "https://github.com/ceurws/semantify"
+Source = "https://github.com/ceurws/semantify"
+
+[project.optional-dependencies]
+test = [
+  # https://pypi.org/project/pytest/
+  # pytest: simple powerful testing with Python
+  "pytest>=8.4.0",
+  # https://pypi.org/project/green/
+  # Green is a clean, colorful, fast python test runner.
+  "green>=3.3.0",
+  # https://pypi.org/project/tox/
+  # tox is a generic virtualenv management and test command line tool
+  "tox>=4.15.0",
+]
+dev = [
+  # https://pypi.org/project/black/
+  # The uncompromising code formatter.
+  "black>=25.1.0",
+  # A Python utility / library to sort Python imports.
+  # https://pypi.org/project/isort/
+  "isort>=6.0.1",
+]
+
+[tool.hatch.version]
+path = "ceursemantify/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+only-include = ["ceursemantify"]
+
+[tool.hatch.build.targets.wheel.sources]
+"pyCEURsemantify" = "ceursemantify"
+
+[tool.black]
+line-length = 120
