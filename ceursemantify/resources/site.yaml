@@ -7,6 +7,9 @@ original_url: "https://ceur-ws.org"
 spt_url: "https://ceurspt.wikidata.dbis.rwth-aachen.de"
 # the stylesheet of the pages
 stylesheet: "/ceur-ws.css"
+# the page header: html snippet with {{ variable }} placeholders,
+# a relative path is relative to the directory of this file, empty for a plain heading
+header: "header.html"
 # the series the proceedings are published in
 series_title: "CEUR Workshop Proceedings"
 series_issn: "1613-0073"

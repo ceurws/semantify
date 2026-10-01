@@ -10,8 +10,10 @@ escapes its values first and then fills a multiline f-string.
 import html
 from dataclasses import dataclass
 from datetime import date
-from typing import Any, List
+from typing import Any, Dict, List
 from urllib.parse import quote
+
+from lodstorage.params import Params
 
 import ceursemantify
 from ceursemantify.jsonld import JsonLd
@@ -594,6 +596,85 @@ class PaperPage:
         return page
 
 
+class Header:
+    """
+    the page header: an html snippet outside the code with {{ variable }}
+    placeholders that are filled by the parameter handling of pyLoDStorage
+    """
+
+    def __init__(self, config: SiteConfig):
+        """
+        constructor
+
+        Args:
+            config: the site configuration with the path of the snippet,
+                without a path the header is the title as plain heading
+        """
+        self.config = config
+        self.snippet = """  <h1>{{ title }}</h1>"""
+        if config.header:
+            with open(config.header, "r", encoding="utf-8") as header_file:
+                self.snippet = header_file.read().rstrip("\n")
+
+    def value(self, raw_value: Any) -> str:
+        """
+        prepare the given value for a placeholder
+
+        Args:
+            raw_value: the value
+
+        Returns:
+            str: the escaped text; a backslash and an opening brace are given as
+                character references since the parameter handling replaces by
+                regular expression and a value must not introduce a placeholder
+        """
+        value = esc(raw_value).replace("\\", "&#92;").replace("{", "&#123;")
+        return value
+
+    def values(self, title: str) -> Dict[str, str]:
+        """
+        get the values of the variables a snippet may use
+
+        Args:
+            title: the title of the page
+
+        Returns:
+            Dict[str, str]: the escaped value by variable name
+        """
+        raw_values = {
+            "title": title,
+            "series_title": self.config.series_title,
+            "series_issn": self.config.series_issn,
+            "original_url": self.config.original_url,
+            "base_url": self.config.base_url,
+        }
+        values = {name: self.value(raw_value) for name, raw_value in raw_values.items()}
+        return values
+
+    def as_html(self, title: str) -> str:
+        """
+        get the header for the page with the given title
+
+        Args:
+            title: the title of the page
+
+        Returns:
+            str: the snippet with all placeholders filled
+
+        Raises:
+            ValueError: if the snippet uses a variable that is not available
+        """
+        values = self.values(title)
+        # the values are escaped for html, the audit for query parameters does not apply
+        params = Params(self.snippet, with_audit=False)
+        unknown = sorted(set(params.params) - set(values.keys()))
+        if unknown:
+            raise ValueError(f"header {self.config.header} uses unknown variables: {', '.join(unknown)}")
+        params.set(values)
+        header = params.apply_parameters()
+        return header
+
+
 class YearEntry:
     """
     the entry of one volume on the page of its year
@@ -709,6 +790,7 @@ class YearPage:
         series_title = esc(self.config.series_title)
         original_url = esc(self.config.original_url)
         base_url = esc(self.config.base_url)
+        header = Header(self.config).as_html(f"{self.config.series_title} of events in {self.year}")
         navigation = self.navigation_as_html()
         entries = self.entries_as_html()
         page = f"""<!DOCTYPE html>
@@ -723,7 +805,7 @@ class YearPage:
 </head>
 
 <body>
-  <h1>{series_title} of events in {year}</h1>
+{header}
 {navigation}
   <p class="unobtrusive">Original: <a href="{original_url}/">{original_url}/</a> |
     Mirror: <a href="/">{base_url}/</a></p>

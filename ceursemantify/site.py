@@ -28,6 +28,7 @@ class SiteConfig:
     original_url: str = ""
     spt_url: str = ""
     stylesheet: str = ""
+    header: str = ""
     series_title: str = ""
     series_issn: str = ""
     validator_url: str = ""
@@ -52,11 +53,15 @@ class SiteConfig:
             path: the path of the yaml file, the default configuration if None
 
         Returns:
-            SiteConfig: the configuration
+            SiteConfig: the configuration, with the path of the header
+                resolved against the directory of the yaml file
         """
         if path is None:
             path = cls.default_path()
         config = cls.load_from_yaml_file(path)
+        if config.header and not os.path.isabs(config.header):
+            config_dir = os.path.dirname(os.path.abspath(path))
+            config.header = os.path.join(config_dir, config.header)
         return config
 
 
