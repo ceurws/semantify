@@ -1,0 +1,164 @@
+# Named queries for the single point of truth endpoint of the generated site,
+# see https://github.com/ceurws/semantify/issues/18
+#
+# Names and output variables are those of the competency questions of
+# https://cr.bitplan.com/index.php/List_of_Queries as held by snapquery in the
+# namespace challenge of the domain ceur-ws.org. The SPARQL is written for the
+# research model vocabulary of ceursemantify/resources/context.yaml instead of
+# Wikidata. Output variables the data does not have are listed per query.
+#
+# usage: sparqlquery -qp ceursemantify/resources/queries.yaml -en ceur-ws-spt -qn AllVolumes
+'AllVolumes':
+    title: All proceedings
+    description: Q0.1
+    sparql: |
+      # Q0.1
+      # not available: language_of_work_or_name, fullWorkUrl, dblpPublicationId, K10plus
+      PREFIX ceur: <https://ceur-ws.org/rdf/schema#>
+      PREFIX dcterms: <http://purl.org/dc/terms/>
+      PREFIX schema: <https://schema.org/>
+      SELECT ?proceeding ?volumeNumber ?title ?short_name ?pubDate ?ceurwsUrl ?urn
+      WHERE {
+        ?proceeding a ceur:ProceedingsVolume ;
+          ceur:volumeNumber ?volumeNumber ;
+          dcterms:title ?title .
+        OPTIONAL { ?proceeding ceur:associatedEvent/ceur:acronym ?short_name . }
+        OPTIONAL { ?proceeding dcterms:issued ?pubDate . }
+        OPTIONAL { ?proceeding schema:url ?ceurwsUrl . }
+        OPTIONAL { ?proceeding ceur:urn ?urn . }
+      }
+      ORDER BY DESC(?volumeNumber)
+'AllPapers':
+    title: All papers
+    description: Q0.2
+    sparql: |
+      # Q0.2 List of all papers
+      # not available: event as entity, language_of_work_or_name, author as entity
+      PREFIX ceur: <https://ceur-ws.org/rdf/schema#>
+      PREFIX dcterms: <http://purl.org/dc/terms/>
+      PREFIX schema: <https://schema.org/>
+      SELECT ?paper ?title ?proceeding ?volumeNumber ?url ?pubDate ?dblpPublicationId
+      WHERE {
+        ?paper a ceur:Paper ;
+          dcterms:title ?title ;
+          dcterms:isPartOf ?proceeding .
+        ?proceeding ceur:volumeNumber ?volumeNumber .
+        OPTIONAL { ?paper schema:url ?url . }
+        OPTIONAL { ?proceeding dcterms:issued ?pubDate . }
+        OPTIONAL { ?paper ceur:dblpPublicationId ?dblpPublicationId . }
+      }
+      ORDER BY DESC(?pubDate) ?paper
+'AllEvents':
+    title: All events
+    description: Q0.3
+    sparql: |
+      # Q0.3
+      # not available: dblpEventId, wikiCfpId, series
+      PREFIX ceur: <https://ceur-ws.org/rdf/schema#>
+      PREFIX dcterms: <http://purl.org/dc/terms/>
+      PREFIX schema: <https://schema.org/>
+      PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+      SELECT ?event ?title ?acronym ?startTime ?endTime ?country ?location ?officialWebsite ?colocatedWith ?ordinal
+      WHERE {
+        ?proceeding a ceur:ProceedingsVolume ;
+          ceur:associatedEvent ?event .
+        OPTIONAL { ?event dcterms:title ?title . }
+        OPTIONAL { ?event ceur:acronym ?acronym . }
+        OPTIONAL { ?event schema:startDate ?startTime . }
+        OPTIONAL { ?event schema:endDate ?endTime . }
+        OPTIONAL { ?event ceur:country/foaf:name ?country . }
+        OPTIONAL { ?event schema:location ?location . }
+        OPTIONAL { ?event ceur:officialWebsite ?officialWebsite . }
+        OPTIONAL { ?event ceur:colocatedWith/ceur:acronym ?colocatedWith . }
+        OPTIONAL { ?event ceur:ordinal ?ordinal . }
+      }
+      ORDER BY DESC(?startTime)
+'AllScholars':
+    title: All scholars
+    description: Q0.5
+    sparql: |
+      # Q0.5
+      # scholars are not yet identified entities: one row per distinct name and identifiers
+      PREFIX ceur: <https://ceur-ws.org/rdf/schema#>
+      SELECT DISTINCT ?label ?givenName ?familyName ?orcid ?dblpAuthorId ?wikidataId
+      WHERE {
+        ?scholar a ceur:Person ;
+          ceur:familyName ?familyName .
+        OPTIONAL { ?scholar ceur:givenName ?givenName . }
+        OPTIONAL { ?scholar ceur:orcid ?orcid . }
+        OPTIONAL { ?scholar ceur:dblpAuthorId ?dblpAuthorId . }
+        OPTIONAL { ?scholar ceur:wikidataId ?wikidataId . }
+        BIND(CONCAT(COALESCE(?givenName, ""), " ", ?familyName) AS ?label)
+      }
+      ORDER BY ?familyName ?givenName
+'AllAuthorsOfPapersOfProceedings':
+    title: authors of papers of proceedings
+    description: Q0.7
+    sparql: |
+      # Q0.7
+      # author is not yet an identified entity
+      PREFIX ceur: <https://ceur-ws.org/rdf/schema#>
+      PREFIX dcterms: <http://purl.org/dc/terms/>
+      PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+      SELECT ?authorLabel ?paper ?paperLabel ?proceedings ?proceedingsLabel
+      WHERE {
+        ?paper a ceur:Paper ;
+          dcterms:title ?paperLabel ;
+          dcterms:isPartOf ?proceedings ;
+          ceur:author/rdf:rest*/rdf:first ?author .
+        ?proceedings dcterms:title ?proceedingsLabel .
+        ?author ceur:familyName ?familyName .
+        OPTIONAL { ?author ceur:givenName ?givenName . }
+        BIND(CONCAT(COALESCE(?givenName, ""), " ", ?familyName) AS ?authorLabel)
+      }
+'DuplicateAndEmptyURNs':
+    title: Duplicate and Empty URNs of proceedings
+    description: Q0.8
+    sparql: |
+      # Q0.8
+      PREFIX ceur: <https://ceur-ws.org/rdf/schema#>
+      SELECT ?urn (COUNT(?proceeding) AS ?count) (GROUP_CONCAT(STR(?volumeNumber); separator=", ") AS ?volWithProceedings)
+      WHERE {
+        ?proceeding a ceur:ProceedingsVolume ;
+          ceur:volumeNumber ?volumeNumber .
+        OPTIONAL { ?proceeding ceur:urn ?urnValue . }
+        BIND(COALESCE(?urnValue, "") AS ?urn)
+      }
+      GROUP BY ?urn
+      HAVING (COUNT(?proceeding) > 1 || ?urn = "")
+      ORDER BY DESC(?count)
+'DuplicateVolumeNumbers':
+    title: Duplicate CEUR-WS Volume numbers of proceedings
+    description: Q0.9
+    sparql: |
+      # Q0.9
+      PREFIX ceur: <https://ceur-ws.org/rdf/schema#>
+      SELECT ?volume (COUNT(?proceeding) AS ?count) (GROUP_CONCAT(DISTINCT STR(?proceeding); separator=", ") AS ?proceedings)
+      WHERE {
+        ?proceeding a ceur:ProceedingsVolume ;
+          ceur:volumeNumber ?volume .
+      }
+      GROUP BY ?volume
+      HAVING (COUNT(?proceeding) > 1)
+      ORDER BY DESC(?count)
+'LocationOfEvents':
+    title: Locations of all CEUR-WS proceedings events
+    description: Q0.10
+    sparql: |
+      # Q0.10
+      # not available: coordinates
+      PREFIX ceur: <https://ceur-ws.org/rdf/schema#>
+      PREFIX dcterms: <http://purl.org/dc/terms/>
+      PREFIX schema: <https://schema.org/>
+      PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+      SELECT ?event ?title ?url ?location ?city ?country
+      WHERE {
+        ?proceeding a ceur:ProceedingsVolume ;
+          schema:url ?url ;
+          ceur:associatedEvent ?event .
+        OPTIONAL { ?event dcterms:title ?title . }
+        OPTIONAL { ?event schema:location ?location . }
+        OPTIONAL { ?event ceur:city/foaf:name ?city . }
+        OPTIONAL { ?event ceur:country/foaf:name ?country . }
+      }
+      ORDER BY ?country ?city
