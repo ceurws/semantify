@@ -10,6 +10,13 @@ Semantification of the CEUR-WS publication workflow
 
 See [Issue #1: Semantify CEUR-WS](https://github.com/ceurws/semantify/issues/1) for the project vision and definition of done.
 
+## Installation
+```bash
+pip install pyCEURsemantify
+```
+The command line tool is `ceursemantify`; `ceursemantify -h` lists the options. Releases are on
+[PyPI](https://pypi.org/project/pyCEURsemantify/), the milestones on [GitHub](https://github.com/ceurws/semantify/milestones).
+
 ## Generator
 `ceursemantify` generates year, volume and paper pages for volume numbers and ranges, see [#24](https://github.com/ceurws/semantify/issues/24).
 The JSON-LD of each volume is fetched from [ceur-spt](https://github.com/ceurws/ceur-spt) and mapped to the research model of
@@ -41,13 +48,30 @@ ceursemantify --embed /path/to/Vol-4280 /path/to/Vol-4281/index.html
 
 The page gets a `CEURSTATE=embedded` comment, the alternate link and the fence in its head; the page is only rewritten if the
 embedded page parses to the same proceedings as the original one. Embedding again replaces the embedded parts.
+Example: [Vol-4280](https://ceur-ws.wikidata.dbis.rwth-aachen.de/2026/Vol-4280/) with its
+[index.jsonld](https://ceur-ws.wikidata.dbis.rwth-aachen.de/2026/Vol-4280/index.jsonld).
+
+## Endpoint
+`--serve` loads all `index.jsonld` files into memory and serves them over the SPARQL protocol as the single point of truth,
+see [#18](https://github.com/ceurws/semantify/issues/18). The named queries of the
+[competency questions](https://cr.bitplan.com/index.php/List_of_Queries) are in `ceursemantify/resources/queries.yaml`:
+
+```bash
+# with an entry ceur-ws-spt for the endpoint in ~/.pylodstorage/endpoints.yaml
+sparqlquery -qp ceursemantify/resources/queries.yaml -en ceur-ws-spt -qn AllVolumes -f csv
+```
 
 | File | Role |
 |------|------|
 | `ceursemantify/model.py` | research model: Proceedings, Paper, Event, Scholar, Publisher, City, Country |
-| `ceursemantify/resources/ceurspt_mapping.yaml` | the one input mapping: ceur-spt JSON-LD to the research model |
+| `ceursemantify/resources/ceurspt_mapping.yaml` | input mapping: ceur-spt JSON-LD to the research model |
+| `ceursemantify/volume_html.py` | input mapping: volume page of the proceedings chair to the research model |
+| `ceursemantify/loctime.py` | parser of the location and time text of a volume page |
+| `ceursemantify/embed.py` | embedding of the JSON-LD into a volume page |
 | `ceursemantify/resources/context.yaml` | JSON-LD context of the research model, with the terms the ontology does not have yet |
+| `ceursemantify/resources/queries.yaml` | named queries of the competency questions for the endpoint |
 | `ceursemantify/resources/site.yaml` | site configuration |
+| `ontology/ceur-ws.ttl` | CEUR-WS proceedings ontology, see [discussion 6](https://github.com/ceurws/semantify/discussions/6) |
 
 Prototype: [2023](https://ceur-ws.wikidata.dbis.rwth-aachen.de/2023/), [2024](https://ceur-ws.wikidata.dbis.rwth-aachen.de/2024/),
 [2025](https://ceur-ws.wikidata.dbis.rwth-aachen.de/2025/), [2026](https://ceur-ws.wikidata.dbis.rwth-aachen.de/2026/)
