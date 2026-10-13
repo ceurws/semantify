@@ -26,7 +26,7 @@ class Version:
     name: str = "pyCEURsemantify"
     version: str = ceursemantify.__version__
     date: str = "2026-10-01"
-    updated: str = "2026-10-01"
+    updated: str = "2026-10-13"
     description: str = "Semantification of the CEUR-WS publication workflow"
     authors: str = "Wolfgang Fahl"
     doc_url: str = "https://github.com/ceurws/semantify"
@@ -71,6 +71,13 @@ class CeurSemantifyCmd(BaseCmd):
             "--regenerate",
             action="store_true",
             help="with --year: fetch and write the volumes present for the year again before rebuilding its page",
+        )
+        parser.add_argument(
+            "--embed",
+            nargs="+",
+            metavar="PATH",
+            help="embed the JSON-LD into the given volume pages of the proceedings chairs (index.html files or"
+            " volume directories) and write index.jsonld next to them",
         )
         parser.add_argument("--progress", action="store_true", help="show a progress bar while generating volumes")
         parser.add_argument(
@@ -119,6 +126,10 @@ class CeurSemantifyCmd(BaseCmd):
         if not handled:
             config = SiteConfig.of_yaml(args.config)
             generator = Generator.of_output(args.output, config)
+            if args.embed:
+                report = generator.embed_volumes(args.embed, progress=args.progress)
+                self.show_report(f"{len(args.embed)} volume pages", report, args)
+                handled = True
             if args.volumes:
                 numbers = VolumeRanges.numbers(args.volumes)
                 report = generator.generate_volumes(numbers, progress=args.progress)

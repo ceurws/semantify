@@ -30,6 +30,18 @@ Written are `yyyy/index.html`, `yyyy/Vol-N/index.html` and `yyyy/Vol-N/paperK/in
 `index.jsonld` beside it and the same JSON-LD as a `json-ld` fence in an HTML comment that
 [semantify3](https://github.com/BITPlan/semantify3) extracts again.
 
+## Embedding
+For a volume published on ceur-ws.org the page of the proceedings chair stays as it is; `--embed` parses it, maps it to the
+research model and embeds the JSON-LD into it, see [#28](https://github.com/ceurws/semantify/issues/28).
+
+```bash
+# embed the JSON-LD into the volume pages of the chairs and write index.jsonld next to them
+ceursemantify --embed /path/to/Vol-4280 /path/to/Vol-4281/index.html
+```
+
+The page gets a `CEURSTATE=embedded` comment, the alternate link and the fence in its head; the page is only rewritten if the
+embedded page parses to the same proceedings as the original one. Embedding again replaces the embedded parts.
+
 | File | Role |
 |------|------|
 | `ceursemantify/model.py` | research model: Proceedings, Paper, Event, Scholar, Publisher, City, Country |

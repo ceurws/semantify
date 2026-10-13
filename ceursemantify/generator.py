@@ -12,11 +12,13 @@ from typing import List, Optional
 from sem3.extractor import Extractor
 from tqdm import tqdm
 
+from ceursemantify.embed import Embedder
 from ceursemantify.jsonld import JsonLd
 from ceursemantify.mapper import Mapper
 from ceursemantify.model import Paper, Proceedings
 from ceursemantify.pages import PageState, PaperPage, VolumePage, YearPage
 from ceursemantify.site import CeurSpt, Site, SiteConfig, SiteReport
+from ceursemantify.volume_html import VolumeHtml
 
 
 class Generator:
@@ -196,6 +198,62 @@ class Generator:
         report.written.extend(year_report.written)
         report.problems.extend(year_report.problems)
         report.seconds += year_report.seconds
+        return report
+
+    def embed_volume(self, path: str, report: SiteReport) -> None:
+        """
+        embed the JSON-LD into the volume page of the proceedings chair at
+        the given path and write index.jsonld next to it, see issue 28
+
+        The page is rewritten only if the round trip holds: the proceedings
+        parsed from the embedded page equal the proceedings parsed from the
+        original page.
+
+        Args:
+            path: the index.html of the volume or its directory
+            report: the report to add the written files and problems to
+        """
+        if os.path.isdir(path):
+            path = os.path.join(path, "index.html")
+        try:
+            volume_html = VolumeHtml.of_file(path, self.config.original_url)
+        except OSError as error:
+            report.problems.append(f"{path}: {error}")
+            return
+        result = volume_html.proceedings()
+        proceedings = result.target
+        for issue in result.issues:
+            report.problems.append(f"{path}: {issue}")
+        jsonld_text = self.jsonld.as_text(proceedings)
+        embedder = Embedder(self.state)
+        try:
+            embedded = embedder.embed(volume_html.text, jsonld_text, proceedings.url or path)
+        except ValueError as error:
+            report.problems.append(f"{path}: {error}")
+            return
+        from_embedded = VolumeHtml(embedded, self.config.original_url).proceedings().target
+        if from_embedded != proceedings:
+            report.problems.append(f"{path}: the embedded page does not parse to the same proceedings")
+            return
+        self.site.write(os.path.join(os.path.dirname(path), "index.jsonld"), jsonld_text + "\n", report)
+        self.site.write(path, embedded, report)
+
+    def embed_volumes(self, paths: List[str], progress: bool = False) -> SiteReport:
+        """
+        embed the JSON-LD into the volume pages at the given paths
+
+        Args:
+            paths: the index.html files of the volumes or their directories
+            progress: if True show a progress bar
+
+        Returns:
+            SiteReport: the written files, the problems and the time used
+        """
+        report = SiteReport()
+        start = time.perf_counter()
+        for path in tqdm(paths, desc="volumes", unit="vol", disable=not progress):
+            self.embed_volume(path, report)
+        report.seconds = time.perf_counter() - start
         return report
 
     def round_trip(self, page_dir: str) -> bool:

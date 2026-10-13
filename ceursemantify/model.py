@@ -61,6 +61,24 @@ class Scholar:
     wikiDataId: Optional[str] = None
     gndId: Optional[str] = None
 
+    @classmethod
+    def of_full_name(cls, full_name: str) -> "Scholar":
+        """
+        get a scholar from a full name as written on a volume page
+
+        The last word is taken as the family name, the words before it as
+        the first name; a heuristic that fails e.g. for Spanish double surnames.
+
+        Args:
+            full_name: the name e.g. Mieke Jans
+
+        Returns:
+            Scholar: the scholar
+        """
+        parts = full_name.split()
+        scholar = cls(name=parts[-1] if parts else None, firstName=" ".join(parts[:-1]) or None)
+        return scholar
+
     def full_name(self) -> str:
         """
         get first name and last name of the scholar

@@ -88,19 +88,19 @@ class PageState:
         state = cls(generated_on=date.today().isoformat())
         return state
 
-    def as_html(self, source: str) -> str:
+    def as_html(self, source: str, state: str = "generated") -> str:
         """
         get the header comment
 
         Args:
             source: what the page was generated from
+            state: generated for a page written by the generator, embedded for
+                the page of the proceedings chair with the JSON-LD embedded
 
         Returns:
             str: the html comment
         """
-        comment = (
-            f"<!-- CEURSTATE=generated: on {self.generated_on} by pyCEURsemantify {self.version} from {source} -->"
-        )
+        comment = f"<!-- CEURSTATE={state}: on {self.generated_on} by pyCEURsemantify {self.version} from {source} -->"
         return comment
 
 
