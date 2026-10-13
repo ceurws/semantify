@@ -63,6 +63,30 @@ class TestJsonLd(BaseCeurTest):
                 document = json.loads(self.jsonld.as_text(proceedings))
                 self.assertEqual(proceedings, self.jsonld.proceedings(document))
 
+    def test_doi(self) -> None:
+        """
+        test the DOI of a volume and a paper as decided in issue 14:
+        10.83095/ceurws_xxxxx and 10.83095/ceurws_xxxxx_yyy, term ceur:doi
+        """
+        proceedings = self.example_proceedings(3889)
+        proceedings.doi = "10.83095/ceurws_03889"
+        proceedings.papers[1].doi = "10.83095/ceurws_03889_001"
+        document = json.loads(self.jsonld.as_text(proceedings))
+        self.assertEqual(proceedings, self.jsonld.proceedings(document))
+        graph = Graph()
+        graph.parse(data=self.jsonld.as_text(proceedings), format="json-ld")
+        query = """
+PREFIX ceur: <https://ceur-ws.org/rdf/schema#>
+SELECT ?subject ?doi WHERE { ?subject ceur:doi ?doi . } ORDER BY ?doi"""
+        rows = [(str(row.subject), str(row.doi)) for row in graph.query(query)]
+        self.assertEqual(
+            [
+                ("http://ceur-ws.org/Vol-3889/", "10.83095/ceurws_03889"),
+                (proceedings.papers[1].pdfUrl, "10.83095/ceurws_03889_001"),
+            ],
+            rows,
+        )
+
     def test_triples(self) -> None:
         """
         test the triples of the JSON-LD of one volume: types, typed values, author order

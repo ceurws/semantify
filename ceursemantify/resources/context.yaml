@@ -36,6 +36,7 @@ classes:
       title: {id: "dcterms:title"}
       volumeNumber: {id: "ceur:volumeNumber", type: "xsd:positiveInteger"}
       urn: {id: "ceur:urn"}
+      doi: {id: "ceur:doi"}
       pubDate: {id: "dcterms:issued", type: "xsd:date"}
       pubYear: {id: "ceur:pubYear", type: "xsd:gYear"}
       url: {id: "schema:url", type: "@id"}
@@ -71,6 +72,7 @@ classes:
       pageStart: {id: "bibo:pageStart"}
       pageEnd: {id: "bibo:pageEnd"}
       dblpPublicationId: {id: "ceur:dblpPublicationId"}
+      doi: {id: "ceur:doi"}
       session: {id: "ceur:session"}
       publishedIn: {id: "dcterms:isPartOf", type: "@id"}
       authors: {id: "ceur:author", container: "@list"}

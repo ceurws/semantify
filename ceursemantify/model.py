@@ -131,6 +131,7 @@ class Paper:
 
     id: Optional[str] = None
     wikidataid: Optional[str] = None
+    doi: Optional[str] = None
     title: Optional[str] = None
     pdfUrl: Optional[str] = None
     pageStart: Optional[str] = None
@@ -148,6 +149,7 @@ class Proceedings:
     """
 
     wikidataid: Optional[str] = None
+    doi: Optional[str] = None
     title: Optional[str] = None
     volumeNumber: Optional[int] = None
     urn: Optional[str] = None
