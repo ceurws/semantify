@@ -357,16 +357,14 @@ count = 1
 for paper in papers:
     paperID = paper["id"]
     paperPDFURL = paper["pdfUrl"]
-    doiPaper = doiVolume+"_"+paperID
 
     # check if there are authors (for preface there sometimes are not)
     if (not "authors" in paper):
        continue
 
     landingPage = urlVolume + "/" + paperID + "/"
-
-    # only use when ID is too long?! TBD
     paperPID = "{:03d}".format(count)
+    doiPaper = doiVolume+"_"+paperPID
 
     tmps = paper.get("doi", "")
     if (tmps):
@@ -448,23 +446,7 @@ for paper in papers:
     # create data structure for registering doi for volume
     doi = {
         'publisher': 'CEUR-WS.org',
-        'types': {
-            "resourceTypeGeneral": "Text",
-            "resourceType": "ConferencePaper"
-        },
-        "relatedItems": [ {
-          "relationType": "IsPublishedIn",
-          "relatedItemType": "Proceeding",
-          "relatedItemIdentifier": {
-            "relatedItemIdentifierType": "DOI",
-            "relatedItemIdentifierValue": doiVolume
-          },
-          "titles": [ {
-              "title": data_json["title"]
-            }
-          ]
-        }
-      ],
+        'type': 'ConferencePaper',
     }
 
     contributor_arr = paper["authors"]
@@ -503,11 +485,6 @@ for paper in papers:
     doi["title"] = paper["title"]
     doi["year"] = pubYear
     doi["url"] = paper["landingPage"]
-
-    # TBD: passt das?
-    typeCeur = paper["@type"]
-    typeDataCite = typeCeur[5:]
-    doi["type"] = typeDataCite
 
     submit_doi_paper(doi, data_json["title"], doiVolume)
 
