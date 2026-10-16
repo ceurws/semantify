@@ -1,0 +1,1414 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml"
+xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+<meta name=ProgId content=Word.Document>
+<meta name=Generator content="Microsoft Word 9">
+<meta name=Originator content="Microsoft Word 9">
+<link rel=File-List href="./index_fichiers/filelist.xml">
+<LINK rel="stylesheet" type="text/css" href="../ceur-ws.css">
+<title>CEUR-WS.org/Vol-41</title>
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author>JonMMx 2000</o:Author>
+  <o:LastAuthor>Dept-Informatique</o:LastAuthor>
+  <o:Revision>18</o:Revision>
+  <o:TotalTime>245</o:TotalTime>
+  <o:Created>2001-07-09T16:23:00Z</o:Created>
+  <o:LastSaved>2001-07-12T15:54:00Z</o:LastSaved>
+  <o:Pages>6</o:Pages>
+  <o:Words>1113</o:Words>
+  <o:Characters>6348</o:Characters>
+  <o:Lines>52</o:Lines>
+  <o:Paragraphs>12</o:Paragraphs>
+  <o:CharactersWithSpaces>7795</o:CharactersWithSpaces>
+  <o:Version>9.2812</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:HyphenationZone>21</w:HyphenationZone>
+  <w:DisplayHorizontalDrawingGridEvery>0</w:DisplayHorizontalDrawingGridEvery>
+  <w:DisplayVerticalDrawingGridEvery>0</w:DisplayVerticalDrawingGridEvery>
+  <w:UseMarginsForDrawingGridOrigin/>
+  <w:Compatibility>
+   <w:FootnoteLayoutLikeWW8/>
+   <w:ShapeLayoutLikeWW8/>
+   <w:AlignTablesRowByRow/>
+   <w:ForgetLastTabAlignment/>
+   <w:LayoutRawTableWidth/>
+   <w:LayoutTableRowsApart/>
+  </w:Compatibility>
+ </w:WordDocument>
+</xml><![endif]-->
+<style>
+<!--
+ /* Font Definitions */
+@font-face
+	{font-family:Times;
+	panose-1:2 2 6 3 5 4 5 2 3 4;
+	mso-font-charset:0;
+	mso-generic-font-family:roman;
+	mso-font-pitch:variable;
+	mso-font-signature:536885895 0 0 0 511 0;}
+ /* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-parent:"";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	mso-bidi-font-size:10.0pt;
+	font-family:Times;
+	mso-fareast-font-family:"Times New Roman";
+	mso-bidi-font-family:"Times New Roman";
+	mso-ansi-language:EN-US;}
+h1
+	{mso-style-next:Normal;
+	margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:21.6pt;
+	margin-bottom:.0001pt;
+	text-align:center;
+	text-indent:-21.6pt;
+	mso-pagination:widow-orphan;
+	page-break-after:avoid;
+	mso-outline-level:1;
+	mso-list:l0 level1 lfo2;
+	tab-stops:list 21.6pt;
+	font-size:12.0pt;
+	mso-bidi-font-size:10.0pt;
+	font-family:Times;
+	mso-font-kerning:0pt;
+	mso-ansi-language:EN-US;
+	mso-bidi-font-weight:normal;}
+h2
+	{mso-style-next:Normal;
+	margin-top:0cm;
+	margin-right:-4.6pt;
+	margin-bottom:0cm;
+	margin-left:50.4pt;
+	margin-bottom:.0001pt;
+	text-align:justify;
+	text-indent:-28.8pt;
+	line-height:12.0pt;
+	mso-pagination:widow-orphan;
+	page-break-after:avoid;
+	mso-outline-level:2;
+	mso-list:l0 level2 lfo3;
+	tab-stops:list 28.8pt;
+	font-size:12.0pt;
+	mso-bidi-font-size:10.0pt;
+	font-family:Times;
+	mso-ansi-language:EN-US;
+	mso-bidi-font-weight:normal;}
+h3
+	{mso-style-next:Normal;
+	margin-top:0cm;
+	margin-right:-4.6pt;
+	margin-bottom:0cm;
+	margin-left:86.4pt;
+	margin-bottom:.0001pt;
+	text-align:justify;
+	text-indent:-36.0pt;
+	line-height:12.0pt;
+	mso-pagination:widow-orphan;
+	page-break-after:avoid;
+	mso-outline-level:3;
+	mso-list:l0 level3 lfo4;
+	tab-stops:list 36.0pt;
+	font-size:12.0pt;
+	mso-bidi-font-size:10.0pt;
+	font-family:Times;
+	mso-ansi-language:EN-US;
+	mso-bidi-font-weight:normal;}
+h4
+	{mso-style-next:Normal;
+	margin-top:12.0pt;
+	margin-right:0cm;
+	margin-bottom:3.0pt;
+	margin-left:129.6pt;
+	text-indent:-43.2pt;
+	mso-pagination:widow-orphan;
+	page-break-after:avoid;
+	mso-outline-level:4;
+	mso-list:l0 level4 lfo5;
+	tab-stops:list 43.2pt;
+	font-size:12.0pt;
+	mso-bidi-font-size:10.0pt;
+	font-family:Times;
+	mso-ansi-language:EN-US;
+	mso-bidi-font-weight:normal;}
+h5
+	{mso-style-next:Normal;
+	margin-top:12.0pt;
+	margin-right:0cm;
+	margin-bottom:3.0pt;
+	margin-left:180.0pt;
+	text-indent:-50.4pt;
+	mso-pagination:widow-orphan;
+	mso-outline-level:5;
+	mso-list:l0 level5 lfo6;
+	tab-stops:list 50.4pt;
+	font-size:11.0pt;
+	mso-bidi-font-size:10.0pt;
+	font-family:Times;
+	mso-ansi-language:EN-US;
+	font-weight:normal;}
+h6
+	{mso-style-next:Normal;
+	margin-top:12.0pt;
+	margin-right:0cm;
+	margin-bottom:3.0pt;
+	margin-left:237.6pt;
+	text-indent:-57.6pt;
+	mso-pagination:widow-orphan;
+	mso-outline-level:6;
+	mso-list:l0 level6 lfo7;
+	tab-stops:list 57.6pt;
+	font-size:11.0pt;
+	mso-bidi-font-size:10.0pt;
+	font-family:Times;
+	mso-ansi-language:EN-US;
+	font-weight:normal;
+	font-style:italic;
+	mso-bidi-font-style:normal;}
+p.MsoHeading7, li.MsoHeading7, div.MsoHeading7
+	{mso-style-next:Normal;
+	margin-top:12.0pt;
+	margin-right:0cm;
+	margin-bottom:3.0pt;
+	margin-left:302.4pt;
+	text-indent:-64.8pt;
+	mso-pagination:widow-orphan;
+	mso-outline-level:7;
+	mso-list:l0 level7 lfo8;
+	tab-stops:list 64.8pt;
+	font-size:10.0pt;
+	font-family:Times;
+	mso-fareast-font-family:"Times New Roman";
+	mso-bidi-font-family:"Times New Roman";
+	mso-ansi-language:EN-US;}
+p.MsoHeading8, li.MsoHeading8, div.MsoHeading8
+	{mso-style-next:Normal;
+	margin-top:12.0pt;
+	margin-right:0cm;
+	margin-bottom:3.0pt;
+	margin-left:374.4pt;
+	text-indent:-72.0pt;
+	mso-pagination:widow-orphan;
+	mso-outline-level:8;
+	mso-list:l0 level8 lfo9;
+	tab-stops:list 72.0pt;
+	font-size:10.0pt;
+	font-family:Times;
+	mso-fareast-font-family:"Times New Roman";
+	mso-bidi-font-family:"Times New Roman";
+	mso-ansi-language:EN-US;
+	font-style:italic;
+	mso-bidi-font-style:normal;}
+p.MsoHeading9, li.MsoHeading9, div.MsoHeading9
+	{mso-style-next:Normal;
+	margin-top:12.0pt;
+	margin-right:0cm;
+	margin-bottom:3.0pt;
+	margin-left:16.0cm;
+	text-indent:-79.2pt;
+	mso-pagination:widow-orphan;
+	mso-outline-level:9;
+	mso-list:l0 level9 lfo10;
+	tab-stops:list 79.2pt;
+	font-size:9.0pt;
+	mso-bidi-font-size:10.0pt;
+	font-family:Times;
+	mso-fareast-font-family:"Times New Roman";
+	mso-bidi-font-family:"Times New Roman";
+	mso-ansi-language:EN-US;
+	font-weight:bold;
+	mso-bidi-font-weight:normal;
+	font-style:italic;
+	mso-bidi-font-style:normal;}
+p.MsoHeader, li.MsoHeader, div.MsoHeader
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	tab-stops:center 235.15pt right 470.3pt;
+	font-size:12.0pt;
+	mso-bidi-font-size:10.0pt;
+	font-family:Times;
+	mso-fareast-font-family:"Times New Roman";
+	mso-bidi-font-family:"Times New Roman";
+	mso-ansi-language:EN-US;}
+p.MsoFooter, li.MsoFooter, div.MsoFooter
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	tab-stops:center 235.15pt right 470.3pt;
+	font-size:12.0pt;
+	mso-bidi-font-size:10.0pt;
+	font-family:Times;
+	mso-fareast-font-family:"Times New Roman";
+	mso-bidi-font-family:"Times New Roman";
+	mso-ansi-language:EN-US;}
+p.MsoBodyText, li.MsoBodyText, div.MsoBodyText
+	{margin-top:0cm;
+	margin-right:-47.2pt;
+	margin-bottom:0cm;
+	margin-left:0cm;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:16.0pt;
+	mso-bidi-font-size:10.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";
+	mso-ansi-language:EN-US;}
+p.MsoBodyText2, li.MsoBodyText2, div.MsoBodyText2
+	{margin-top:0cm;
+	margin-right:-68.45pt;
+	margin-bottom:0cm;
+	margin-left:0cm;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:24.0pt;
+	mso-bidi-font-size:10.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";
+	mso-ansi-language:EN-US;
+	font-weight:bold;
+	mso-bidi-font-weight:normal;
+	mso-bidi-font-style:italic;}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;
+	text-underline:single;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;
+	text-underline:single;}
+@page Section1
+	{size:612.0pt 792.0pt;
+	margin:70.9pt 70.9pt 70.9pt 70.9pt;
+	mso-header-margin:1.0cm;
+	mso-footer-margin:1.0cm;
+	mso-page-numbers:roman-lower 1;
+	mso-title-page:yes;
+	mso-paper-source:0;}
+div.Section1
+	{page:Section1;}
+ /* List Definitions */
+@list l0
+	{mso-list-id:-5;
+	mso-list-template-ids:186422630;}
+@list l0:level1
+	{mso-level-style-link:"Titre 1";
+	mso-level-text:%1;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	mso-level-legacy:yes;
+	mso-level-legacy-indent:21.6pt;
+	mso-level-legacy-space:2.85pt;
+	margin-left:21.6pt;
+	text-indent:-21.6pt;}
+@list l0:level2
+	{mso-level-style-link:"Titre 2";
+	mso-level-text:"%1\.%2";
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	mso-level-legacy:yes;
+	mso-level-legacy-indent:28.8pt;
+	mso-level-legacy-space:6.0pt;
+	margin-left:50.4pt;
+	text-indent:-28.8pt;}
+@list l0:level3
+	{mso-level-style-link:"Titre 3";
+	mso-level-text:"%1\.%2\.%3";
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	mso-level-legacy:yes;
+	mso-level-legacy-indent:36.0pt;
+	mso-level-legacy-space:6.0pt;
+	margin-left:86.4pt;
+	text-indent:-36.0pt;}
+@list l0:level4
+	{mso-level-style-link:"Titre 4";
+	mso-level-text:"%1\.%2\.%3\.%4";
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	mso-level-legacy:yes;
+	mso-level-legacy-indent:43.2pt;
+	mso-level-legacy-space:6.0pt;
+	margin-left:129.6pt;
+	text-indent:-43.2pt;}
+@list l0:level5
+	{mso-level-style-link:"Titre 5";
+	mso-level-text:"%1\.%2\.%3\.%4\.%5";
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	mso-level-legacy:yes;
+	mso-level-legacy-indent:50.4pt;
+	mso-level-legacy-space:6.0pt;
+	text-indent:-50.4pt;}
+@list l0:level6
+	{mso-level-style-link:"Titre 6";
+	mso-level-text:"%1\.%2\.%3\.%4\.%5\.%6";
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	mso-level-legacy:yes;
+	mso-level-legacy-indent:57.6pt;
+	mso-level-legacy-space:6.0pt;
+	margin-left:237.6pt;
+	text-indent:-57.6pt;}
+@list l0:level7
+	{mso-level-style-link:"Titre 7";
+	mso-level-text:"%1\.%2\.%3\.%4\.%5\.%6\.%7";
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	mso-level-legacy:yes;
+	mso-level-legacy-indent:64.8pt;
+	mso-level-legacy-space:6.0pt;
+	margin-left:302.4pt;
+	text-indent:-64.8pt;}
+@list l0:level8
+	{mso-level-style-link:"Titre 8";
+	mso-level-text:"%1\.%2\.%3\.%4\.%5\.%6\.%7\.%8";
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	mso-level-legacy:yes;
+	mso-level-legacy-indent:72.0pt;
+	mso-level-legacy-space:6.0pt;
+	margin-left:374.4pt;
+	text-indent:-72.0pt;}
+@list l0:level9
+	{mso-level-style-link:"Titre 9";
+	mso-level-text:"%1\.%2\.%3\.%4\.%5\.%6\.%7\.%8\.%9";
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	mso-level-legacy:yes;
+	mso-level-legacy-indent:79.2pt;
+	mso-level-legacy-space:6.0pt;
+	margin-left:16.0cm;
+	text-indent:-79.2pt;}
+@list l1
+	{mso-list-id:6;
+	mso-list-type:simple;
+	mso-list-template-ids:66572;}
+@list l1:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:18.0pt;
+	mso-level-number-position:left;
+	margin-left:18.0pt;
+	text-indent:-18.0pt;
+	font-family:Symbol;}
+@list l2
+	{mso-list-id:7;
+	mso-list-type:simple;
+	mso-list-template-ids:66572;}
+@list l2:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:18.0pt;
+	mso-level-number-position:left;
+	margin-left:18.0pt;
+	text-indent:-18.0pt;
+	font-family:Symbol;}
+@list l3
+	{mso-list-id:12;
+	mso-list-type:simple;
+	mso-list-template-ids:66572;}
+@list l3:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:18.0pt;
+	mso-level-number-position:left;
+	margin-left:18.0pt;
+	text-indent:-18.0pt;
+	font-family:Symbol;}
+@list l4
+	{mso-list-id:13;
+	mso-list-type:simple;
+	mso-list-template-ids:66572;}
+@list l4:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:18.0pt;
+	mso-level-number-position:left;
+	margin-left:18.0pt;
+	text-indent:-18.0pt;
+	font-family:Symbol;}
+ol
+	{margin-bottom:0cm;}
+ul
+	{margin-bottom:0cm;}
+-->
+</style>
+</head>
+
+<body lang=FR-CA link=blue vlink=purple style='tab-interval:35.4pt'>
+
+  <TABLE cellSpacing=5 cellPadding=0 width="95%" border=0>
+    <TBODY>
+    <TR>
+      <TD vAlign=center align=left><A 
+        href="http://ceur-ws.org/"><IMG 
+        alt="[CEUR Workshop Proceedings]" 
+        src="../CEUR-WS-logo.png" border=0 width="476" height="118"></A> </TD>
+      <TD vAlign=center align=right><FONT 
+        face=ARIAL,HELVETICA,VERDANA><B><FONT color=#0f0ff0 
+        size=5>Vol-41</FONT></B> 
+        <P align=justify><FONT color=#777777 size=-2>&copy; 2001 for the individual 
+        papers by the papers' authors. Copying permitted for private and 
+        scientific purposes. Re-publication of material on this page requires 
+        permission by the copyright 
+owners.</FONT></P></FONT></TD></TR></TBODY></TABLE>
+  <HR>
+  <BR>
+
+
+<div class=Section1>
+
+<p class=MsoBodyText2><span lang=EN-US>ICCS'01</span></p>
+
+<p class=MsoBodyText2><span lang=EN-US><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoBodyText2><span lang=EN-US>Conceptual Structures: Extracting and
+Representing Semantics</span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-family:
+"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-family:
+"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-family:
+"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-family:
+"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'>Contributions to ICCS 2001<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'>The 9th International Conference on
+Conceptual Structures<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-right:-4.65pt'><span lang=EN-US
+style='font-size:16.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Stanford
+University, California, USA<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-right:-4.65pt'><span lang=EN-US
+style='font-size:16.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>July
+30th to August 3rd, 2001.<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=EN-US
+style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=EN-US
+style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=EN-US
+style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=EN-US
+style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><b style='mso-bidi-font-weight:normal'><span lang=FR
+style='font-size:18.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman";
+mso-ansi-language:FR'>Guy W. Mineau (Ed.)<o:p></o:p></span></b></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'>Dept. of Computer Science<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'>Faculty of Sciences and Engineering<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'>University Laval<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'>Quebec City, Quebec, Canada<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'><a href="mailto:mineau@ift.ulaval.ca"><span
+style='font-family:Times'>mineau@ift.ulaval.ca</span></a><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=EN-US
+style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=EN-US
+style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=EN-US
+style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=EN-US
+style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=EN-US
+style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><b style='mso-bidi-font-weight:
+normal'><u><span lang=EN-US style='font-size:20.0pt;mso-bidi-font-size:10.0pt;
+font-family:"Times New Roman"'>Introduction:<o:p></o:p></span></u></b></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><b style='mso-bidi-font-weight:
+normal'><span lang=EN-US style='font-size:20.0pt;mso-bidi-font-size:10.0pt;
+font-family:"Times New Roman"'><span style="mso-spacerun: yes"> </span><o:p></o:p></span></b></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'>ICCS is a yearly conference that proposes
+to explore ways of acquiring, representing and exploiting human knowledge based
+on conceptual models of representation that rely heavily on graphical
+representations. Mainly focused on the conceptual graph (CG) formalism of John
+Sowa, this conference has expanded its scope to welcome all other related
+theories: formal concept analysis, formal ontologies, description logics,
+situation theory, discourse representation theory, SNePS, and other related
+topics. This year it held a joint session with the 2001 International Workshop
+on Description Logics, and included workshops on Natural Language Semantics, on
+the Semantic Web, and CG Tools. Additionally, ICCS was co-located with the
+Semantic Web Workshop of the DARPA DAML Program and the OntoWeb Network.<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-family:
+"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-family:
+"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-family:
+"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-family:
+"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-family:
+"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><b style='mso-bidi-font-weight:normal'><u><span lang=EN-US
+style='font-size:20.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Table of Content:<o:p></o:p></span></u></b></p>
+
+<p class=MsoNormal><span lang=EN-US><span style="mso-spacerun: yes">
+</span></span></p>
+
+<p class=MsoNormal style='margin-left:18.0pt;text-indent:-18.0pt;mso-list:l3 level1 lfo12;
+tab-stops:list 18.0pt'><![if !supportLists]><span lang=EN-US style='font-size:
+16.0pt;mso-bidi-font-size:10.0pt;font-family:Symbol'>¸<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><![endif]><span lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:
+10.0pt'><a href="#ConfSummary">Conference S<span style='mso-bookmark:_Hlt519141611'>u</span><span
+style='mso-bookmark:_Hlt519138275'>m</span>m<span style='mso-bookmark:_Hlt519139585'>a</span>ry</a><![if !supportNestedAnchors]><a
+name="_Hlt519139585"></a><a name="_Hlt519138275"></a><a name="_Hlt519141611"></a><![endif]></span><span
+lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-left:18.0pt;text-indent:-18.0pt;mso-list:l4 level1 lfo14;
+tab-stops:list 18.0pt'><![if !supportLists]><span lang=EN-US style='font-size:
+16.0pt;mso-bidi-font-size:10.0pt;font-family:Symbol'>¸<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><![endif]><span lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:
+10.0pt'><a href="#OrganizingCommittees">Org<span style='mso-bookmark:_Hlt519138315'>a</span>nizing
+C<span style='mso-bookmark:_Hlt519139580'>o</span>mm<span style='mso-bookmark:
+_Hlt519138323'>i</span>t<span style='mso-bookmark:_Hlt519139544'>t</span>ees</a><![if !supportNestedAnchors]><a
+name="_Hlt519139544"></a><a name="_Hlt519138323"></a><a name="_Hlt519139580"></a><a
+name="_Hlt519138315"></a><![endif]></span><span lang=EN-US style='font-size:
+16.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-left:36.0pt;text-indent:-18.0pt;mso-list:l1 level1 lfo16;
+tab-stops:list 36.0pt'><![if !supportLists]><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:Symbol'>¸<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><![endif]><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt'><a href="#GeneralChair">Conference Chair</a></span><span lang=EN-US
+style='font-size:14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-left:36.0pt;text-indent:-18.0pt;mso-list:l1 level1 lfo16;
+tab-stops:list 36.0pt'><![if !supportLists]><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:Symbol'>¸<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><![endif]><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt'><a href="#ProgramCoChairs">Program Cochairs</a></span><span lang=EN-US
+style='font-size:14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-left:36.0pt;text-indent:-18.0pt;mso-list:l1 level1 lfo16;
+tab-stops:list 36.0pt'><![if !supportLists]><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:Symbol'>¸<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><![endif]><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt'><a href="#LocalArrangementChair">Local Arrang<span style='mso-bookmark:
+_Hlt519142169'>e</span>ment <span style='mso-bookmark:_Hlt519142177'>C</span>hair</a><![if !supportNestedAnchors]><a
+name="_Hlt519142177"></a><a name="_Hlt519142169"></a><![endif]></span><span
+lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-left:36.0pt;text-indent:-18.0pt;mso-list:l1 level1 lfo16;
+tab-stops:list 36.0pt'><![if !supportLists]><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:Symbol'>¸<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><![endif]><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt'><a href="#EditorialBoard">Editorial Bo<span style='mso-bookmark:_Hlt519142182'>a</span>rd</a><![if !supportNestedAnchors]><a
+name="_Hlt519142182"></a><![endif]></span><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-left:36.0pt;text-indent:-18.0pt;mso-list:l1 level1 lfo16;
+tab-stops:list 36.0pt'><![if !supportLists]><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:Symbol'>¸<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><![endif]><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt'><a href="#ProgramCommittee">Program Com<span style='mso-bookmark:_Hlt519142186'>m</span>ittee</a><![if !supportNestedAnchors]><a
+name="_Hlt519142186"></a><![endif]></span><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-left:18.0pt;text-indent:-18.0pt;mso-list:l4 level1 lfo14;
+tab-stops:list 18.0pt'><![if !supportLists]><span lang=EN-US style='font-size:
+16.0pt;mso-bidi-font-size:10.0pt;font-family:Symbol'>¸<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><![endif]><span lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:
+10.0pt'><a href="#Contents">Pap<span style='mso-bookmark:_Hlt519138316'>e</span>rs
+in this <span style='mso-bookmark:_Hlt519138889'>V</span><span
+style='mso-bookmark:_Hlt519139494'>o</span><span style='mso-bookmark:_Hlt519139514'>l</span><span
+style='mso-bookmark:_Hlt519139574'>u</span>me</a><![if !supportNestedAnchors]><a
+name="_Hlt519139574"></a><a name="_Hlt519139514"></a><a name="_Hlt519139494"></a><a
+name="_Hlt519138889"></a><a name="_Hlt519138316"></a><![endif]></span><span
+lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-left:36.0pt;text-indent:-18.0pt;mso-list:l2 level1 lfo18;
+tab-stops:list 36.0pt'><![if !supportLists]><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:Symbol'>¸<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><![endif]><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt'><a href="#Querying">Quer<span style='mso-bookmark:_Hlt519142190'>y</span><span
+style='mso-bookmark:_Hlt519142087'>i</span>ng</a><![if !supportNestedAnchors]><a
+name="_Hlt519142087"></a><a name="_Hlt519142190"></a><![endif]></span><span
+lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-left:36.0pt;text-indent:-18.0pt;mso-list:l2 level1 lfo18;
+tab-stops:list 36.0pt'><![if !supportLists]><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:Symbol'>¸<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><![endif]><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt'><a href="#ExtractingSemantics">Extracting Semanti<span
+style='mso-bookmark:_Hlt519142195'>c</span>s</a><![if !supportNestedAnchors]><a
+name="_Hlt519142195"></a><![endif]></span><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-left:36.0pt;text-indent:-18.0pt;mso-list:l2 level1 lfo18;
+tab-stops:list 36.0pt'><![if !supportLists]><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:Symbol'>¸<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><![endif]><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt'><a href="#ConceptualCategories">Conceptual Catego<span
+style='mso-bookmark:_Hlt519142199'>r</span>ies</a><![if !supportNestedAnchors]><a
+name="_Hlt519142199"></a><![endif]></span><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-left:36.0pt;text-indent:-18.0pt;mso-list:l2 level1 lfo18;
+tab-stops:list 36.0pt'><![if !supportLists]><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:Symbol'>¸<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><![endif]><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt'><a href="#PositionPapers">Position Pa<span style='mso-bookmark:_Hlt519142727'>p</span><span
+style='mso-bookmark:_Hlt519142652'>e</span>rs</a><![if !supportNestedAnchors]><a
+name="_Hlt519142652"></a><a name="_Hlt519142727"></a><![endif]></span><span
+lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-family:
+"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-family:
+"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-family:
+"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-family:
+"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><a name=ConfSummary></a><b style='mso-bidi-font-weight:normal'><u><span
+lang=EN-US style='font-size:20.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Conference
+Summary:<o:p></o:p></span></u></b></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'>Following a series of seven annual
+workshops, the International Conferences on Conceptual Structures (ICCS) have
+been held annually in Europe (Darmstadt, 2000; Montpellier, 1998), Australia
+(Sydney, 1996), and North America (Blacksburg, 1999; Seattle, 1997; Santa Cruz,
+1995; Washington, 1994; Quebec City, 1993). Their focus is on the formal
+analysis and representation of conceptual knowledge with applications to
+artificial intelligence, computational linguistics, and related areas of
+computer science.<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'>Historically, a group of researchers
+working on the theory and applications of conceptual graphs (CG) founded ICCS. Over
+the years, they have broadened the scope to include a wide range of related
+theories: formal concept analysis, formal ontologies, description logics,
+situation theory, discourse representation theory, SNePS, and other related
+topics.<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'>Papers presented at ICCS 2001 cover the
+following topics: conceptual graphs (theory, applications, and experience with
+case studies); formal concept analysis, natural language processing with
+emphasis on semantics and pragmatics; conceptual analysis, knowledge modeling,
+representation, and visualization; knowledge acquisition; and the theory and
+applications of ontologies.<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'>The conference proceedings are published
+each year by Springer-Verlag as part of their Lecture Notes on Artificial
+Intelligence (LNAI) series (#699, #835, #954, #1115, #1257, #1453, #1640,
+#1867). This year's proceedings are also published by Springer-Verlag (LNAI
+#2120), and papers describing on-going research are published in these
+supplementary proceedings.<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'>Each paper in this volume was classified
+under one of the following three categories: querying, extracting semantics,
+and conceptual categories. As we move towards knowledge servers accessible over
+the World Wide Web, the issues pertaining to the extraction of semantics from
+text, to the creation of relevant and meaningful structures that capture this
+knowledge (like ontologies), and our subsequent ability to query these
+knowledge structures are of the outmost importance. This year's conference
+definitely draws a path in the right direction. We hope that you enjoy the
+papers that it has to offer, and that they are useful in your own research.<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=EN-US
+style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=EN-US
+style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=EN-US
+style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=EN-US
+style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=EN-US
+style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><a name=OrganizingCommittees></a><b style='mso-bidi-font-weight:
+normal'><u><span lang=EN-US style='font-size:20.0pt;mso-bidi-font-size:10.0pt;
+font-family:"Times New Roman"'>Organizing Committees:<o:p></o:p></span></u></b></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-family:
+"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-family:
+"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><a name=GeneralChair></a><b
+style='mso-bidi-font-weight:normal'><u><span lang=EN-US style='font-size:18.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>General Chair</span></u></b><b
+style='mso-bidi-font-weight:normal'><span lang=EN-US style='font-size:18.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'><o:p></o:p></span></b></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=FR style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman";mso-ansi-language:
+FR'>Robert Levinson (USA)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=FR style='font-family:
+"Times New Roman";mso-ansi-language:FR'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=FR style='font-family:
+"Times New Roman";mso-ansi-language:FR'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><a name=ProgramCoChairs></a><b
+style='mso-bidi-font-weight:normal'><u><span lang=EN-US style='font-size:18.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Program Cochairs<o:p></o:p></span></u></b></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Harry Delugach
+(USA)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Gerd Stumme
+(Germany)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-family:
+"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-family:
+"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><a name=LocalArrangementChair></a><b
+style='mso-bidi-font-weight:normal'><u><span lang=EN-US style='font-size:18.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Local Arrangement
+Chair<o:p></o:p></span></u></b></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Robert Spillers
+(USA)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-family:
+"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-family:
+"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><a name=EditorialBoard></a><b
+style='mso-bidi-font-weight:normal'><u><span lang=EN-US style='font-size:18.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Editorial Board<o:p></o:p></span></u></b></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=DE style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman";mso-ansi-language:
+DE'>Galia Angelova (Bulgaria)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=DE style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman";mso-ansi-language:
+DE'>Michel Chein (France)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=DE style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman";mso-ansi-language:
+DE'>Peter Eklund (Australia)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=DE style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman";mso-ansi-language:
+DE'>John Esch (USA)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=DE style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman";mso-ansi-language:
+DE'>Bernhard Ganter (Germany)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=DE style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman";mso-ansi-language:
+DE'>Roger Hartley (USA)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Mary Keeler
+(USA)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Lotfi Lakhal
+(France)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Wilfried Lex
+(Germany)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Deborah McGuinness
+(USA)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=FR style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman";mso-ansi-language:
+FR'>Guy Mineau (Canada)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Bernard Moulin
+(Canada)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=FR style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman";mso-ansi-language:
+FR'>Marie-Laure Mugnier (France)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=DE style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman";mso-ansi-language:
+DE'>Heather Pfeiffer (USA)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Uta Priss (USA)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>John Sowa (USA)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Bill Tepfenhart
+(USA)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Rudolf Wille
+(Germany)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-family:
+"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-family:
+"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><a name=ProgramCommittee></a><b
+style='mso-bidi-font-weight:normal'><u><span lang=EN-US style='font-size:18.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Program Committee<o:p></o:p></span></u></b></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=FR style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman";mso-ansi-language:
+FR'>Jean-Fran&ccedil;ois Baget (France)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Tru Cao (U.K.)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Claudio
+Carpineto (Italy)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=FR style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman";mso-ansi-language:
+FR'>Paul Compton (Australia)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=NL style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman";mso-ansi-language:
+NL'>Dan Corbett (Australia)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Judy Dick
+(Canada)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>David Genest
+(France)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Olivier Gerb 
+(Canada)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-right:-33.0pt;tab-stops:184.3pt'><span
+lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Carole
+Goble (UK)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Robert Godin
+(Canada)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Michel Habib
+(France)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Ollivier
+Haemmerl  (France)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Adil Kabbaj
+(Morocco)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Adalbert Kerber
+(Germany)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Sergei
+Kuznetsov (Germany)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-right:-40.05pt;tab-stops:184.3pt'><span
+lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Pavel
+Kocura (UK)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Wolfgang Lenski
+(Germany)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=DE style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman";mso-ansi-language:
+DE'>Graham Mann (Australia)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=FR style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman";mso-ansi-language:
+FR'>Philippe Martin (Australia)<o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=FR style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman";mso-ansi-language:
+FR'>Joao P. Martins (Portugal)<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'>Ralf Moeller (Germany)</span><span
+lang=EN-US style='font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=NL style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman";mso-ansi-language:NL'>Aldo de Moor
+(Netherlands)</span><span lang=NL style='font-family:"Times New Roman";
+mso-ansi-language:NL'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-size:
+14.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Amadeo Napoli
+(France)<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=FR style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman";mso-ansi-language:FR'>Lhouari Nourine
+(France)<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=DE style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman";mso-ansi-language:DE'>Peter Ûhrstr°m
+(Denmark)<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=DE style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman";mso-ansi-language:DE'>Peter
+Patel-Schneider (USA)<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'>Silke Pollandt (Germany)<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'>Susanne Prediger (Germany)</span><span
+lang=EN-US style='font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'>Richard Raban (Australia)</span><span
+lang=EN-US style='font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=FR style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman";mso-ansi-language:FR'>Anne-Marie Rassinoux
+(Switzerland)<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=DE style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman";mso-ansi-language:DE'>Daniel Rochowiak
+(USA)<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'>Eric Salvat (France)<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'>Ulrike Sattler (Germany)</span><span
+lang=EN-US style='font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'>Stuart Shapiro (USA)</span><span
+lang=EN-US style='font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'>Finnegan Southey (Canada)<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'>Thanwadee Thanitsukkarn (Thailand)<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'>Petko Valtchev (Canada)<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'>Michel Wermelinger (Portugal)</span><span
+lang=EN-US style='font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'>Karl Erich Wolff (Germany)</span><span
+lang=EN-US style='font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-family:
+"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-family:
+"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-family:
+"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-family:
+"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:184.3pt'><span lang=EN-US style='font-family:
+"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><a name=Contents></a><b
+style='mso-bidi-font-weight:normal'><u><span lang=EN-US style='font-size:20.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>Contents:<o:p></o:p></span></u></b></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=EN-US
+style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=EN-US
+style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><a name=Querying></a><b
+style='mso-bidi-font-weight:normal'><i style='mso-bidi-font-style:normal'><span
+lang=EN-US style='font-size:18.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>I.
+Querying<o:p></o:p></span></i></b></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=EN-US
+style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=EN-US
+style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-right:-54.3pt;tab-stops:right 326.05pt'><span
+lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'><a
+href="Bouzouba.pdf">CG-KQML+: An Agent Communication Language and its Use in a
+Multi-Agent System</a><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-indent:35.4pt;tab-stops:right 326.05pt'><i
+style='mso-bidi-font-style:normal'><span lang=EN-US style='font-size:16.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>K. Bouzouba, B.
+Moulin, A. Kabbaj<o:p></o:p></span></i></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt 467.8pt'><span lang=EN-US
+style='font-size:16.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'><a
+href="Kabbaj.pdf">An Algorithmic Definition of CG Operations Based on a
+Bootstrap Step</a><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-indent:35.4pt;tab-stops:right 326.05pt'><i
+style='mso-bidi-font-style:normal'><span lang=FR style='font-size:16.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Times New Roman";mso-ansi-language:FR'>A.
+Kabbaj, B. Moulin<o:p></o:p></span></i></p>
+
+<p class=MsoNormal><span lang=FR style='font-size:16.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman";mso-ansi-language:FR'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt 467.8pt'><span lang=EN-US
+style='font-size:16.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'><a
+href="Groh.pdf">A CG Query Engine Based on Relational Power Context Families</a><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-indent:35.4pt;tab-stops:right 326.05pt'><i
+style='mso-bidi-font-style:normal'><span lang=DE style='font-size:16.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Times New Roman";mso-ansi-language:DE'>B.
+Groh, P. Eklund<o:p></o:p></span></i></p>
+
+<p class=MsoNormal><span lang=DE style='font-size:16.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman";mso-ansi-language:DE'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt 467.8pt'><span lang=EN-US
+style='font-size:16.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'><a
+href="Kim.pdf">A Web-based Browsing Mechanism Based on Conceptual Structures</a><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-indent:35.4pt;tab-stops:right 326.05pt'><i
+style='mso-bidi-font-style:normal'><span lang=FR style='font-size:16.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Times New Roman";mso-ansi-language:FR'>M.
+Kim, P. Compton<o:p></o:p></span></i></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=FR
+style='font-family:"Times New Roman";mso-ansi-language:FR'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=FR
+style='font-family:"Times New Roman";mso-ansi-language:FR'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=FR
+style='font-family:"Times New Roman";mso-ansi-language:FR'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=FR
+style='font-family:"Times New Roman";mso-ansi-language:FR'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><a
+name=ExtractingSemantics></a><b style='mso-bidi-font-weight:normal'><i
+style='mso-bidi-font-style:normal'><span lang=EN-US style='font-size:18.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>II. Extracting
+Semantics<o:p></o:p></span></i></b></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><b style='mso-bidi-font-weight:
+normal'><span lang=EN-US style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></b></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><b style='mso-bidi-font-weight:
+normal'><span lang=EN-US style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></b></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt 467.8pt'><span lang=EN-US
+style='font-size:16.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'><a
+href="Gatzemeier.pdf">Authoring Operations Based on Weighted Schemata</a><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-indent:35.4pt;tab-stops:right 326.05pt'><i
+style='mso-bidi-font-style:normal'><span lang=EN-US style='font-size:16.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>F. H. Gatzemeier<o:p></o:p></span></i></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt 467.8pt'><span lang=EN-US
+style='font-size:16.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'><a
+href="Hoede.pdf">Structural Parsing</a><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-indent:35.4pt;tab-stops:right 326.05pt'><i
+style='mso-bidi-font-style:normal'><span lang=NL style='font-size:16.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Times New Roman";mso-ansi-language:NL'>C.
+Hoede, L. Zhang<o:p></o:p></span></i></p>
+
+<p class=MsoNormal><span lang=NL style='font-size:16.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman";mso-ansi-language:NL'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-right:-25.95pt;tab-stops:right 326.05pt'><span
+lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'><a
+href="Boytcheva.pdf">CGExtract: Towards Extraction of Conceptual Graphs from
+Controlled English</a><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-indent:35.4pt;tab-stops:right 326.05pt'><i
+style='mso-bidi-font-style:normal'><span lang=EN-US style='font-size:16.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>S. Boytcheva, P. Dobrev,
+G. Angelova<o:p></o:p></span></i></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt 467.8pt'><span lang=EN-US
+style='font-size:16.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'><a
+href="Cox.pdf">Dependency Analysis Using Conceptual Graph</a><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-indent:35.4pt;tab-stops:right 326.05pt'><i
+style='mso-bidi-font-style:normal'><span lang=EN-US style='font-size:16.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>L. Cox, H. S. Delugach<o:p></o:p></span></i></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=EN-US
+style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=EN-US
+style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=EN-US
+style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=EN-US
+style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><a
+name=ConceptualCategories></a><b style='mso-bidi-font-weight:normal'><i
+style='mso-bidi-font-style:normal'><span lang=EN-US style='font-size:18.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>III. Conceptual
+Categories<o:p></o:p></span></i></b></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=EN-US
+style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=EN-US
+style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-right:-68.45pt;tab-stops:right 326.05pt'><span
+lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'><a
+href="Landauer.pdf">Conceptual Modeling Systems: Active Knowledge Processes in
+Conceptual Categories</a><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-indent:35.4pt;tab-stops:right 326.05pt'><i
+style='mso-bidi-font-style:normal'><span lang=DE style='font-size:16.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Times New Roman";mso-ansi-language:DE'>C.
+Landauer, K. L. Bellman<o:p></o:p></span></i></p>
+
+<p class=MsoNormal><span lang=DE style='font-size:16.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman";mso-ansi-language:DE'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt 467.8pt'><span lang=EN-US
+style='font-size:16.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'><a
+href="Becker.pdf">Multi-dimensional Representations of Conceptual Hierarchies</a><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-indent:35.4pt;tab-stops:right 326.05pt'><i
+style='mso-bidi-font-style:normal'><span lang=EN-US style='font-size:16.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>P. Becker<o:p></o:p></span></i></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt 467.8pt'><span lang=EN-US
+style='font-size:16.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'><a
+href="Priss.pdf">A Triadic Model of Information Flow</a><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-indent:35.4pt;tab-stops:right 326.05pt'><i
+style='mso-bidi-font-style:normal'><span lang=FR style='font-size:16.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Times New Roman";mso-ansi-language:FR'>U.
+Priss<o:p></o:p></span></i></p>
+
+<p class=MsoNormal><span lang=FR style='font-size:16.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman";mso-ansi-language:FR'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt 467.8pt'><span lang=FR
+style='font-size:16.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman";
+mso-ansi-language:FR'><a href="Pollandt.pdf">Relational Constructions on Semiconcept
+Graphs</a><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-indent:35.4pt;tab-stops:right 326.05pt'><i
+style='mso-bidi-font-style:normal'><span lang=FR style='font-size:16.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Times New Roman";mso-ansi-language:FR'>S.
+Pollandt<o:p></o:p></span></i></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=FR
+style='font-family:"Times New Roman";mso-ansi-language:FR'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=FR
+style='font-family:"Times New Roman";mso-ansi-language:FR'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=FR
+style='font-family:"Times New Roman";mso-ansi-language:FR'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=FR
+style='font-family:"Times New Roman";mso-ansi-language:FR'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><a name=PositionPapers></a><b
+style='mso-bidi-font-weight:normal'><i style='mso-bidi-font-style:normal'><span
+lang=EN-US style='font-size:18.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>IV.
+Position Papers<o:p></o:p></span></i></b></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><b style='mso-bidi-font-weight:
+normal'><span lang=EN-US style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></b></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><b style='mso-bidi-font-weight:
+normal'><span lang=EN-US style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></b></p>
+
+<p class=MsoBodyText style='margin-right:-61.4pt'><span lang=EN-US><a
+href="Wyssusek.pdf">The Philosophical Foundation of Conceptual Knowledge û A
+Sociopragmatic Approach</a></span></p>
+
+<p class=MsoNormal style='text-indent:35.4pt;tab-stops:right 326.05pt'><i
+style='mso-bidi-font-style:normal'><span lang=DE style='font-size:16.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Times New Roman";mso-ansi-language:DE'>B.
+Wyssusek, M. Schwartz, B. Kremberg<o:p></o:p></span></i></p>
+
+<p class=MsoNormal><span lang=DE style='font-size:16.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman";mso-ansi-language:DE'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt 467.8pt'><span lang=FR
+style='font-size:16.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman";
+mso-ansi-language:FR'><a href="MephuNguifo.pdf">Flexible Concept Lattices</a><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-indent:35.4pt;tab-stops:right 326.05pt'><i
+style='mso-bidi-font-style:normal'><span lang=FR style='font-size:16.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Times New Roman";mso-ansi-language:FR'>E.
+Mephu Nguifo<o:p></o:p></span></i></p>
+
+<p class=MsoNormal><span lang=FR style='font-size:16.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman";mso-ansi-language:FR'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt 467.8pt'><span lang=EN-US
+style='font-size:16.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'><a
+href="Fillies.pdf">SemTalk: A RDFS Editor for Visio 2000</a><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-right:-68.45pt;text-indent:35.45pt'><i
+style='mso-bidi-font-style:normal'><span lang=EN-US style='font-size:16.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>C. Fillies, F.
+Weichhardt<o:p></o:p></span></i></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoFooter style='tab-stops:right 354.4pt 467.8pt 470.3pt'><span
+lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'><a
+href="McGuinness.pdf">Description Logics Emerge from Ivory Towers</a><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-indent:35.45pt'><i style='mso-bidi-font-style:
+normal'><span lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:10.0pt;
+font-family:"Times New Roman"'>D. McGuinness</span></i><span lang=EN-US
+style='font-size:16.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:
+10.0pt;font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoFooter style='tab-stops:right 354.4pt 467.8pt 470.3pt'><span
+lang=EN-US style='font-size:16.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'><a
+href="Wolff.pdf">Process Representation in Temporal Concept Analysis</a><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-indent:35.4pt;tab-stops:right 326.05pt'><i
+style='mso-bidi-font-style:normal'><span lang=EN-US style='font-size:16.0pt;
+mso-bidi-font-size:10.0pt;font-family:"Times New Roman"'>K.E. Wolff</span></i><i
+style='mso-bidi-font-style:normal'><span lang=EN-US style='font-family:"Times New Roman"'><o:p></o:p></span></i></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=EN-US
+style='font-size:16.0pt;mso-bidi-font-size:10.0pt;font-family:"Times New Roman";
+mso-bidi-font-style:italic'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=EN-US
+style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:right 326.05pt'><span lang=EN-US
+style='font-family:"Times New Roman"'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+</div>
+
+<HR>
+submitted by G. Mineau, July 12, 2001.
+
+</body>
+
+</html>

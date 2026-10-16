@@ -128,6 +128,15 @@ class TestVolumeHtml(BaseCeurTest):
         self.assertEqual(("utf-8", "cp1252"), (declared, used))
         self.assertIn("–", text)
         self.assertEqual((None, "utf-8"), VolumeHtml.decode("<p>K\xf6ln</p>".encode("utf-8"))[1:])
+        # the volume pages of the mirror that ended the import with UnicodeDecodeError
+        for volume, expected in [
+            ("Vol-41", "declared UTF-8, decoded as cp1252"),
+            ("Vol-814", "declared None, decoded as cp1252"),
+        ]:
+            with self.subTest(volume=volume):
+                result = VolumeHtml.of_file(os.path.join(self.examples_path, f"{volume}.html")).proceedings()
+                charset_issues = [issue.message for issue in result.issues if issue.source_key == "charset"]
+                self.assertEqual([expected], charset_issues)
 
     def test_round_trip_with_jsonld(self) -> None:
         """
