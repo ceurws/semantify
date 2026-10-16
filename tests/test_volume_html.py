@@ -4,6 +4,7 @@ Created on 2026-10-13
 @author: wf
 """
 
+import json
 import os
 
 from ceursemantify.model import Scholar
@@ -93,6 +94,40 @@ class TestVolumeHtml(BaseCeurTest):
         self.assertEqual("no title mark", proceedings.papers[0].title)
         keys = sorted(issue.source_key for issue in result.issues)
         self.assertEqual(["CEURFULLTITLE", "CEURLOCTIME", "CEURPUBDATE", "CEURURN"], keys)
+
+    def test_early_volumes(self) -> None:
+        """
+        test that the papers of early volume pages are the papers ceur-spt lists
+        for volumes without li id https://github.com/ceurws/semantify/issues/36
+        without CEUR marks https://github.com/ceurws/semantify/issues/37
+        and not encoded in utf-8 https://github.com/ceurws/semantify/issues/38
+        """
+        with open(os.path.join(self.examples_path, "ceur-spt-pdf-names.json"), "r", encoding="utf-8") as json_file:
+            spt_pdf_names = json.load(json_file)
+        for volume, expected in spt_pdf_names.items():
+            with self.subTest(volume=volume):
+                volume_html = VolumeHtml.of_file(os.path.join(self.examples_path, f"{volume}.html"))
+                proceedings = volume_html.proceedings().target
+                self.assertEqual(int(volume[4:]), proceedings.volumeNumber)
+                pdf_names = [paper.pdfUrl.rsplit("/", 1)[1] for paper in proceedings.papers]
+                if self.debug:
+                    print(f"{volume}: {len(pdf_names)} papers, ceur-spt {len(expected)}")
+                self.assertEqual(sorted(expected), sorted(pdf_names))
+                for paper in proceedings.papers:
+                    self.assertEqual(paper.pdfUrl.rsplit("/", 1)[1][: -len(".pdf")], paper.id)
+
+    def test_decode(self) -> None:
+        """
+        test the decoding with the declared charset and the fallbacks
+        https://github.com/ceurws/semantify/issues/38
+        """
+        latin1 = '<meta charset="iso-8859-1"><p>Saarbr\xfccken</p>'.encode("latin-1")
+        self.assertEqual(("iso-8859-1", "iso-8859-1"), VolumeHtml.decode(latin1)[1:])
+        wrong_declaration = '<meta charset="utf-8"><p>–</p>'.encode("cp1252")
+        text, declared, used = VolumeHtml.decode(wrong_declaration)
+        self.assertEqual(("utf-8", "cp1252"), (declared, used))
+        self.assertIn("–", text)
+        self.assertEqual((None, "utf-8"), VolumeHtml.decode("<p>K\xf6ln</p>".encode("utf-8"))[1:])
 
     def test_round_trip_with_jsonld(self) -> None:
         """

@@ -8,8 +8,10 @@ https://github.com/ceurws/semantify/issues/28
 @author: wf
 """
 
-from typing import List, Optional
-from urllib.parse import urljoin
+import posixpath
+import re
+from typing import List, Optional, Tuple
+from urllib.parse import urljoin, urlparse
 
 from bs4 import BeautifulSoup, Tag
 
@@ -25,18 +27,49 @@ class VolumeHtml:
     """
 
     publisher_name = "CEUR-WS.org"
+    # tried after the declared charset; latin-1 decodes every byte
+    fallback_encodings = ["utf-8", "cp1252", "latin-1"]
 
-    def __init__(self, text: str, base_url: str = "https://ceur-ws.org"):
+    def __init__(self, text: str, base_url: str = "https://ceur-ws.org", volume_number: Optional[int] = None):
         """
         constructor
 
         Args:
             text: the html of the volume page
             base_url: the url of the site the volume is published on
+            volume_number: the number of the volume for pages without CEURVOLNR
         """
         self.text = text
         self.base_url = base_url.rstrip("/")
+        self.volume_number = volume_number
         self.soup = BeautifulSoup(text, "html.parser")
+        self.issues: List[MappingIssue] = []
+
+    @classmethod
+    def decode(cls, raw: bytes) -> Tuple[str, Optional[str], str]:
+        """
+        decode the bytes of a volume page with its declared charset,
+        then with the fallback encodings, see https://github.com/ceurws/semantify/issues/38
+
+        Args:
+            raw: the bytes of the page
+
+        Returns:
+            Tuple[str, Optional[str], str]: the text, the declared charset or None and the encoding used
+        """
+        match = re.search(rb"charset\s*=\s*[\"']?([A-Za-z0-9_.:\-]+)", raw[:4096], re.IGNORECASE)
+        declared = match.group(1).decode("ascii") if match else None
+        encodings = ([declared] if declared else []) + cls.fallback_encodings
+        text = None
+        used = None
+        for encoding in encodings:
+            try:
+                text = raw.decode(encoding)
+                used = encoding
+                break
+            except (LookupError, UnicodeDecodeError):
+                pass
+        return text, declared, used
 
     @classmethod
     def of_file(cls, path: str, base_url: str = "https://ceur-ws.org") -> "VolumeHtml":
@@ -44,15 +77,21 @@ class VolumeHtml:
         read the volume page from the given file
 
         Args:
-            path: the path of the index.html
+            path: the path of the index.html, the volume number is taken from a Vol-N part of it
             base_url: the url of the site the volume is published on
 
         Returns:
             VolumeHtml: the volume page
         """
-        with open(path, "r", encoding="utf-8") as html_file:
-            text = html_file.read()
-        volume_html = cls(text, base_url)
+        with open(path, "rb") as html_file:
+            raw = html_file.read()
+        text, declared, used = cls.decode(raw)
+        numbers = re.findall(r"Vol-(\d+)", path)
+        volume_number = int(numbers[-1]) if numbers else None
+        volume_html = cls(text, base_url, volume_number)
+        expected = (declared or "utf-8").lower().replace("-", "")
+        if used.lower().replace("-", "") != expected:
+            volume_html.issues.append(MappingIssue("Proceedings", "charset", f"declared {declared}, decoded as {used}"))
         return volume_html
 
     def mark(self, css_class: str, root: Optional[Tag] = None) -> Optional[Tag]:
@@ -188,21 +227,30 @@ class VolumeHtml:
         get the paper of the given table of contents item
 
         Args:
-            item: the li element with the id of the paper
+            item: the li element of the paper, the id of the paper is the li id
+                or the stem of the pdf link when the li has no id
+                see https://github.com/ceurws/semantify/issues/36
             url: the url of the volume
             result: the mapping result to report issues to
 
         Returns:
             Optional[Paper]: the paper, None if the item has no link to a pdf
+                or has no id and links to a pdf outside the volume
         """
         paper = None
         link = item.find("a", href=lambda href: href and href.lower().endswith(".pdf"))
-        if link is not None:
+        paper_id = item.get("id")
+        if link is not None and not paper_id:
+            href = link["href"]
+            # without li id only a pdf of the volume itself is taken
+            if not urlparse(href).scheme and "/" not in href.strip("./"):
+                paper_id = posixpath.splitext(posixpath.basename(href))[0]
+        if link is not None and paper_id:
             title = self.mark_text("CEURTITLE", item) or Convert.text(link.get_text()) or None
             if title is None:
-                result.issues.append(MappingIssue("Paper", item["id"], "no title"))
+                result.issues.append(MappingIssue("Paper", paper_id, "no title"))
             paper = Paper(
-                id=item["id"],
+                id=paper_id,
                 title=title,
                 pdfUrl=urljoin(url, link["href"]),
                 publishedIn=url,
@@ -227,9 +275,12 @@ class VolumeHtml:
         """
         toc = self.mark("CEURTOC") or self.soup
         papers = []
-        for item in toc.find_all("li", id=True):
+        pdf_urls = set()
+        for item in toc.find_all("li"):
             paper = self.paper(item, url, result)
-            if paper is not None:
+            # an li around a nested list finds the pdf of its first child again
+            if paper is not None and paper.pdfUrl not in pdf_urls:
+                pdf_urls.add(paper.pdfUrl)
                 papers.append(paper)
         return papers
 
@@ -241,15 +292,20 @@ class VolumeHtml:
             MappingResult: the proceedings and the issues
         """
         result = MappingResult()
+        result.issues.extend(self.issues)
         proceedings = Proceedings(publisher=Publisher(name=self.publisher_name))
         volume_mark = self.required("CEURVOLNR", result)
         if volume_mark:
             try:
                 proceedings.volumeNumber = Convert.volume_number(volume_mark)
-                proceedings.url = f"{self.base_url}/Vol-{proceedings.volumeNumber}/"
-                proceedings.archive = f"{self.base_url}/ftp-dir/Vol-{proceedings.volumeNumber}.zip"
             except ValueError as error:
                 result.issues.append(MappingIssue("Proceedings", "CEURVOLNR", str(error)))
+        # pages without CEUR marks, see https://github.com/ceurws/semantify/issues/37
+        if proceedings.volumeNumber is None:
+            proceedings.volumeNumber = self.volume_number
+        if proceedings.volumeNumber is not None:
+            proceedings.url = f"{self.base_url}/Vol-{proceedings.volumeNumber}/"
+            proceedings.archive = f"{self.base_url}/ftp-dir/Vol-{proceedings.volumeNumber}.zip"
         proceedings.urn = self.required("CEURURN", result)
         proceedings.title = self.required("CEURFULLTITLE", result) or self.mark_text("CEURVOLTITLE")
         pub_date = self.required("CEURPUBDATE", result)
