@@ -81,14 +81,20 @@ class VolumeHtml:
             base_url: the url of the site the volume is published on
 
         Returns:
-            VolumeHtml: the volume page
+            VolumeHtml: the volume page, an EarlyVolumeHtml for a page without CEURVOLNR
         """
         with open(path, "rb") as html_file:
             raw = html_file.read()
         text, declared, used = cls.decode(raw)
         numbers = re.findall(r"Vol-(\d+)", path)
         volume_number = int(numbers[-1]) if numbers else None
-        volume_html = cls(text, base_url, volume_number)
+        volume_class = cls
+        if "CEURVOLNR" not in text:
+            # imported here since the early volume page is a subclass of this one
+            from ceursemantify.early_volume_html import EarlyVolumeHtml
+
+            volume_class = EarlyVolumeHtml
+        volume_html = volume_class(text, base_url, volume_number)
         expected = (declared or "utf-8").lower().replace("-", "")
         if used.lower().replace("-", "") != expected:
             volume_html.issues.append(MappingIssue("Proceedings", "charset", f"declared {declared}, decoded as {used}"))
@@ -284,6 +290,25 @@ class VolumeHtml:
                 papers.append(paper)
         return papers
 
+    def volume_number_of(self, result: MappingResult) -> Optional[int]:
+        """
+        get the volume number of the CEURVOLNR mark
+
+        Args:
+            result: the mapping result to report a missing or unparsed mark to
+
+        Returns:
+            Optional[int]: the volume number, None if the mark is missing or unparsed
+        """
+        volume_number = None
+        volume_mark = self.required("CEURVOLNR", result)
+        if volume_mark:
+            try:
+                volume_number = Convert.volume_number(volume_mark)
+            except ValueError as error:
+                result.issues.append(MappingIssue("Proceedings", "CEURVOLNR", str(error)))
+        return volume_number
+
     def proceedings(self) -> MappingResult:
         """
         map the volume page to the proceedings of the research model
@@ -294,15 +319,7 @@ class VolumeHtml:
         result = MappingResult()
         result.issues.extend(self.issues)
         proceedings = Proceedings(publisher=Publisher(name=self.publisher_name))
-        volume_mark = self.required("CEURVOLNR", result)
-        if volume_mark:
-            try:
-                proceedings.volumeNumber = Convert.volume_number(volume_mark)
-            except ValueError as error:
-                result.issues.append(MappingIssue("Proceedings", "CEURVOLNR", str(error)))
-        # pages without CEUR marks, see https://github.com/ceurws/semantify/issues/37
-        if proceedings.volumeNumber is None:
-            proceedings.volumeNumber = self.volume_number
+        proceedings.volumeNumber = self.volume_number_of(result)
         if proceedings.volumeNumber is not None:
             proceedings.url = f"{self.base_url}/Vol-{proceedings.volumeNumber}/"
             proceedings.archive = f"{self.base_url}/ftp-dir/Vol-{proceedings.volumeNumber}.zip"
