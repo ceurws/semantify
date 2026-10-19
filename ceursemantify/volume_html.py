@@ -8,6 +8,8 @@ https://github.com/ceurws/semantify/issues/28
 @author: wf
 """
 
+import json
+import os
 import posixpath
 import re
 from typing import List, Optional, Tuple
@@ -16,6 +18,7 @@ from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup, Tag
 
 from ceursemantify.convert import Convert
+from ceursemantify.jsonld import JsonLd
 from ceursemantify.loctime import LocTime
 from ceursemantify.mapper import MappingIssue, MappingResult
 from ceursemantify.model import City, Country, Event, Paper, Proceedings, Publisher, Scholar
@@ -29,6 +32,10 @@ class VolumeHtml:
     publisher_name = "CEUR-WS.org"
     # tried after the declared charset; latin-1 decodes every byte
     fallback_encodings = ["utf-8", "cp1252", "latin-1"]
+    # an embedded page announces its state and carries its JSON-LD in a fence with a marker line, see issue 28
+    embedded_pattern = re.compile(r"<!-- CEURSTATE=embedded[^\n]*-->")
+    fence_pattern = re.compile(r"```json-ld\n(?:[^\n{\[]*\n)?(.*?)\n```", re.DOTALL)
+    _jsonld: Optional[JsonLd] = None
 
     def __init__(self, text: str, base_url: str = "https://ceur-ws.org", volume_number: Optional[int] = None):
         """
@@ -44,6 +51,45 @@ class VolumeHtml:
         self.volume_number = volume_number
         self.soup = BeautifulSoup(text, "html.parser")
         self.issues: List[MappingIssue] = []
+        self.embedded = False
+        self.jsonld_document: Optional[dict] = None
+
+    @classmethod
+    def jsonld(cls) -> JsonLd:
+        """
+        the JSON-LD support of the research model, loaded once
+        """
+        if cls._jsonld is None:
+            cls._jsonld = JsonLd.of_yaml()
+        return cls._jsonld
+
+    def read_embedded(self, path: str) -> None:
+        """
+        read the JSON-LD of an embedded page, the source of the mapping instead of the markup, see issue 28:
+        the fence of the page when it holds the document, else index.jsonld beside the page
+
+        Args:
+            path: the path of the index.html
+        """
+        if not self.embedded_pattern.search(self.text):
+            return
+        self.embedded = True
+        document = None
+        match = self.fence_pattern.search(self.text)
+        if match and match.group(1).strip():
+            document = json.loads(match.group(1))
+        else:
+            jsonld_path = os.path.join(os.path.dirname(path), "index.jsonld")
+            if os.path.isfile(jsonld_path):
+                with open(jsonld_path, "r", encoding="utf-8") as jsonld_file:
+                    document = json.load(jsonld_file)
+        if document is None:
+            self.issues.append(
+                MappingIssue(
+                    "Proceedings", "CEURSTATE", "embedded, but neither the fence nor index.jsonld holds the JSON-LD"
+                )
+            )
+        self.jsonld_document = document
 
     @classmethod
     def decode(cls, raw: bytes) -> Tuple[str, Optional[str], str]:
@@ -95,6 +141,7 @@ class VolumeHtml:
 
             volume_class = EarlyVolumeHtml
         volume_html = volume_class(text, base_url, volume_number)
+        volume_html.read_embedded(path)
         expected = (declared or "utf-8").lower().replace("-", "")
         if used.lower().replace("-", "") != expected:
             volume_html.issues.append(MappingIssue("Proceedings", "charset", f"declared {declared}, decoded as {used}"))
@@ -318,6 +365,9 @@ class VolumeHtml:
         """
         result = MappingResult()
         result.issues.extend(self.issues)
+        if self.jsonld_document is not None:
+            result.target = self.jsonld().proceedings(self.jsonld_document)
+            return result
         proceedings = Proceedings(publisher=Publisher(name=self.publisher_name))
         proceedings.volumeNumber = self.volume_number_of(result)
         if proceedings.volumeNumber is not None:
