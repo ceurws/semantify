@@ -1,0 +1,551 @@
+{
+    "@context": {
+        "@version": 1.1,
+        "ceur": "https://ceur-ws.org/rdf/schema#",
+        "dcterms": "http://purl.org/dc/terms/",
+        "schema": "https://schema.org/",
+        "foaf": "http://xmlns.com/foaf/0.1/",
+        "bibo": "http://purl.org/ontology/bibo/",
+        "xsd": "http://www.w3.org/2001/XMLSchema#",
+        "Proceedings": {
+            "@id": "ceur:ProceedingsVolume",
+            "@context": {
+                "wikidataid": {
+                    "@id": "ceur:wikidataId"
+                },
+                "title": {
+                    "@id": "dcterms:title"
+                },
+                "volumeNumber": {
+                    "@id": "ceur:volumeNumber",
+                    "@type": "xsd:positiveInteger"
+                },
+                "urn": {
+                    "@id": "ceur:urn"
+                },
+                "doi": {
+                    "@id": "ceur:doi"
+                },
+                "pubDate": {
+                    "@id": "dcterms:issued",
+                    "@type": "xsd:date"
+                },
+                "pubYear": {
+                    "@id": "ceur:pubYear",
+                    "@type": "xsd:gYear"
+                },
+                "url": {
+                    "@id": "schema:url",
+                    "@type": "@id"
+                },
+                "archive": {
+                    "@id": "ceur:archive",
+                    "@type": "@id"
+                },
+                "license": {
+                    "@id": "dcterms:license",
+                    "@type": "@id"
+                },
+                "publisher": {
+                    "@id": "dcterms:publisher"
+                },
+                "event": {
+                    "@id": "ceur:associatedEvent"
+                },
+                "editors": {
+                    "@id": "ceur:editor",
+                    "@container": "@list"
+                },
+                "papers": {
+                    "@reverse": "dcterms:isPartOf"
+                }
+            }
+        },
+        "Event": {
+            "@id": "ceur:AcademicEvent",
+            "@context": {
+                "acronym": {
+                    "@id": "ceur:acronym"
+                },
+                "ordinal": {
+                    "@id": "ceur:ordinal",
+                    "@type": "xsd:positiveInteger"
+                },
+                "title": {
+                    "@id": "dcterms:title"
+                },
+                "homepage": {
+                    "@id": "ceur:officialWebsite",
+                    "@type": "@id"
+                },
+                "wikidataid": {
+                    "@id": "ceur:wikidataId"
+                },
+                "startDate": {
+                    "@id": "schema:startDate",
+                    "@type": "xsd:date"
+                },
+                "endDate": {
+                    "@id": "schema:endDate",
+                    "@type": "xsd:date"
+                },
+                "location": {
+                    "@id": "schema:location"
+                },
+                "virtual": {
+                    "@id": "ceur:virtual",
+                    "@type": "xsd:boolean"
+                },
+                "city": {
+                    "@id": "ceur:city"
+                },
+                "country": {
+                    "@id": "ceur:country"
+                },
+                "colocated_with": {
+                    "@id": "ceur:colocatedWith"
+                }
+            }
+        },
+        "Paper": {
+            "@id": "ceur:Paper",
+            "@context": {
+                "id": {
+                    "@id": "dcterms:identifier"
+                },
+                "wikidataid": {
+                    "@id": "ceur:wikidataId"
+                },
+                "title": {
+                    "@id": "dcterms:title"
+                },
+                "pdfUrl": {
+                    "@id": "schema:url",
+                    "@type": "@id"
+                },
+                "pageStart": {
+                    "@id": "bibo:pageStart"
+                },
+                "pageEnd": {
+                    "@id": "bibo:pageEnd"
+                },
+                "dblpPublicationId": {
+                    "@id": "ceur:dblpPublicationId"
+                },
+                "doi": {
+                    "@id": "ceur:doi"
+                },
+                "session": {
+                    "@id": "ceur:session"
+                },
+                "publishedIn": {
+                    "@id": "dcterms:isPartOf",
+                    "@type": "@id"
+                },
+                "authors": {
+                    "@id": "ceur:author",
+                    "@container": "@list"
+                }
+            }
+        },
+        "Scholar": {
+            "@id": "ceur:Person",
+            "@context": {
+                "name": {
+                    "@id": "ceur:familyName"
+                },
+                "firstName": {
+                    "@id": "ceur:givenName"
+                },
+                "orcid": {
+                    "@id": "ceur:orcid"
+                },
+                "dblpId": {
+                    "@id": "ceur:dblpAuthorId"
+                },
+                "wikiDataId": {
+                    "@id": "ceur:wikidataId"
+                },
+                "gndId": {
+                    "@id": "ceur:gndId"
+                }
+            }
+        },
+        "Publisher": {
+            "@id": "ceur:Organization",
+            "@context": {
+                "name": {
+                    "@id": "foaf:name"
+                },
+                "wikidataid": {
+                    "@id": "ceur:wikidataId"
+                }
+            }
+        },
+        "City": {
+            "@id": "ceur:City",
+            "@context": {
+                "name": {
+                    "@id": "foaf:name"
+                },
+                "wikidataid": {
+                    "@id": "ceur:wikidataId"
+                }
+            }
+        },
+        "Country": {
+            "@id": "ceur:Country",
+            "@context": {
+                "name": {
+                    "@id": "foaf:name"
+                },
+                "wikidataid": {
+                    "@id": "ceur:wikidataId"
+                }
+            }
+        }
+    },
+    "@type": "Proceedings",
+    "@id": "https://ceur-ws.org/Vol-4298/",
+    "title": "Proceedings of the Work-in-Progress in Hardware and Software for Location Computation Workshop (WIPHAL 2026)",
+    "volumeNumber": 4298,
+    "urn": "urn:nbn:de:0074-4298-x",
+    "pubDate": "2026-10-19",
+    "pubYear": 2026,
+    "url": "https://ceur-ws.org/Vol-4298/",
+    "archive": "https://ceur-ws.org/ftp-dir/Vol-4298.zip",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "publisher": {
+        "@type": "Publisher",
+        "name": "CEUR-WS.org"
+    },
+    "event": {
+        "@type": "Event",
+        "acronym": "WIPHAL 2026",
+        "title": "Work-in-Progress in Hardware and Software for Location Computation 2026",
+        "homepage": "https://events.tuni.fi/icl-gnss/wiphal/",
+        "startDate": "2026-10-06",
+        "endDate": "2026-10-08",
+        "location": "Rome, Italy, October 06-08, 2026",
+        "city": {
+            "@type": "City",
+            "name": "Rome"
+        },
+        "country": {
+            "@type": "Country",
+            "name": "Italy"
+        },
+        "colocated_with": {
+            "@type": "Event",
+            "acronym": "ICL-GNSS 2026"
+        }
+    },
+    "editors": [
+        {
+            "@type": "Scholar",
+            "name": "Nurmi",
+            "firstName": "Jari"
+        },
+        {
+            "@type": "Scholar",
+            "name": "Benedetto",
+            "firstName": "Francesco"
+        },
+        {
+            "@type": "Scholar",
+            "name": "Crivello",
+            "firstName": "Antonino"
+        },
+        {
+            "@type": "Scholar",
+            "name": "Torres-Sospedra",
+            "firstName": "Joaquín"
+        }
+    ],
+    "papers": [
+        {
+            "@type": "Paper",
+            "@id": "https://ceur-ws.org/Vol-4298/preface.pdf",
+            "id": "preface",
+            "title": "Preface",
+            "pdfUrl": "https://ceur-ws.org/Vol-4298/preface.pdf",
+            "publishedIn": "https://ceur-ws.org/Vol-4298/",
+            "doi": "10.83095/ceurws_04298_preface",
+            "landingPage": "https://ceur-ws.org/Vol-4298/preface/"
+        },
+        {
+            "@type": "Paper",
+            "@id": "https://ceur-ws.org/Vol-4298/paper1.pdf",
+            "id": "paper1",
+            "title": "Design of a Custom 5G and 4G Signal of Opportunity Navigation Radio Receiver",
+            "pdfUrl": "https://ceur-ws.org/Vol-4298/paper1.pdf",
+            "pageStart": "1",
+            "pageEnd": "12",
+            "publishedIn": "https://ceur-ws.org/Vol-4298/",
+            "authors": [
+                {
+                    "@type": "Scholar",
+                    "name": "Morrison",
+                    "firstName": "Aiden",
+                    "orcid": "0000-0002-0617-9959"
+                },
+                {
+                    "@type": "Scholar",
+                    "name": "Sokolova",
+                    "firstName": "Nadezda",
+                    "orcid": "0009-0005-9079-1380"
+                }
+            ],
+            "doi": "10.83095/ceurws_04298_paper1",
+            "landingPage": "https://ceur-ws.org/Vol-4298/paper1/"
+        },
+        {
+            "@type": "Paper",
+            "@id": "https://ceur-ws.org/Vol-4298/paper2.pdf",
+            "id": "paper2",
+            "title": "Pseudorange Error Modeling for LEO-PNT Systems",
+            "pdfUrl": "https://ceur-ws.org/Vol-4298/paper2.pdf",
+            "pageStart": "13",
+            "pageEnd": "24",
+            "publishedIn": "https://ceur-ws.org/Vol-4298/",
+            "authors": [
+                {
+                    "@type": "Scholar",
+                    "name": "Bianconi",
+                    "firstName": "Andrea"
+                },
+                {
+                    "@type": "Scholar",
+                    "name": "Dolfi",
+                    "firstName": "Marco"
+                },
+                {
+                    "@type": "Scholar",
+                    "name": "Morandi",
+                    "firstName": "Omar"
+                },
+                {
+                    "@type": "Scholar",
+                    "name": "Morosi",
+                    "firstName": "Simone"
+                }
+            ],
+            "doi": "10.83095/ceurws_04298_paper2",
+            "landingPage": "https://ceur-ws.org/Vol-4298/paper2/"
+        },
+        {
+            "@type": "Paper",
+            "@id": "https://ceur-ws.org/Vol-4298/paper3.pdf",
+            "id": "paper3",
+            "title": "Joint Spoofing and Multipath Suppression Using MEDLL and GNSS/5G/INS Consistency Check",
+            "pdfUrl": "https://ceur-ws.org/Vol-4298/paper3.pdf",
+            "pageStart": "25",
+            "pageEnd": "33",
+            "publishedIn": "https://ceur-ws.org/Vol-4298/",
+            "authors": [
+                {
+                    "@type": "Scholar",
+                    "name": "Li",
+                    "firstName": "Zihao"
+                },
+                {
+                    "@type": "Scholar",
+                    "name": "Kou",
+                    "firstName": "Yanhong",
+                    "orcid": "0000-0002-9812-6677"
+                },
+                {
+                    "@type": "Scholar",
+                    "name": "Guo",
+                    "firstName": "Xiaochen"
+                },
+                {
+                    "@type": "Scholar",
+                    "name": "Xiu",
+                    "firstName": "Chundi"
+                }
+            ],
+            "doi": "10.83095/ceurws_04298_paper3",
+            "landingPage": "https://ceur-ws.org/Vol-4298/paper3/"
+        },
+        {
+            "@type": "Paper",
+            "@id": "https://ceur-ws.org/Vol-4298/paper4.pdf",
+            "id": "paper4",
+            "title": "CHAGALL: An Adaptive Distributed GNSS Architecture for Autonomous Geodetic and Environmental Monitoring",
+            "pdfUrl": "https://ceur-ws.org/Vol-4298/paper4.pdf",
+            "pageStart": "34",
+            "pageEnd": "42",
+            "publishedIn": "https://ceur-ws.org/Vol-4298/",
+            "authors": [
+                {
+                    "@type": "Scholar",
+                    "name": "Consoli",
+                    "firstName": "Angelo"
+                },
+                {
+                    "@type": "Scholar",
+                    "name": "Brenner",
+                    "firstName": "Joel"
+                },
+                {
+                    "@type": "Scholar",
+                    "name": "Moriggia",
+                    "firstName": "Lorenzo"
+                },
+                {
+                    "@type": "Scholar",
+                    "name": "Yossef",
+                    "firstName": "Yuval bar"
+                }
+            ],
+            "doi": "10.83095/ceurws_04298_paper4",
+            "landingPage": "https://ceur-ws.org/Vol-4298/paper4/"
+        },
+        {
+            "@type": "Paper",
+            "@id": "https://ceur-ws.org/Vol-4298/paper5.pdf",
+            "id": "paper5",
+            "title": "Development of a Universal RF Front-End for Next-Generation LEO-PNT Systems",
+            "pdfUrl": "https://ceur-ws.org/Vol-4298/paper5.pdf",
+            "pageStart": "43",
+            "pageEnd": "48",
+            "publishedIn": "https://ceur-ws.org/Vol-4298/",
+            "authors": [
+                {
+                    "@type": "Scholar",
+                    "name": "Consoli",
+                    "firstName": "Angelo"
+                },
+                {
+                    "@type": "Scholar",
+                    "name": "Fontana",
+                    "firstName": "Flavio"
+                },
+                {
+                    "@type": "Scholar",
+                    "name": "Gilardi",
+                    "firstName": "Luca"
+                },
+                {
+                    "@type": "Scholar",
+                    "name": "Saporiti",
+                    "firstName": "Augusto"
+                }
+            ],
+            "doi": "10.83095/ceurws_04298_paper5",
+            "landingPage": "https://ceur-ws.org/Vol-4298/paper5/"
+        },
+        {
+            "@type": "Paper",
+            "@id": "https://ceur-ws.org/Vol-4298/paper6.pdf",
+            "id": "paper6",
+            "title": "ROBOSAT: Towards an Integrated Robotic Platform for Large-scale Multimodal Wilderness Navigation",
+            "pdfUrl": "https://ceur-ws.org/Vol-4298/paper6.pdf",
+            "pageStart": "49",
+            "pageEnd": "59",
+            "publishedIn": "https://ceur-ws.org/Vol-4298/",
+            "authors": [
+                {
+                    "@type": "Scholar",
+                    "name": "Matey-Sanz",
+                    "firstName": "Miguel",
+                    "orcid": "0000-0002-1189-5079"
+                },
+                {
+                    "@type": "Scholar",
+                    "name": "Wu",
+                    "firstName": "Yuyan",
+                    "orcid": "0000-0002-1078-3120"
+                },
+                {
+                    "@type": "Scholar",
+                    "name": "Pervysheva",
+                    "firstName": "Yelyzaveta",
+                    "orcid": "0009-0009-7676-0851"
+                },
+                {
+                    "@type": "Scholar",
+                    "name": "Safi",
+                    "firstName": "Muhammad",
+                    "orcid": "0009-0009-4719-2226"
+                },
+                {
+                    "@type": "Scholar",
+                    "name": "Cramariuc",
+                    "firstName": "Andrei",
+                    "orcid": "0000-0002-9301-0253"
+                },
+                {
+                    "@type": "Scholar",
+                    "name": "Mocanu",
+                    "firstName": "Irina",
+                    "orcid": "0000-0001-5176-9344"
+                },
+                {
+                    "@type": "Scholar",
+                    "name": "Cramariuc",
+                    "firstName": "Oana",
+                    "orcid": "0000-0002-7499-5704"
+                },
+                {
+                    "@type": "Scholar",
+                    "name": "Nurmi",
+                    "firstName": "Jari",
+                    "orcid": "0000-0003-2169-4606"
+                },
+                {
+                    "@type": "Scholar",
+                    "name": "Lohan",
+                    "firstName": "Elena Simona",
+                    "orcid": "0000-0003-1718-6924"
+                },
+                {
+                    "@type": "Scholar",
+                    "name": "Claver",
+                    "firstName": "Jose Manuel",
+                    "orcid": "0000-0002-9617-3453"
+                },
+                {
+                    "@type": "Scholar",
+                    "name": "Dura",
+                    "firstName": "Esther",
+                    "orcid": "0000-0002-2603-5549"
+                },
+                {
+                    "@type": "Scholar",
+                    "name": "Torres-Sospedra",
+                    "firstName": "Joaquín",
+                    "orcid": "0000-0003-4338-4334"
+                }
+            ],
+            "doi": "10.83095/ceurws_04298_paper6",
+            "landingPage": "https://ceur-ws.org/Vol-4298/paper6/"
+        },
+        {
+            "@type": "Paper",
+            "@id": "https://ceur-ws.org/Vol-4298/paper7.pdf",
+            "id": "paper7",
+            "title": "Smartphone RTK for C-ITS: Architecture and PPK-Based Field Evaluation",
+            "pdfUrl": "https://ceur-ws.org/Vol-4298/paper7.pdf",
+            "pageStart": "60",
+            "pageEnd": "74",
+            "publishedIn": "https://ceur-ws.org/Vol-4298/",
+            "authors": [
+                {
+                    "@type": "Scholar",
+                    "name": "Zerafa",
+                    "firstName": "Steve"
+                },
+                {
+                    "@type": "Scholar",
+                    "name": "Scerri",
+                    "firstName": "Kenneth"
+                }
+            ],
+            "doi": "10.83095/ceurws_04298_paper7",
+            "landingPage": "https://ceur-ws.org/Vol-4298/paper7/"
+        }
+    ],
+    "doi": "10.83095/ceurws_04298"
+}

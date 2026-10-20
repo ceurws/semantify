@@ -79,6 +79,13 @@ class CeurSemantifyCmd(BaseCmd):
             help="embed the JSON-LD into the given volume pages of the proceedings chairs (index.html files or"
             " volume directories) and write index.jsonld next to them",
         )
+        parser.add_argument(
+            "--generate",
+            nargs="+",
+            metavar="PATH",
+            help="generate the volume and paper pages from the given local volume pages (index.html files or"
+            " volume directories, an embedded page is read from its JSON-LD) instead of ceur-spt",
+        )
         parser.add_argument("--progress", action="store_true", help="show a progress bar while generating volumes")
         parser.add_argument(
             "--serve",
@@ -129,6 +136,10 @@ class CeurSemantifyCmd(BaseCmd):
             if args.embed:
                 report = generator.embed_volumes(args.embed, progress=args.progress)
                 self.show_report(f"{len(args.embed)} volume pages", report, args)
+                handled = True
+            if args.generate:
+                report = generator.generate_paths(args.generate, progress=args.progress)
+                self.show_report(f"{len(args.generate)} volume pages", report, args)
                 handled = True
             if args.volumes:
                 numbers = VolumeRanges.numbers(args.volumes)

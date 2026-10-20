@@ -36,6 +36,23 @@ def esc(value: Any) -> str:
     return escaped
 
 
+def doi_as_html(doi: Any) -> str:
+    """
+    get the DOI linked to its resolver, see issue 14
+
+    Args:
+        doi: the DOI, None gives the empty string
+
+    Returns:
+        str: the html span, empty if there is no DOI
+    """
+    doi_html = ""
+    if doi:
+        doi_text = esc(doi)
+        doi_html = f"""<span class="CEURDOI"><a href="https://doi.org/{doi_text}">{doi_text}</a></span>"""
+    return doi_html
+
+
 class Fence:
     """
     JSON-LD as semantify³ fence in an html comment
@@ -196,15 +213,16 @@ class PaperView:
         pdf_url = esc(self.paper.pdfUrl)
         title = esc(self.paper.title)
         pages = self.pages_as_html()
+        doi = doi_as_html(self.paper.doi)
         authors = ",\n        ".join(ScholarView(author).as_html("CEURAUTHOR") for author in self.paper.authors)
         if self.paper.id:
             item = f"""      <li id="{paper_id}"><a href="{paper_id}/">
-          <span class="CEURTITLE">{title}</span></a> {pages} <a href="{pdf_url}">PDF</a><br>
+          <span class="CEURTITLE">{title}</span></a> {pages} <a href="{pdf_url}">PDF</a> {doi}<br>
         {authors}
       </li>"""
         else:
             item = f"""      <li><a href="{pdf_url}">
-          <span class="CEURTITLE">{title}</span></a> {pages}<br>
+          <span class="CEURTITLE">{title}</span></a> {pages} {doi}<br>
         {authors}
       </li>"""
         return item
@@ -308,6 +326,10 @@ class VolumePage:
         urn = esc(self.proceedings.urn)
         pub_year = esc(self.proceedings.pubYear)
         license_url = esc(self.proceedings.license)
+        doi = doi_as_html(self.proceedings.doi)
+        if doi:
+            doi = f""" <br>
+          {doi}"""
         header = f"""  <table style="border: 0; border-spacing: 0; border-collapse: collapse; width: 95%">
     <tbody>
       <tr>
@@ -316,7 +338,7 @@ class VolumePage:
         </td>
         <td style="text-align: right; vertical-align: middle">
           <span class="CEURVOLNR">Vol-{number}</span> <br>
-          <span class="CEURURN">{urn}</span>
+          <span class="CEURURN">{urn}</span>{doi}
           <p class="unobtrusive copyright" style="text-align: justify">Copyright &copy; {pub_year} for
             the individual papers by the papers' authors.
             Copyright &copy; <span class="CEURPUBYEAR">{pub_year}</span> for the volume
@@ -559,6 +581,7 @@ class PaperPage:
         fence = Fence.as_html(self.jsonld_text())
         navigation = self.navigation_as_html()
         pages = PaperView(self.paper).pages_as_html()
+        doi = doi_as_html(self.paper.doi)
         authors = "\n".join(self.author_as_html(author) for author in self.paper.authors)
         page = f"""<!DOCTYPE html>
 {state}
@@ -584,7 +607,7 @@ class PaperPage:
   <ul>
 {authors}
   </ul>
-  <p>{pages} <a href="{pdf_url}">PDF</a></p>
+  <p>{pages} <a href="{pdf_url}">PDF</a> {doi}</p>
 
   <hr>
 

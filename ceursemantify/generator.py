@@ -102,6 +102,33 @@ class Generator:
             report.problems.append(f"Vol-{number}: {self.spt.volume_url(number)}: {error}")
         return proceedings
 
+    def read_proceedings(self, path: str, report: SiteReport) -> Optional[Proceedings]:
+        """
+        read the proceedings from the local volume page at the given path, an
+        embedded page from its JSON-LD, see issues 33 and 34
+
+        Args:
+            path: the index.html of the volume or its directory
+            report: the report to add problems to
+
+        Returns:
+            Optional[Proceedings]: the proceedings, None if the page could not be read
+        """
+        if os.path.isdir(path):
+            path = os.path.join(path, "index.html")
+        proceedings = None
+        try:
+            volume_html = VolumeHtml.of_file(path, self.config.original_url)
+            result = volume_html.proceedings()
+            proceedings = result.target
+            for paper in proceedings.papers:
+                paper.publishedIn = proceedings.url
+            for issue in result.issues:
+                report.problems.append(f"{path}: {issue}")
+        except OSError as error:
+            report.problems.append(f"{path}: {error}")
+        return proceedings
+
     def write_volume(self, proceedings: Proceedings, report: SiteReport) -> None:
         """
         write the page and the JSON-LD file of the given proceedings
@@ -154,6 +181,34 @@ class Generator:
                 continue
             if proceedings.year() is None:
                 report.problems.append(f"Vol-{number}: no event start date, the volume has no year")
+                continue
+            self.write_volume(proceedings, report)
+        report.seconds = time.perf_counter() - start
+        return report
+
+    def generate_paths(self, paths: List[str], progress: bool = False) -> SiteReport:
+        """
+        generate the pages of the volumes from their local volume pages
+        instead of ceur-spt, see issues 33 and 34; the volume pages are not touched
+
+        A volume that can not be read or has no event start date is not
+        written and reported as a problem. Year pages are not touched.
+
+        Args:
+            paths: the index.html files of the volumes or their directories
+            progress: if True show a progress bar
+
+        Returns:
+            SiteReport: the written files, the problems and the time used
+        """
+        report = SiteReport()
+        start = time.perf_counter()
+        for path in tqdm(paths, desc="volumes", unit="vol", disable=not progress):
+            proceedings = self.read_proceedings(path, report)
+            if proceedings is None:
+                continue
+            if proceedings.year() is None:
+                report.problems.append(f"{path}: no event start date, the volume has no year")
                 continue
             self.write_volume(proceedings, report)
         report.seconds = time.perf_counter() - start
