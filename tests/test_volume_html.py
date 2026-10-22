@@ -116,6 +116,22 @@ class TestVolumeHtml(BaseCeurTest):
                 for paper in proceedings.papers:
                     self.assertEqual(paper.pdfUrl.rsplit("/", 1)[1][: -len(".pdf")], paper.id)
 
+    def test_published_elsewhere(self) -> None:
+        """
+        test that entries of papers published elsewhere are no papers of the volume
+        https://github.com/ceurws/semantify/issues/35
+        Vol-4003 lists 10 such entries, 4 of them link a pdf of another volume or site
+        """
+        volume_html = VolumeHtml.of_file(os.path.join(self.examples_path, "Vol-4003.html"))
+        result = volume_html.proceedings()
+        proceedings = result.target
+        self.assertEqual(26, len(proceedings.papers))
+        for paper in proceedings.papers:
+            self.assertFalse(paper.id.startswith("published"), paper.id)
+            self.assertTrue(paper.pdfUrl.startswith(proceedings.url), paper.pdfUrl)
+        elsewhere = sorted(issue.source_key for issue in result.issues if "published elsewhere" in issue.message)
+        self.assertEqual(["published2", "published4", "published7", "published9"], elsewhere)
+
     def test_decode(self) -> None:
         """
         test the decoding with the declared charset and the fallbacks

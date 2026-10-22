@@ -287,8 +287,10 @@ class VolumeHtml:
             result: the mapping result to report issues to
 
         Returns:
-            Optional[Paper]: the paper, None if the item has no link to a pdf
-                or has no id and links to a pdf outside the volume
+            Optional[Paper]: the paper, None if the item has no link to a pdf,
+                has no id and links to a pdf outside the volume,
+                or links to a pdf outside the volume directory: a paper published elsewhere,
+                see https://github.com/ceurws/semantify/issues/35
         """
         paper = None
         link = item.find("a", href=lambda href: href and href.lower().endswith(".pdf"))
@@ -299,21 +301,44 @@ class VolumeHtml:
             if not urlparse(href).scheme and "/" not in href.strip("./"):
                 paper_id = posixpath.splitext(posixpath.basename(href))[0]
         if link is not None and paper_id:
-            title = self.mark_text("CEURTITLE", item) or Convert.text(link.get_text()) or None
-            if title is None:
-                result.issues.append(MappingIssue("Paper", paper_id, "no title"))
-            paper = Paper(
-                id=paper_id,
-                title=title,
-                pdfUrl=urljoin(url, link["href"]),
-                publishedIn=url,
-                authors=[self.scholar(element) for element in item.find_all(class_="CEURAUTHOR")],
-            )
-            pages = self.mark_text("CEURPAGES", item)
-            if pages:
-                paper.pageStart = Convert.page_start(pages)
-                paper.pageEnd = Convert.page_end(pages)
+            pdf_url = urljoin(url, link["href"])
+            if not self.in_volume(pdf_url, url):
+                result.issues.append(MappingIssue("Paper", paper_id, f"published elsewhere: {pdf_url}"))
+            else:
+                title = self.mark_text("CEURTITLE", item) or Convert.text(link.get_text()) or None
+                if title is None:
+                    result.issues.append(MappingIssue("Paper", paper_id, "no title"))
+                paper = Paper(
+                    id=paper_id,
+                    title=title,
+                    pdfUrl=pdf_url,
+                    publishedIn=url,
+                    authors=[self.scholar(element) for element in item.find_all(class_="CEURAUTHOR")],
+                )
+                pages = self.mark_text("CEURPAGES", item)
+                if pages:
+                    paper.pageStart = Convert.page_start(pages)
+                    paper.pageEnd = Convert.page_end(pages)
         return paper
+
+    @classmethod
+    def in_volume(cls, pdf_url: str, url: str) -> bool:
+        """
+        check whether the given pdf lies in the directory of the volume,
+        the criterion for a paper of the volume, see https://github.com/ceurws/semantify/issues/35;
+        the scheme is ignored so that http links to an https site still count
+
+        Args:
+            pdf_url: the absolute url of the pdf
+            url: the url of the volume
+
+        Returns:
+            bool: True if the pdf is in the volume directory or one of its subdirectories
+        """
+        pdf_parts = urlparse(pdf_url)
+        volume_parts = urlparse(url)
+        in_volume = pdf_parts.netloc == volume_parts.netloc and pdf_parts.path.startswith(volume_parts.path)
+        return in_volume
 
     def papers(self, url: str, result: MappingResult) -> List[Paper]:
         """
