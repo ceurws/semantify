@@ -66,7 +66,8 @@ class VolumeHtml:
     def read_embedded(self, path: str) -> None:
         """
         read the JSON-LD of an embedded page, the source of the mapping instead of the markup, see issue 28:
-        the fence of the page when it holds the document, else index.jsonld beside the page
+        index.jsonld beside the page is the record that the DOI registration writes, see issue 42;
+        the fence of the page is the copy and is read only when there is no index.jsonld
 
         Args:
             path: the path of the index.html
@@ -75,14 +76,14 @@ class VolumeHtml:
             return
         self.embedded = True
         document = None
-        match = self.fence_pattern.search(self.text)
-        if match and match.group(1).strip():
-            document = json.loads(match.group(1))
+        jsonld_path = os.path.join(os.path.dirname(path), "index.jsonld")
+        if os.path.isfile(jsonld_path):
+            with open(jsonld_path, "r", encoding="utf-8") as jsonld_file:
+                document = json.load(jsonld_file)
         else:
-            jsonld_path = os.path.join(os.path.dirname(path), "index.jsonld")
-            if os.path.isfile(jsonld_path):
-                with open(jsonld_path, "r", encoding="utf-8") as jsonld_file:
-                    document = json.load(jsonld_file)
+            match = self.fence_pattern.search(self.text)
+            if match and match.group(1).strip():
+                document = json.loads(match.group(1))
         if document is None:
             self.issues.append(
                 MappingIssue(

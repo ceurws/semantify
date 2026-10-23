@@ -129,23 +129,25 @@ class Generator:
             report.problems.append(f"{path}: {error}")
         return proceedings
 
-    def write_volume(self, proceedings: Proceedings, report: SiteReport) -> None:
+    def write_volume(self, proceedings: Proceedings, report: SiteReport, volume_dir: Optional[str] = None) -> None:
         """
         write the page and the JSON-LD file of the given proceedings
 
         Args:
             proceedings: the proceedings, with a year
             report: the report to add the written files to
+            volume_dir: the directory to write to, the year tree of the site if None
         """
-        volume_dir = self.site.volume_dir(proceedings)
+        if volume_dir is None:
+            volume_dir = self.site.volume_dir(proceedings)
         page = VolumePage(proceedings, self.config, self.jsonld, self.state)
         self.site.write(os.path.join(volume_dir, "index.html"), page.as_html(), report)
         self.site.write(os.path.join(volume_dir, "index.jsonld"), page.jsonld_text() + "\n", report)
         for paper in proceedings.papers:
             if paper.id:
-                self.write_paper(proceedings, paper, report)
+                self.write_paper(proceedings, paper, report, os.path.join(volume_dir, paper.id))
 
-    def write_paper(self, proceedings: Proceedings, paper: Paper, report: SiteReport) -> None:
+    def write_paper(self, proceedings: Proceedings, paper: Paper, report: SiteReport, paper_dir: str) -> None:
         """
         write the page and the JSON-LD file of the given paper
 
@@ -153,8 +155,8 @@ class Generator:
             proceedings: the proceedings the paper is published in
             paper: the paper, with an id
             report: the report to add the written files to
+            paper_dir: the directory to write to
         """
-        paper_dir = self.site.paper_dir(proceedings, paper.id)
         page = PaperPage(paper, proceedings, self.config, self.jsonld, self.state)
         self.site.write(os.path.join(paper_dir, "index.html"), page.as_html(), report)
         self.site.write(os.path.join(paper_dir, "index.jsonld"), page.jsonld_text() + "\n", report)
@@ -186,10 +188,13 @@ class Generator:
         report.seconds = time.perf_counter() - start
         return report
 
-    def generate_paths(self, paths: List[str], progress: bool = False) -> SiteReport:
+    def generate_paths(self, paths: List[str], progress: bool = False, in_place: bool = False) -> SiteReport:
         """
         generate the pages of the volumes from their local volume pages
-        instead of ceur-spt, see issues 33 and 34; the volume pages are not touched
+        instead of ceur-spt, see issues 33 and 34; the volume pages are not
+        touched unless in_place is set, see issue 43: then the volume page,
+        its index.jsonld and the paper pages are written into the volume
+        directory itself and the year tree of the site is not used
 
         A volume that can not be read or has no event start date is not
         written and reported as a problem. Year pages are not touched.
@@ -197,6 +202,7 @@ class Generator:
         Args:
             paths: the index.html files of the volumes or their directories
             progress: if True show a progress bar
+            in_place: if True write into the volume directories of the given pages
 
         Returns:
             SiteReport: the written files, the problems and the time used
@@ -210,7 +216,10 @@ class Generator:
             if proceedings.year() is None:
                 report.problems.append(f"{path}: no event start date, the volume has no year")
                 continue
-            self.write_volume(proceedings, report)
+            volume_dir = None
+            if in_place:
+                volume_dir = path if os.path.isdir(path) else os.path.dirname(os.path.abspath(path))
+            self.write_volume(proceedings, report, volume_dir)
         report.seconds = time.perf_counter() - start
         return report
 

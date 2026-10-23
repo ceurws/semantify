@@ -4,11 +4,15 @@ Created on 2026-10-20
 @author: wf
 """
 
+import json
 import os
 import shutil
 import tempfile
+from typing import Any
 
 from ceursemantify.ceursemantify_cmd import main
+from ceursemantify.embed import Embedder
+from ceursemantify.pages import PageState
 from tests.base_ceurtest import BaseCeurTest
 
 
@@ -63,6 +67,65 @@ class TestGenerateLocal(BaseCeurTest):
             self.assertIn('<span class="CEURDOI"><a href="https://doi.org/10.83095/ceurws_04298_paper7">', paper_page)
             # the source is not touched
             self.assertEqual(self.read(self.example_dir, "index.html"), self.read(source_dir, "index.html"))
+
+    def strip_dois(self, node: Any) -> Any:
+        """
+        remove the doi keys from the given JSON-LD node recursively
+        """
+        if isinstance(node, dict):
+            node = {key: self.strip_dois(value) for key, value in node.items() if key != "doi"}
+        elif isinstance(node, list):
+            node = [self.strip_dois(item) for item in node]
+        return node
+
+    def test_index_jsonld_wins(self) -> None:
+        """
+        the fence of the embedded page holds the JSON-LD without DOIs, index.jsonld
+        the one with the DOIs as register-dois writes it: the DOIs are on the pages, see issue 42
+        """
+        with tempfile.TemporaryDirectory() as temp_dir:
+            source_dir = self.copy_example(temp_dir)
+            with open(os.path.join(source_dir, "index.jsonld"), "r", encoding="utf-8") as jsonld_file:
+                document = json.load(jsonld_file)
+            without_dois = json.dumps(self.strip_dois(document), indent=2, ensure_ascii=False)
+            embedder = Embedder(PageState(generated_on="2026-10-23"))
+            page_path = os.path.join(source_dir, "index.html")
+            self.assertNotIn("10.83095", without_dois)
+            fenced = embedder.embed(self.read(page_path), without_dois, "https://ceur-ws.org/Vol-4298/")
+            self.assertIn("```json-ld", fenced)
+            with open(page_path, "w", encoding="utf-8") as page_file:
+                page_file.write(fenced)
+            output_dir = os.path.join(temp_dir, "site")
+            generator = self.get_generator(output_dir)
+            report = generator.generate_paths([source_dir])
+            self.assertEqual([], report.problems)
+            volume_page = self.read(output_dir, "2026", "Vol-4298", "index.html")
+            self.assertIn('<a href="https://doi.org/10.83095/ceurws_04298_paper7">', volume_page)
+
+    def test_generate_in_place(self) -> None:
+        """
+        the volume page and the paper pages are written into the volume directory itself, see issue 43
+        """
+        with tempfile.TemporaryDirectory() as temp_dir:
+            source_dir = self.copy_example(temp_dir)
+            output_dir = os.path.join(temp_dir, "site")
+            generator = self.get_generator(output_dir)
+            report = generator.generate_paths([source_dir], in_place=True)
+            self.assertEqual([], report.problems)
+            self.assertEqual(2 + 2 * 8, len(report.written))
+            for path in report.written:
+                self.assertTrue(path.startswith(source_dir), path)
+            self.assertFalse(os.path.exists(output_dir))
+            self.assertTrue(generator.round_trip(source_dir))
+            volume_page = self.read(source_dir, "index.html")
+            self.assertIn('<a href="https://doi.org/10.83095/ceurws_04298">10.83095/ceurws_04298</a>', volume_page)
+            self.assertTrue(generator.round_trip(os.path.join(source_dir, "paper7")))
+            # the command line
+            config_path = os.path.join(temp_dir, "site.yaml")
+            generator.config.save_to_yaml_file(config_path)
+            exit_code = main(["--generate", source_dir, "--in-place", "--config", config_path, "--quiet"])
+            self.assertEqual(0, exit_code)
+            self.assertTrue(os.path.isfile(os.path.join(source_dir, "paper1", "index.html")))
 
     def test_generate_problem(self) -> None:
         """

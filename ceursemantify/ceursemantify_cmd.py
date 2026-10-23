@@ -26,7 +26,7 @@ class Version:
     name: str = "pyCEURsemantify"
     version: str = ceursemantify.__version__
     date: str = "2026-10-01"
-    updated: str = "2026-10-13"
+    updated: str = "2026-10-23"
     description: str = "Semantification of the CEUR-WS publication workflow"
     authors: str = "Wolfgang Fahl"
     doc_url: str = "https://github.com/ceurws/semantify"
@@ -84,7 +84,13 @@ class CeurSemantifyCmd(BaseCmd):
             nargs="+",
             metavar="PATH",
             help="generate the volume and paper pages from the given local volume pages (index.html files or"
-            " volume directories, an embedded page is read from its JSON-LD) instead of ceur-spt",
+            " volume directories, an embedded page is read from its index.jsonld) instead of ceur-spt",
+        )
+        parser.add_argument(
+            "--in-place",
+            action="store_true",
+            help="with --generate: write the volume page, its index.jsonld and the paper pages into the volume"
+            " directory itself instead of the year tree of the output directory; the volume page is overwritten",
         )
         parser.add_argument("--progress", action="store_true", help="show a progress bar while generating volumes")
         parser.add_argument(
@@ -138,7 +144,7 @@ class CeurSemantifyCmd(BaseCmd):
                 self.show_report(f"{len(args.embed)} volume pages", report, args)
                 handled = True
             if args.generate:
-                report = generator.generate_paths(args.generate, progress=args.progress)
+                report = generator.generate_paths(args.generate, progress=args.progress, in_place=args.in_place)
                 self.show_report(f"{len(args.generate)} volume pages", report, args)
                 handled = True
             if args.volumes:
