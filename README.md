@@ -51,6 +51,25 @@ embedded page parses to the same proceedings as the original one. Embedding agai
 Example: [Vol-4280](https://ceur-ws.wikidata.dbis.rwth-aachen.de/2026/Vol-4280/) with its
 [index.jsonld](https://ceur-ws.wikidata.dbis.rwth-aachen.de/2026/Vol-4280/index.jsonld).
 
+## Generating from local volume pages
+`--generate` reads local volume pages instead of ceur-spt and writes the volume and paper pages from them, see
+[#33](https://github.com/ceurws/semantify/issues/33) and [#34](https://github.com/ceurws/semantify/issues/34).
+An embedded page is read from its `index.jsonld`; the fence in the page is only the copy and is read when there is no
+`index.jsonld`, see [#42](https://github.com/ceurws/semantify/issues/42). So the DOIs that the registration script writes into
+`index.jsonld` reach the pages.
+
+```bash
+# volume and paper pages into the year tree of the output directory
+ceursemantify --generate /path/to/Vol-4298 -o /tmp/ceur-ws-yyyy
+# in place: index.html, index.jsonld and the paper pages Vol-N/paperK/ into the volume directory itself
+ceursemantify --generate /path/to/Vol-4298 --in-place
+```
+
+With `--in-place` the page of the proceedings chair is replaced by the generated one, see
+[#43](https://github.com/ceurws/semantify/issues/43). The sequence for a newly published volume per
+[#14](https://github.com/ceurws/semantify/issues/14) is `--embed`, the DOI registration writing into `index.jsonld`,
+`--generate --in-place`.
+
 ## Endpoint
 `--serve` loads all `index.jsonld` files into memory and serves them over the SPARQL protocol as the single point of truth,
 see [#18](https://github.com/ceurws/semantify/issues/18). The named queries of the
