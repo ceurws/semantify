@@ -5,7 +5,10 @@
 # Load metadata from index.jsonld.
 # Config file defines values for DataCite API: apiUrl, apiUsername, apiPassword, doiPrefix
 #
-# python3 register-dois.py
+# Call:
+# python3 register-dois.py -c config-file -v -t
+# -v: verbose - more output
+# -t: test run - no registration, no file changes
 #
 # Requirements:
 # pip install requests
@@ -45,9 +48,6 @@ doiPrefix = ""
    see https://support.datacite.org/docs/api-error-codes
 '''
 def submit_doi(doi):
-    submit_doi_paper(doi, "", "")
-
-def submit_doi_paper(doi, voltitle, voldoi):
     data = {
         'data': {
             'type': 'dois',
@@ -69,41 +69,41 @@ def submit_doi_paper(doi, voltitle, voldoi):
             }
         }
     }
-    if (voltitle):
-        data = {
-        'data': {
-            'type': 'dois',
-            'attributes': {
-                'event': 'publish',
-                'doi': doi['doi'],
-                'creators': doi['creators'],
-                'titles': [{
-                    'title': doi['title']
-                }],
-                'publisher': doi['publisher'],
-                'publicationYear': doi['year'],
-                'types': {
-                    'resourceTypeGeneral': 'Text',
-                    'resourceType': doi['type']
-                },
-        "relatedItems": [ {
-          "relationType": "IsPublishedIn",
-          "relatedItemType": "ConferenceProceeding",
-          "relatedItemIdentifier": {
-            "relatedItemIdentifierType": "DOI",
-            "relatedItemIdentifierValue": voldoi
-          },
-          "titles": [ {
-              "title": voltitle
-            }   
-          ]     
-        }       
-      ],   
-                'schemaVersion': 'http://datacite.org/schema/kernel-4',
-                'url': doi['url']
+
+    if(doi.get('volumeTitle')):
+        relatedItems = [ {
+            "title": [ { doi['volumeTitle'] } ],
+            "relationType": "IsPublishedIn",
+            "relatedItemType": "ConferenceProceedings",
+            "relatedItemIdentifier": {
+                "relatedItemIdentifier": doi['volumeDOI'],
+                "relatedItemIdentifierType": "DOI"
             }
+        } ]
+        # data['data'].attributes.relatedItems = relatedItems
+        print(data)
+
+    '''
+"relatedItems": [
+        {
+          "titles": [
+            {
+              "title": "Physics letters B"
+            }
+          ],
+          "volume": "776",
+          "lastPage": "264",
+          "firstPage": "249",
+          "relationType": "IsPublishedIn",
+          "publicationYear": "2018",
+          "relatedItemType": "Journal",
+          "relatedItemIdentifier": {
+            "relatedItemIdentifier": "0370-2693",
+            "relatedItemIdentifierType": "ISSN"
+          }
         }
-        }
+      ],
+    '''
 
     json_data = json.dumps(data, ensure_ascii=False)
     response = requests.post(
@@ -118,6 +118,7 @@ def submit_doi_paper(doi, voltitle, voldoi):
         print(response_text['errors'][0]['title'])
 
     if (response.status_code == 422 or response.status_code == 409): # doi has already been taken, try update
+        print("doi is already taken - trying to update it")
         response = requests.put(
             apiUrl+"/"+doi['doi'],
             headers={'Content-Type': 'application/vnd.api+json'},
@@ -142,8 +143,9 @@ def loadMetadataFromIndexJSONLD():
         with open("index.jsonld", "r") as file:
             jsonldcontent = file.read()
             data_json = json.loads(jsonldcontent)
+            #print(data_json)
     except FileNotFoundError:
-        print("ERROR: no file index.jsonld")
+        print("ERROR - no file index.jsonld")
         sys.exit()
     return data_json
 
@@ -163,78 +165,6 @@ def saveMetadataToIndexJSONLD(data_json):
 
 
 ######################################################################################
-# Function: add DOI information to index.html
-#
-# TEMPORARY FUNCTION
-# This function will no longer be needed when the ceursemantify tool can regenerate the index.html 
-# from the metadata stored in index.jsonld
-
-def updateIndexHTML(data_json):
-
-    content = ""
-    try:
-        # try to open file
-        with open("index.html", "r") as file:
-            content = file.read()
-    except FileNotFoundError:
-        print("ERROR: no file index.html")
-        sys.exit()
-
-    # check if there are already CEURDOI elements in the file - if yes, then do not add
-    if (content.find("class=\"CEURDOI\"")>0):
-        print("WARN: there are already CEURDOI elements in index.html - do not add additional ones")
-        return
-
-    volumeDOI = data_json["doi"]
-
-    # add volume doi to header
-    # before: <span class="CEURURN">urn:nbn:de:0074-4286-x</span>
-    # after: <span class="CEURURN">urn:nbn:de:0074-4286-x</span><br/><a href="https://doi.org/xxx"><span class="CEURDOI">doi:xxx</span></a>
-    pos = content.find("class=\"CEURURN\"")
-    if (not pos):
-        print("ERROR: no CEURURN in file ...")
-        sys.exit()
-    pos = content.find("</span>", pos)
-    content = content[0:pos+7]+"<br><span class=\"CEURDOI\">"+volumeDOI+"</span>"+content[pos+7:]
-
-    # add paper dois
-    papers = data_json["papers"]
-    for paper in papers:
-        # check if there are authors (for preface there sometimes are not)
-        if (not "authors" in paper):
-            continue
-
-        paperDOI = paper["doi"]
-        paperId = paper["id"]
-        paperLandingPage = paper["landingPage"]
-        paperPdfUrl = paper["pdfUrl"]
-
-        pos = content.find("<li id=\"" + paperId + "\">")
-        if (not pos):
-            print("ERROR: no paper block for "+paperId)
-            sys.exit()
-        pos2 = content.find("CEURTITLE", pos)
-        if (pos2>=0):
-            content = content[0:pos2+10]+" itemscope itemtype=\"https://www.doi.org/\" itemid=\""+paperDOI+"\""+content[pos2+10:]
-        pos2 = content.find("<span class=\"CEURAUTHOR", pos)
-        if (pos2>=0):
-            content = content[0:pos2]+"<span class=\"CEURDOI\">" + paperDOI + "</span> <br>\n" + content[pos2:]
-
-    # and finally remove copy of JSONLD
-    pos = content.find("```json-ld");
-    posEnd = content.find("-->", pos+3)
-    content = content[0:pos]+content[posEnd:]
-
-    # save file
-    os.system("mv index.html index.html.bak")
-    text_file = open("index.html", "w")
-    text_file.write(content)
-    text_file.close()
-
-    return
-
-
-######################################################################################
 # MAIN 
 ######################################################################################
 
@@ -243,6 +173,7 @@ parser = argparse.ArgumentParser(
                     prog='register-dois',
                     description='Register the DOIs for a CEURWS Volume and its papers')
 parser.add_argument('-v', '--verbose', action='store_true')  # on/off flag
+parser.add_argument('-t', '--test', action='store_true')  # on/off flag
 parser.add_argument('-c', '--config')  # config file name
 args = parser.parse_args()
 
@@ -251,7 +182,7 @@ if (args.config):
     configFile = args.config
 
 if (args.verbose):
-    print("loading configuration from "+configFile)
+    print("Loading configuration from "+configFile)
 
 # load config
 with open(configFile, 'r') as f:
@@ -275,24 +206,17 @@ if (not apiPassword):
 
 # check files
 if (not os.path.exists("index.html")):
-    print("ERROR: there is no file index.html in current directory")
+    print("ERROR: There is no file index.html in current directory")
     sys.exit()
 if (not os.path.exists("index.jsonld")):
-    print("ERROR: there is no file index.jsonld in current directory")
-    print("you have to create this file from index.html using the command \"ceursemantify --embed .\"")
+    print("ERROR: There is no file index.jsonld in current directory")
+    print("You have to create this file from index.html using the command \"ceursemantify --embed .\"")
     sys.exit()
 
 # load data from jsonld file
 if (args.verbose):
-    print("loading data from index.jsonld")
+    print("Loading data from index.jsonld")
 data_json = loadMetadataFromIndexJSONLD()
-
-volNum = data_json.get("volumeNumber", 0)
-if (volNum < 1):
-    print("ERROR: there is no volume number defined in metadata")
-    sys.exit()
-
-volNumFormated = "{:05d}".format(volNum)
 
 
 ######################################################################################
@@ -302,7 +226,7 @@ volNumFormated = "{:05d}".format(volNum)
 everythingFine = True
 tmps = data_json["title"]
 if (not tmps):
-    print("ERROR: no proceedings title defined")
+    print("ERROR: no ceedings title defined")
     everythingFine = False
 tmps = data_json["publisher"]
 if (not tmps):
@@ -331,10 +255,11 @@ if (not everythingFine):
 # if there are alreads doi attributes defined, print a warning and continue
 
 if (args.verbose):
-    print("generating DOIs");
+    print("Generating DOIs");
 
 volNum = data_json["volumeNumber"]
 volNumFormated = "{:05d}".format(volNum)
+volTitle = data_json["title"]
 
 doiVolume = doiPrefix + "/ceurws_"+volNumFormated
 urlVolume = urlprefix + "Vol-" + str(volNum)
@@ -343,8 +268,8 @@ urlVolume = urlprefix + "Vol-" + str(volNum)
 tmps = data_json.get("doi", "")
 if (tmps):
     if (not tmps == doiVolume):
-        print("WARN: there is already a doi defined: "+tmps)
-        print("WARN: do not overwrite this with new value: "+doiVolume)
+        print("WARN: There is already a doi defined: "+tmps)
+        print("WARN: Do not overwrite this with new value: "+doiVolume)
         doiVolume = tmps
 else:
     if (args.verbose):
@@ -358,19 +283,23 @@ for paper in papers:
     paperID = paper["id"]
     paperPDFURL = paper["pdfUrl"]
 
-    # check if there are authors (for preface there sometimes are not)
-    if (not "authors" in paper):
-       continue
+    authors = paper.get("authors")
+    if (not authors):
+        if (args.verbose):
+            print("WARN: No authors for paper "+paperID)
+        # no dois for papers without authors - these usually are preface etc.
+        continue
 
     landingPage = urlVolume + "/" + paperID + "/"
+
     paperPID = "{:03d}".format(count)
     doiPaper = doiVolume+"_"+paperPID
 
     tmps = paper.get("doi", "")
     if (tmps):
         if (not tmps == doiPaper):
-            print("WARN: there is already a paper doi defined: "+tmps)
-            print("WARN: do not overwrite this with new value: "+doiPaper)
+            print("WARN: There is already a paper doi defined: "+tmps)
+            print("WARN: Do not overwrite this with new value: "+doiPaper)
             doiPaper = tmps   
     else:
         if (args.verbose):
@@ -380,28 +309,21 @@ for paper in papers:
 
     count = count + 1
 
-if (args.verbose):
-    print("saving Matadata to JSON-LD file");
-saveMetadataToIndexJSONLD(data_json)
-
-if (args.verbose):
-    print("updating index.html file");
-updateIndexHTML(data_json)
-
+if (not args.test):
+    if (args.verbose):
+        print("Saving metadata to JSON-LD file");
+    saveMetadataToIndexJSONLD(data_json)
 
 ######################################################################################
 # register dois
 
 if (args.verbose):
-    print("registering DOIs");
+    print("Registering DOIs");
 
 ###################################
 # register doi for volume
 
 pubYear = data_json["pubYear"]
-
-if (args.verbose):
-    print("register "+doiVolume+" for "+urlVolume+" ("+str(pubYear)+")")
 
 # create data structure for registering doi for volume
 doi = {
@@ -421,11 +343,15 @@ for editor in editor_arr:
 
 doi["doi"] = doiVolume
 doi["creators"] = creator_arr
-doi["title"] = data_json["title"]
+doi["title"] = volTitle
 doi["year"] = pubYear
 doi["url"] = urlVolume
 
-submit_doi(doi)
+if (not args.test):
+    submit_doi(doi)
+else:
+    print("WARN: test mode - no not register doi")
+    print(doi)
 
 ###################################
 # register dois for papers
@@ -436,17 +362,16 @@ papers = data_json["papers"]
 
 for paper in papers:
 
-    # check if there are authors (for preface there sometimes are not)
-    if (not "authors" in paper):
-       continue
-
-    if (args.verbose):
-        print("register "+paper["doi"]+" for "+paper["landingPage"])
+    paperdoi = paper.get("doi")
+    if (not paperdoi):
+        continue
 
     # create data structure for registering doi for volume
     doi = {
         'publisher': 'CEUR-WS.org',
         'type': 'ConferencePaper',
+        'volumeTitle': volTitle,
+        'volumeDOI': doiVolume,
     }
 
     contributor_arr = paper["authors"]
@@ -454,12 +379,9 @@ for paper in papers:
     for contributor in contributor_arr:
         creator = { }
         creator["nameType"] = "Personal"
-        creator["givenName"] = contributor.get("firstName", "")
-        creator["familyName"] = contributor.get("name", "")
-        if (not creator["givenName"]):
-            creator["creatorName"] = creator["familyName"]
-        else:
-            creator["creatorName"] = creator["givenName"]+" "+creator["familyName"]
+        creator["givenName"] = contributor["firstName"]
+        creator["familyName"] = contributor["name"]
+        creator["creatorName"] = contributor["firstName"]+" "+contributor["name"]
         '''
         orcid = contributor.get("ceur:orcid")
         if (not orcid):
@@ -486,7 +408,10 @@ for paper in papers:
     doi["year"] = pubYear
     doi["url"] = paper["landingPage"]
 
-    submit_doi_paper(doi, data_json["title"], doiVolume)
+    if (not args.test):
+        submit_doi(doi)
+    else:
+        print("WARN: test mode - no not register paper doi")
+        print(doi)
 
-print("finished registering dois")
 
