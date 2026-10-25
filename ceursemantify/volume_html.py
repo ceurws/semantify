@@ -32,8 +32,9 @@ class VolumeHtml:
     publisher_name = "CEUR-WS.org"
     # tried after the declared charset; latin-1 decodes every byte
     fallback_encodings = ["utf-8", "cp1252", "latin-1"]
-    # an embedded page announces its state and carries its JSON-LD in a fence with a marker line, see issue 28
-    embedded_pattern = re.compile(r"<!-- CEURSTATE=embedded[^\n]*-->")
+    # an embedded or generated page announces its state and carries its JSON-LD in a fence with a
+    # marker line, see issues 28 and 49
+    embedded_pattern = re.compile(r"<!-- CEURSTATE=(embedded|generated)[^\n]*-->")
     fence_pattern = re.compile(r"```json-ld\n(?:[^\n{\[]*\n)?(.*?)\n```", re.DOTALL)
     _jsonld: Optional[JsonLd] = None
 
@@ -65,25 +66,27 @@ class VolumeHtml:
 
     def read_embedded(self, path: str) -> None:
         """
-        read the JSON-LD of an embedded page, the source of the mapping instead of the markup, see issue 28:
-        index.jsonld beside the page is the record that the DOI registration writes, see issue 42;
-        the fence of the page is the copy and is read only when there is no index.jsonld
+        read the JSON-LD record of a page, the source of the mapping instead of the markup, see issue 28:
+        index.jsonld beside the page is the record that the DOI registration writes, for every page
+        whatever its state, see issues 42 and 49; the fence of an embedded or generated page is the
+        copy and is read only when there is no index.jsonld
 
         Args:
             path: the path of the index.html
         """
-        if not self.embedded_pattern.search(self.text):
-            return
-        self.embedded = True
         document = None
         jsonld_path = os.path.join(os.path.dirname(path), "index.jsonld")
+        marked = self.embedded_pattern.search(self.text) is not None
         if os.path.isfile(jsonld_path):
             with open(jsonld_path, "r", encoding="utf-8") as jsonld_file:
                 document = json.load(jsonld_file)
-        else:
+        elif marked:
             match = self.fence_pattern.search(self.text)
             if match and match.group(1).strip():
                 document = json.loads(match.group(1))
+        if document is None and not marked:
+            return
+        self.embedded = True
         if document is None:
             self.issues.append(
                 MappingIssue(

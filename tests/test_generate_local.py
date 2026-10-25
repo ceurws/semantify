@@ -127,6 +127,31 @@ class TestGenerateLocal(BaseCeurTest):
             self.assertEqual(0, exit_code)
             self.assertTrue(os.path.isfile(os.path.join(source_dir, "paper1", "index.html")))
 
+    def test_generated_page_is_read_from_its_record(self) -> None:
+        """
+        a volume directory as --generate --in-place leaves it, a generated page with
+        index.jsonld beside it, keeps its DOIs on the next generate; without the
+        index.jsonld the fence of the generated page is the record, see issue 49
+        """
+        with tempfile.TemporaryDirectory() as temp_dir:
+            source_dir = self.copy_example(temp_dir)
+            generator = self.get_generator(os.path.join(temp_dir, "unused"))
+            report = generator.generate_paths([source_dir], in_place=True)
+            self.assertEqual([], report.problems)
+            self.assertIn("CEURSTATE=generated", self.read(source_dir, "index.html"))
+            doi_link = '<a href="https://doi.org/10.83095/ceurws_04298_paper7">'
+            # the generated page with its index.jsonld beside it
+            output_dir = os.path.join(temp_dir, "site")
+            report = self.get_generator(output_dir).generate_paths([source_dir])
+            self.assertEqual([], report.problems)
+            self.assertIn(doi_link, self.read(output_dir, "2026", "Vol-4298", "index.html"))
+            # the generated page alone, its fence is the record
+            os.remove(os.path.join(source_dir, "index.jsonld"))
+            output_dir = os.path.join(temp_dir, "site2")
+            report = self.get_generator(output_dir).generate_paths([source_dir])
+            self.assertEqual([], report.problems)
+            self.assertIn(doi_link, self.read(output_dir, "2026", "Vol-4298", "index.html"))
+
     def test_generate_problem(self) -> None:
         """
         a path without a volume page is reported, nothing is written
