@@ -154,7 +154,14 @@ class ScholarView:
             str: the html span
         """
         name = esc(self.scholar.full_name())
-        span = f"""<span class="{css_class}">{name}</span>"""
+        # the ORCID as itemid of the span, the markup of the Vol-XXX template that dblp reads, see issue 51
+        orcid_attributes = ""
+        if self.scholar.orcid:
+            orcid = esc(self.scholar.orcid)
+            orcid_attributes = (
+                f""" itemscope itemtype="https://schema.org/Person" itemid="https://orcid.org/{orcid}\""""
+            )
+        span = f"""<span class="{css_class}"{orcid_attributes}>{name}</span>"""
         return span
 
     def identifiers_as_html(self) -> str:
@@ -215,14 +222,19 @@ class PaperView:
         pages = self.pages_as_html()
         doi = doi_as_html(self.paper.doi)
         authors = ",\n        ".join(ScholarView(author).as_html("CEURAUTHOR") for author in self.paper.authors)
+        # the line breaks after the title and its pages as in the Vol-XXX template, see issue 44
+        if pages:
+            pages = f" {pages}"
         if self.paper.id:
             item = f"""      <li id="{paper_id}"><a href="{paper_id}/">
-          <span class="CEURTITLE">{title}</span></a> {pages} <a href="{pdf_url}">PDF</a> {doi}<br>
+          <span class="CEURTITLE">{title}</span></a>{pages}<br>
+        <a href="{pdf_url}">PDF</a> {doi}<br>
         {authors}
       </li>"""
         else:
             item = f"""      <li><a href="{pdf_url}">
-          <span class="CEURTITLE">{title}</span></a> {pages} {doi}<br>
+          <span class="CEURTITLE">{title}</span></a>{pages}<br>
+        {doi}<br>
         {authors}
       </li>"""
         return item
@@ -315,6 +327,30 @@ class VolumePage:
     Year: <a href="../">{year}</a></p>"""
         return links
 
+    # license URL of the record, name and abbreviation as in the copyright text of the Vol-XXX template
+    license_names = {
+        "https://creativecommons.org/licenses/by/4.0/": (
+            "the Creative Commons License Attribution 4.0 International",
+            "CC BY 4.0",
+        ),
+    }
+
+    def license_as_html(self) -> str:
+        """
+        get the license of the proceedings as in the copyright text of the Vol-XXX template, see issue 44
+
+        Returns:
+            str: the license name with the abbreviation linked to the license, the bare URL for an unknown license
+        """
+        license_url = self.proceedings.license
+        url = esc(license_url)
+        name, abbreviation = self.license_names.get(license_url, (None, None))
+        if name:
+            license_html = f"""{name} <a href="{url}">(<span class="CEURLIC">{abbreviation}</span>)</a>"""
+        else:
+            license_html = f"""<a href="{url}"><span class="CEURLIC">{url}</span></a>"""
+        return license_html
+
     def header_as_html(self) -> str:
         """
         get the header with volume number, URN and copyright
@@ -325,7 +361,7 @@ class VolumePage:
         number = esc(self.proceedings.volumeNumber)
         urn = esc(self.proceedings.urn)
         pub_year = esc(self.proceedings.pubYear)
-        license_url = esc(self.proceedings.license)
+        license_html = self.license_as_html()
         doi = doi_as_html(self.proceedings.doi)
         if doi:
             doi = f""" <br>
@@ -343,8 +379,7 @@ class VolumePage:
             the individual papers by the papers' authors.
             Copyright &copy; <span class="CEURPUBYEAR">{pub_year}</span> for the volume
             as a collection by its editors.
-            This volume and its papers are published under
-            <a href="{license_url}"><span class="CEURLIC">{license_url}</span></a>.
+            This volume and its papers are published under {license_html}.
           </p>
         </td>
       </tr>
