@@ -9,6 +9,7 @@ import os
 import re
 import shutil
 import tempfile
+from urllib.parse import quote
 
 from ceursemantify.ceursemantify_cmd import main
 from tests.base_ceurtest import BaseCeurTest
@@ -92,3 +93,25 @@ class TestBoardReview(BaseCeurTest):
             r'<span class="CEURTITLE">[^<]*</span></a>( <span class="CEURPAGES">[^<]*</span>)?<br>', self.page
         )
         self.assertEqual(len(titles), len(breaks))
+
+    def test_in_place_links(self) -> None:
+        """
+        issue 44: a page generated in place is the original on ceur-ws.org, so
+        the header line links no mirror and the validator checks the original url
+        """
+        self.assertNotIn("Mirror:", self.page)
+        checked_url = quote("https://ceur-ws.org/Vol-4298/", safe="")
+        self.assertIn(f'<a href="https://validator.w3.org/nu/?doc={checked_url}">valid HTML5</a>', self.page)
+
+    def test_year_tree_links(self) -> None:
+        """
+        a page generated into the year tree of the site keeps the mirror link
+        and the validator checks the page on the site
+        """
+        output_dir = os.path.join(self.temp_dir, "site")
+        main(["--generate", os.path.join(self.example_dir), "-o", output_dir, "-q"])
+        with open(os.path.join(output_dir, "2026", "Vol-4298", "index.html"), "r", encoding="utf-8") as page_file:
+            page = page_file.read()
+        self.assertIn("Mirror:", page)
+        checked_url = quote("https://ceur-ws.wikidata.dbis.rwth-aachen.de/2026/Vol-4298/", safe="")
+        self.assertIn(f"?doc={checked_url}", page)

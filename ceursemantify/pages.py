@@ -245,7 +245,9 @@ class VolumePage:
     the page of the proceedings of one volume
     """
 
-    def __init__(self, proceedings: Proceedings, config: SiteConfig, jsonld: JsonLd, state: PageState):
+    def __init__(
+        self, proceedings: Proceedings, config: SiteConfig, jsonld: JsonLd, state: PageState, in_place: bool = False
+    ):
         """
         constructor
 
@@ -254,11 +256,13 @@ class VolumePage:
             config: the site configuration
             jsonld: the JSON-LD support of the research model
             state: the state to announce
+            in_place: if True the page replaces the volume page of the original site, see issue 44
         """
         self.proceedings = proceedings
         self.config = config
         self.jsonld = jsonld
         self.state = state
+        self.in_place = in_place
 
     def original_url(self) -> str:
         """
@@ -277,7 +281,10 @@ class VolumePage:
         Returns:
             str: the url
         """
-        page_url = f"{self.config.base_url}/{self.proceedings.year()}/Vol-{self.proceedings.volumeNumber}/"
+        if self.in_place:
+            page_url = self.original_url()
+        else:
+            page_url = f"{self.config.base_url}/{self.proceedings.year()}/Vol-{self.proceedings.volumeNumber}/"
         return page_url
 
     def jsonld_text(self) -> str:
@@ -313,11 +320,14 @@ class VolumePage:
 
     def links_as_html(self) -> str:
         """
-        get the links to the original volume, its copy and the year
+        get the links to the original volume, its copy and the year; a page
+        in place is the original and has no year tree, so it has no such links
 
         Returns:
-            str: the html paragraph
+            str: the html paragraph, empty in place
         """
+        if self.in_place:
+            return ""
         number = esc(self.proceedings.volumeNumber)
         year = esc(self.proceedings.year())
         original_url = esc(self.original_url())

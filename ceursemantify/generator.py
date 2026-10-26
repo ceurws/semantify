@@ -138,9 +138,10 @@ class Generator:
             report: the report to add the written files to
             volume_dir: the directory to write to, the year tree of the site if None
         """
+        in_place = volume_dir is not None
         if volume_dir is None:
             volume_dir = self.site.volume_dir(proceedings)
-        page = VolumePage(proceedings, self.config, self.jsonld, self.state)
+        page = VolumePage(proceedings, self.config, self.jsonld, self.state, in_place=in_place)
         self.site.write(os.path.join(volume_dir, "index.html"), page.as_html(), report)
         self.site.write(os.path.join(volume_dir, "index.jsonld"), page.jsonld_text() + "\n", report)
         for paper in proceedings.papers:
