@@ -165,7 +165,29 @@ def saveMetadataToIndexJSONLD(data_json):
 
 
 ######################################################################################
-# MAIN 
+# Function: DataCite creator of an editor or author of index.jsonld
+# parameter: scholar - dict with firstName, name and optionally orcid
+# return: creator dict for the DataCite REST API, with the ORCID as nameIdentifier - see issue 52
+
+def creator_of(scholar):
+    creator = { }
+    creator["nameType"] = "Personal"
+    creator["givenName"] = scholar["firstName"]
+    creator["familyName"] = scholar["name"]
+    creator["creatorName"] = scholar["firstName"]+" "+scholar["name"]
+    orcid = scholar.get("orcid")
+    if (orcid):
+        nI = {
+          "nameIdentifier": "https://orcid.org/"+orcid,
+          "nameIdentifierScheme": "ORCID",
+          "schemeUri": "https://orcid.org"
+        }
+        creator["nameIdentifiers"] = [ nI ]
+    return creator
+
+
+######################################################################################
+# MAIN
 ######################################################################################
 
 # parse command line arguments
@@ -334,12 +356,7 @@ doi = {
 creator_arr = []
 editor_arr = data_json["editors"]
 for editor in editor_arr:
-    creator = { }
-    creator["nameType"] = "Personal"
-    creator["givenName"] = editor["firstName"]
-    creator["familyName"] = editor["name"]
-    creator["creatorName"] = editor["firstName"]+" "+editor["name"]
-    creator_arr.append(creator)
+    creator_arr.append(creator_of(editor))
 
 doi["doi"] = doiVolume
 doi["creators"] = creator_arr
@@ -374,33 +391,15 @@ for paper in papers:
         'volumeDOI': doiVolume,
     }
 
-    contributor_arr = paper["authors"]
+    # no dois for papers without authors - as in the generation above; a paper
+    # without authors may still carry a doi from an earlier run
+    contributor_arr = paper.get("authors")
+    if (not contributor_arr):
+        print("WARN: paper "+paper["id"]+" has a doi but no authors - not registered")
+        continue
     creator_arr = []
     for contributor in contributor_arr:
-        creator = { }
-        creator["nameType"] = "Personal"
-        creator["givenName"] = contributor["firstName"]
-        creator["familyName"] = contributor["name"]
-        creator["creatorName"] = contributor["firstName"]+" "+contributor["name"]
-        '''
-        orcid = contributor.get("ceur:orcid")
-        if (not orcid):
-            nI = {
-              "nameIdentifier": orcid,
-              "nameIdentifierScheme": "ORCID",
-              "schemeURI": "https://orcid.org/"
-            }
-            creator["nameIdentifiers"] = [ nI ]
-        affiliation = None
-        if (not affiliation):
-            a = {
-              "name": affiliation,
-              #"affiliationIdentifier": "https://ror.org/03efmqc40",
-              #"affiliationIdentifierScheme": "ROR"
-            }
-            creator["affiliations"] = [ a ]
-        '''
-        creator_arr.append(creator)
+        creator_arr.append(creator_of(contributor))
 
     doi["doi"] = paper["doi"]
     doi["creators"] = creator_arr
