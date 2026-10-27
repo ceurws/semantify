@@ -325,6 +325,10 @@ for paper in papers:
             print("WARN: There is already a paper doi defined: " + tmps)
             print("WARN: Do not overwrite this with new value: " + doiPaper)
             doiPaper = tmps
+        # else ... nothing to do, instead of registering the do it will be updated later
+        # check if there is a landingPage attribute in the metadata - if not set it
+        if not paper.get("landingPage"):
+            paper["landingPage"] = landingPage
     else:
         if args.verbose:
             print("DOI for paper " + paperID + " is " + doiPaper)
