@@ -323,6 +323,10 @@ class VolumeHtml:
                 if pages:
                     paper.pageStart = Convert.page_start(pages)
                     paper.pageEnd = Convert.page_end(pages)
+                # the paper belongs to the CEURSESSION heading before it, see issue 54
+                session = item.find_previous(class_="CEURSESSION")
+                if session is not None:
+                    paper.session = Convert.text(session.get_text()) or None
         return paper
 
     @classmethod
@@ -416,6 +420,17 @@ class VolumeHtml:
                 proceedings.pubYear = Convert.integer(pub_year)
             except ValueError as error:
                 result.issues.append(MappingIssue("Proceedings", "CEURPUBYEAR", str(error)))
+        # the numbers of the summary sentence of the Vol-XXX template, see issue 54
+        for css_class, field_name in [
+            ("CEURSUBMITTEDPAPERS", "submittedPapers"),
+            ("CEURACCEPTEDPAPERS", "acceptedPapers"),
+        ]:
+            count = self.mark_text(css_class)
+            if count:
+                try:
+                    setattr(proceedings, field_name, Convert.integer(count))
+                except ValueError as error:
+                    result.issues.append(MappingIssue("Proceedings", css_class, str(error)))
         license_element = self.mark("CEURLIC")
         if license_element is not None:
             proceedings.license = self.link_of(license_element) or self.mark_text("CEURLIC")

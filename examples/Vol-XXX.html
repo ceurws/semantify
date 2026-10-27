@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<!-- CEURVERSION=2026-02-04 -->
+<html lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="../ceur-ws.css">
+<title>CEUR-WS.org/Vol-XXX - Workshop on Publishing Papers with CEUR-WS YYYY</title>
+</head>
+<!--CEURLANG=eng -->
+<body>
+<pre># Editing instructions
+# The following variables need to be adapted by you:
+# JJJJ=Year in which the final papers of the proceedings were produced 
+# YYYY=Year in which the workshop took place (in most cases YYYY=JJJJ)
+# NNNN=Acronym of the Workshop 
+# DD=Day of submission of the workshop proceedings to CEUR-WS.org
+# MM=Month of submission of the workshop proceedings (MM=01,02,03,04,05,06,07,08,09,10,11,12)
+# The variable 
+# XXX=Volume number of the proceedings with CEUR-WS.org
+# shall be set by CEUR-WS.org. CEUR-WS.org shall also set the publication date.
+#
+#
+# (*) Replace title of the workshop in the title element 
+# (*) Replace title of the workshop in the heading h1 element 
+# (*) Note that the style file ceur-ws.css and the image CEUR-WS-logo.png are referring to files within
+#     the CEUR-WS.org web site; they are not part of the submission directory
+# (*) Remove lines starting with #  or &lt;pre&gt;# when preparing the file index.html
+# 
+# Some elements are tagged with a "class=CEUR..." clause. Be careful to maintain these tags!
+# They are used both for formatting purposes and for identifying bibliographic elements.
+# The CEUR class tags are as follows:
+#          CEURLANG: the main language of the proceedings (eng, deu, fra, spa, rus, ita, por, ...)
+#                 according to ISO 639-2/T (https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes)
+#          CEURVOLNR: the volume number of the proceedings **set by us**
+#          CEURPUBYEAR: the year in which the proceedings volume was created (see also YYYY)
+#          CEURURN: the URN of the volume **set by us**
+#          CEURVOLACRONYM: the acronym of the workshop plus YYYY (year of the workshop)
+#                 the acronym may contain '-'; between acronym and year is either a blank
+#                 or a '-'. The year is exactly 4 digits, e.g. 2012
+#          CEURVOLTITLE: the title of the proceedings
+#          CEURFULLTITLE: the long title of the proceedings
+#          CEURCOLOCATED: the acronym and year of the conference where this workshop was 
+#              co-located with; use "NONE" if the workshop was not co-located with a conference
+#          CEURLOCTIME: the place and time when the workshop took place
+#          CEURVOLEDITOR: full name of an editor of the proceedings
+#          CEURTOC: indicator for the start of the table of contents
+#          CEURSESSION (optional): separator for a section within the table of contents
+#          CEURTITLE: title of a paper within the table of contents
+#          CEURPAGES (optional): numerical range of pages of a paper, e.g. 10-20
+#          CEURAUTHOR: one author of a paper (use full names, do not include affiliations);
+#                 multiple authors should be separated by commas; rather use Unicode
+#                 characters like é instead HTML commands like &amp;eacute;
+#          CEURPUBDATE: the precise date of publication at CEUR-WS.org **set by us**
+#          CEURSUBMITTEDPAPERS: the total number of papers submitted for peer review to this volume
+#          CEURACCEPTEDPAPERS: the total number of accepted peer-reviewed papers (excl. invited papers, keynotes 
+#                 introductions written by the workshop organizers, etc.)
+#
+# CEURVOLEDITOR and CEURAUTHOR tags can include ORCID identifiers via itemid attributes. See examples below. 
+# If you use them, make sure that the ORCIDs are correct! Use a single line per CEURVOLEDITOR and CEURAUTHOR definition!
+# 2026-04-15: volume editors and authors must be natural persons! CEUR-WS does not support corporate editors or authors!
+#
+# Use the tools at https://ceur-ws.org/HOWTOSUBMIT.html#CONTENTVALIDATE to check the correctness of the index.html and the
+# paper PDFs. Use in particular the bash scripts check-index-errors and check-pdf-errors!
+#          
+#</pre>
+
+
+
+<table style="border: 0; border-spacing: 0; border-collapse: collapse; width: 95%">
+<tbody><tr>
+<td style="text-align: left; vertical-align: middle">
+<a href="https://ceur-ws.org/"><div id="CEURWSLOGO"></div></a>
+</td>
+<td style="text-align: right; vertical-align: middle">
+<div style="float:left" id="CEURCCBY"></div>
+<span class="CEURVOLNR">Vol-XXX</span> <br>
+<span class="CEURURN">urn:nbn:de:0074-XXX-C</span>
+<p class="unobtrusive copyright" style="text-align: justify">Copyright &copy; JJJJ for 
+the individual papers by the papers' authors. 
+Copyright &copy; <span class="CEURPUBYEAR">JJJJ</span> for the volume
+as a collection by its editors.
+This volume and its papers are published under the
+Creative Commons License Attribution 4.0 International
+<A HREF="https://creativecommons.org/licenses/by/4.0/">(<span class="CEURLIC">CC BY 4.0</span>)</A>.</p>
+</td>
+</tr>
+</tbody></table>
+
+<hr>
+<pre># Instructions for the Proceedings Title 
+# The layout of the proceedings title can be adapted to your needs.
+# Make sure to include all proceedings editors and their affiliations. 
+# Links to home pages are fine but not required. Some workshops have
+# a special logo. This could be included here provided that you own the
+# copyright to the logo. Do NOT include logos of companies, products, 
+# or sponsors.
+# Consider the use of ORCIDs for both CEURVOLEDITOR and CEURAUTHOR, see examples below.
+#</pre>
+
+<br><br><br>
+
+<pre># Avoid long acronyms for NNNN: 10 characters is about the maximum</pre>
+<h1><a href="https://www.workshop-website.org/loc"><span class="CEURVOLACRONYM">NNNN YYYY</span></a><br>
+<span class="CEURVOLTITLE">Publishing Papers with CEUR-WS YYYY</span></h1>
+<br>
+
+<h2>
+<span class="CEURFULLTITLE">Proceedings of the 7th Workshop on Publishing Papers with CEUR-WS (NNNN YYYY)</span><br>
+<pre># delete one of the following two CEURCOLOCATED lines:</pre>
+<!-- co-located with <span class="CEURCOLOCATED">NONE</span> -->
+co-located with 10th International Conference on Online Publishing (<span class="CEURCOLOCATED">OPub YYYY</span>)<br>
+</h2>
+<h2><span class="CEURLOCTIME">City, Country, Month Day, YYYY</span>.</h2> 
+<pre># If the event is virtual, then specify "Virtual Event, City, Country ..." using the location of the local organizer of the event</pre>
+
+<br>
+<b> Edited by </b>
+<p>
+
+<pre># use full names, but omit any academic title; if you use ORCIDs here then also for CEURAUTHOR where available</pre>
+</p><h3>
+   <a href="https://www.personal-webpage.org/myhome/"><span class="CEURVOLEDITOR">Mary Editor</span></a> <sup>1</sup><br>
+   <span class="CEURVOLEDITOR" itemscope itemtype="https://schema.org/Person" itemid="https://orcid.org/0000-0000-0000-0000">Peter Coeditor</span> <sup>2</sup><br>
+
+</h3>
+
+<sup>1</sup> <a href="https://www.univ-of-science.org/">University of Science</a>,
+  Faculty of Research, 9999 Novocity, Country<br>
+<sup>2</sup> <a href="https://www.acme-company.com/research/">ACME Inc.</a>,
+   Research Laboratory, 8888 Technotown, Othercountry <br>
+  <br>
+
+<hr>
+
+<br><br><br>
+
+<pre># Instructions for Table of Contents 
+# The table of contents normally is a plain list of papers (with titles/authors).
+# The paper title should be linked to the paper URL (usually pdf).
+# You may include "session" subsections e.g. to reflect the track structure of your workshop.
+# Authors should be specified as comma-separated lists with full author names
+# (like John Smith). Avoid glue words like 'by' and 'and'. If applicable, then lookup how
+# the author is spelled out by DBLP.
+# You may also provide additional material such as preface, bibtex files, complete 
+# proceedings as a single pdf, and similar items. The additional items should be 
+# clearly separated from the paper list, preferably after the table of contents.
+# Please only tag original papers with the CEURTITLE/CEURAUTHOR scheme. Rather do not tag
+# additional material with this scheme!
+# For the time being, presentation slides should also not be tagged by CEURTITLE/CEURAUTHOR.
+#
+# CEUR-WS shall watermark PDF files in a published volume by its online CEUR-WS.org URL.
+# If there are certain PDF files like frontmatter or images that you like to exclude
+# from watermarking, then give it a name like 'xfrontmatter.pdf'. 
+#
+# For all other PDF files, use functional names like
+#   - paper1.pdf   (regular papers; start with paper1, then paper2,...)
+#   - intro1.pdf   (introductory paper written by the workshop/track organizers)
+#   - invited1.pdf  (invited paper)
+#   - keynote1.pdf  (a variant for invited papers)
+#   - short1.pdf   (a short paper that still is a citable paper)
+#   - abstract1.pdf  (an abstract that is not supposed to be a citable paper)
+#   - preface.pdf   (a preface, usually not citable)
+# By default, all PDF files of a published volume will be watermarked by their online CEUR-WS URL and 
+# other details specific to its publication at CEUR-WS.
+# You can disable this by prefixing the filename with the letter 'x'. We however not recommend it.
+# It may only be done for frontmatter files such has prefaces!
+# Keep the filesnames 10 characters long or shorter. If you have papers from different workshops in a joint
+# volume, then you can use relative filenames like "ws1p2.pdf". So, keep filenames short here as well!
+# Do no include workshop acronyms or author names in the filenames!
+#</pre>
+
+
+<div class="CEURTOC">
+<h2> Table of Contents </h2>
+
+<pre># Prefaces, frontmatter etc. typically have no explicit authors.
+# Note that the &lt;li id="..."&gt; attribute should have the same value as
+# the name of the file linked to, just without the filename extension.
+# This allows the table of contents entries to be linked to.
+# Please provide a summary sentence about the number of submitted and accepted papers. You can explain the peer-review
+# process in more detail in the preface pdf file. You can change the precise wording of the sentence to adapt it to
+# the context of your workshop/conference. The tags for REGULAR and SHORT papers are optional.
+#
+# 2026-01-28: The preface is now mandatory. It shall as a minimum contain the list of topics mentioned in the published
+# Call For Papers, the review process (e.g. how many reviews were required per paper), the deadlines for submission and the
+# acceptance notification, and the members of the organizing and program committees incl their affiliation.
+# If your preface was supposed to have a longer introduction to the workshop/event, then better write the introduction in a separate paper intro1.pdf
+# with a CEURTITLE like "Introduction to XYZ 2025" (see below for an example entry). Such an introduction should
+# be written as an academic paper with references. Such an introductory paper is NOT mandatory!
+#
+# Do not include redundant PDF files such as a compilation of all paper PDFs in a single PDF file. Redundancy can cause
+# inconsistency and serves no real purpose since all paper PDFs are directly accessible. 
+# </pre>
+<ul>
+<li id="preface"><A href="preface.pdf">Preface</A><BR>
+Summary: There were <span class="CEURSUBMITTEDPAPERS">49</span> papers submitted for peer-review to this workshop. Out of these, 
+<span class="CEURACCEPTEDPAPERS">20</span> papers were accepted for this volume. 
+</li>
+
+<li id="intro1"><a href="intro1.pdf">
+<span class="CEURTITLE">Introduction to Publishing Papers with CEUR-WS YYYY</span></a> 
+<span class="CEURPAGES">1</span>
+<br>
+<span class="CEURAUTHOR">Mary Editor</span></span>,
+<span class="CEURAUTHOR" itemscope itemtype="https://schema.org/Person" itemid="https://orcid.org/0000-0000-0000-0000">Peter Coeditor</span>
+</li>
+
+</ul>
+<BR>
+
+
+<pre># The session element is optional. It structures the table of contents.
+# Each CEURSESSION must be followed by at least one paper using the li clause
+# You can also use h3 subtitles without the CEURSESSION tag. Then, no
+# restriction is imposed.
+# Prefer Unicode characters over HTML character codes for accents and special characters 
+# in paper titles and author names where possible.
+# The id element in CEURSESSION can be used to create URLs pointing directly to the respective session
+#</pre>
+<h3><span id="session1" class="CEURSESSION">Session 1: Invited Talks</span></h3>
+
+<pre># paper links must follow directly the li element. Special characters like accents should preferably be expressed in UNICODE.
+# CEURAUTHOR tags should occupy a single line, do not add line breaks! 
+# abstract1.pdf below is an example of an invited paper that is just a short abstract.
+# invited1.pdf is an example of a multi-page paper with page numbers </pre>
+<ul>
+
+<li id="abstract1"><a href="abstract1.pdf">
+<span class="CEURTITLE">Preparing the submission file - Abstract</span></a> (invited paper) 
+<span class="CEURPAGES">1</span>
+<br>
+<span class="CEURAUTHOR" itemscope itemtype="https://schema.org/Person" itemid="https://orcid.org/0000-0000-0000-0000">Ken Bar</span>, 
+<span class="CEURAUTHOR" itemscope itemtype="https://schema.org/Person" itemid="https://orcid.org/0000-0000-0000-0000">Anne Foé</span>
+</li>
+
+<li id="invited1"><a href="invited1.pdf">
+<span class="CEURTITLE">Completing and signing the author agreement</span></a> (invited paper)
+<span class="CEURPAGES">3-14</span> 
+<br>
+<span class="CEURAUTHOR">Mary Doe</span>, 
+<span class="CEURAUTHOR">Peter Müstermann</span>
+</li>
+
+<li id="keynote1"><a href="keynote1.pdf">
+<span class="CEURTITLE">Dealing with page numbers and rather long titles that could theoretically and practically 
+span multiple lines to check whether all is displayed correctly - Extended Abstract</span></a> (keynote) 
+<span class="CEURPAGES">15-22</span> 
+<br>
+<span class="CEURAUTHOR" itemscope itemtype="https://schema.org/Person" itemid="https://orcid.org/0000-0000-0000-0000">Carlos Nombre</span>
+</li>
+
+</ul>
+
+
+<h3><span id="session2" class="CEURSESSION">Session 2: Academic Papers in CEURART Style</span></h3>
+<pre># The LaTeX files for the new CEURART style are available as <a href="https://www.overleaf.com/latex/templates/template-for-submissions-to-ceur-workshop-proceedings-ceur-ws-dot-org/hpvjjzhjxzjk">Overleaf Template</a> and as <A HREF="https://ceur-ws.org/Vol-XXX/CEURART.zip">download ZIP</A>.
+# If you use a local LaTeX locally instead via Overleaf, then install a recent (2020 or later) version of TeX-Live. 
+# Make sure that the Libertinus fonts are included:
+#   Linux: sudo apt install texlive-fonts-extra
+#   Windows: tlmgr install libertinus libertinus-fonts libertinus-otf libertinus-type1
+# The ZIP file also contains the ODT variant of the CEURART style.</pre>
+
+<ul>
+<li id="sample-1col"><a href="sample-1col.pdf">
+<span class="CEURTITLE">A better way to format your document for CEUR-WS using LaTeX</span></a> 
+<span class="CEURPAGES">23-31</span> 
+<br>
+<span class="CEURAUTHOR">Dmitry S. Kulyabov</span>, 
+<span class="CEURAUTHOR">Ilaria Tiddi</span>, 
+<span class="CEURAUTHOR">Manfred Jeusfeld</span>
+</li>
+
+<li id="CEUR-Template-1col"><a href="CEUR-Template-1col.pdf">
+<span class="CEURTITLE">A better way to format your document for CEUR-WS using LibreOffice</span></a> 
+<span class="CEURPAGES">32-39</span> 
+<br>
+<span class="CEURAUTHOR">Aleksandr Ometov</span>,
+<span class="CEURAUTHOR">Tiago Prince Sales</span>,
+<span class="CEURAUTHOR">Manfred Jeusfeld</span>
+</li>
+
+
+
+<pre># We no longer support 2-column papers since 2025.
+# The Latex templates should be preferred by authors if they are familiar with Latex! 
+# An ODT (LibreOffice) template <A HREF="https://ceur-ws.org/Vol-XXX/CEUR-Template-1col.odt">CEUR-Template-1col.odt</A> is available as well. 
+# Note that LibreOffice has its own "Save PDF" function, which produces good PDF files.
+# The ODT files are derived from a template created by Aleksandr Ometov 
+# and are made available here under the Creative Commons License Attribute-ShareAlike 4.0 International.
+# LibreOffice users need to make sure that the Libertinus font family is installed on the
+# local computer. Instructions are in the ODT templates. Do not use cloud text editors such as Office-365 or GoogleDocs. 
+# They do not support Libertinus.
+# 2024-12-20: The templates now include a mandatory declaration on the use of generative AI.
+# 2025-02-03: If you cannot use Latex, then use the ODT (LibreOffice) template. LibreOffice is free software and available on most
+# platforms. We recommend not to use Word/Microsoft365 since it tends to produce incompatible PDFs.
+
+</pre>
+
+</ul>
+
+
+<pre># If your volume is a joint proceedings and the organizers are not all also CEURVOLEDITORS, you can also list them
+# in the CEURSESSION element. Another option is to include an introduction paper by the respective workshop organizers
+# in the CEURSESSION of their workshop.
+</pre>
+
+<h3><span id="session3" class="CEURSESSION">Workshop on New Publishing Models (org.: A. Foé, B. Modelo)</span></h3>
+
+<pre># The following are examples of papers without page numbers</pre>
+<ul>
+
+<li id="paper4"><a href="paper4.pdf">
+<span class="CEURTITLE">In Medias Res</span></a>
+<br>
+<span class="CEURAUTHOR">Anne Foé</span>
+</li>
+
+<li id="paper5"><a href="paper5.pdf">
+<span class="CEURTITLE">Using tags in HTML</span></a>
+<br>
+<span class="CEURAUTHOR">Peter Müstermann</span>
+</li>
+
+<pre># The subsequent paper points to a subdirectory that contains the paper, 
+# possible data sets and other material that is regarded as part of the paper.
+# Use the model of this subdirectory if you want to give authors the opportunity
+# to publish more than just the paper PDF. The size of the complete proceedings
+# should however not exceed around 100MB!</pre>
+
+
+<li id="paperX"><a href="paperX/">
+<span class="CEURTITLE">A complex paper model</span></a>
+<br>
+<span class="CEURAUTHOR">Anna Paperi</span>, 
+<span class="CEURAUTHOR">Bert Modelo</span>
+</li>
+
+</ul>
+
+
+<pre># Example of a session for a part workshop where workshop organizers write an introduction</pre>
+<h3><span id="session4" class="CEURSESSION">Workshop on Existing Publishing Models</span></h3>
+
+<ul>
+
+<li id="intro2"><a href="intro2.pdf">
+<span class="CEURTITLE">Introduction to the First Workshop on Existing Publishing Models (WEPM YYYY)</span></a>
+<br>
+<span class="CEURAUTHOR">Socrates E. Secundo</span>,
+<span class="CEURAUTHOR">Marie Staple-Topps</span>
+</li>
+
+
+<li id="paper6"><a href="paper6.pdf">
+<span class="CEURTITLE">One-column style vs. two-column style</span></a>
+<br>
+<span class="CEURAUTHOR">Fred Printerman</span>
+</li>
+
+<li id="paper7"><a href="paper7.pdf">
+<span class="CEURTITLE">Subscription options for university libraries</span></a>
+<br>
+<span class="CEURAUTHOR">Elenor Abonnement</span>
+</li>
+
+
+</ul>
+
+
+</div>
+
+
+<hr>
+<span class="unobtrusive">
+YYYY-MM-DD: submitted by Peter Coeditor, 
+            metadata incl. bibliographic data published under <A HREF="https://creativecommons.org/publicdomain/zero/1.0/">Creative Commons CC0</A><br>
+<span class="CEURPUBDATE">yyyy-mm-dd</span>: published on CEUR Workshop Proceedings (CEUR-WS.org, ISSN 1613-0073)
+	|<a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fceur-ws.org%2FVol-XXX%2F">valid HTML5</a>|
+</span>
+</body></html>

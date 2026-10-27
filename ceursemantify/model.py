@@ -158,6 +158,8 @@ class Proceedings:
     url: Optional[str] = None
     archive: Optional[str] = None
     license: Optional[str] = None
+    submittedPapers: Optional[int] = None
+    acceptedPapers: Optional[int] = None
     publisher: Optional[Publisher] = None
     event: Optional[Event] = None
     editors: List[Scholar] = field(default_factory=list)

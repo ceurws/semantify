@@ -438,6 +438,11 @@ class VolumePage:
         title = esc(self.proceedings.title)
         colocated = self.colocated_as_html()
         location = esc(self.proceedings.event.location)
+        # the event title below the acronym as in the Vol-XXX template, see issue 54
+        if self.proceedings.event.title:
+            event_title = esc(self.proceedings.event.title)
+            acronym = f"""{acronym}<br>
+    <span class="CEURVOLTITLE">{event_title}</span>"""
         title_html = f"""  <h1>{acronym}</h1>
 
   <h2>
@@ -467,14 +472,58 @@ class VolumePage:
         Returns:
             str: the html division
         """
-        papers = "\n".join(PaperView(paper).as_html() for paper in self.proceedings.papers)
+        summary = self.summary_as_html()
+        # a CEURSESSION heading opens a new list wherever the session of the papers changes, see issue 54
+        lists = []
+        session = None
+        items = []
+        session_number = 0
+        for paper in self.proceedings.papers:
+            if paper.session != session:
+                if items:
+                    lists.append("    <ul>\n" + "\n".join(items) + "\n    </ul>")
+                    items = []
+                session = paper.session
+                if session:
+                    session_number += 1
+                    lists.append(
+                        f"""    <h3><span id="session{session_number}" class="CEURSESSION">{esc(session)}</span></h3>"""
+                    )
+            items.append(PaperView(paper).as_html())
+        lists.append("    <ul>\n" + "\n".join(items) + "\n    </ul>")
+        papers = "\n".join(lists)
         toc = f"""  <div class="CEURTOC">
     <h2>Table of Contents</h2>
-    <ul>
-{papers}
-    </ul>
+{summary}{papers}
   </div>"""
         return toc
+
+    def summary_as_html(self) -> str:
+        """
+        get the summary sentence with the numbers of submitted and accepted papers as in the Vol-XXX template,
+        see issue 54
+
+        Returns:
+            str: the html paragraph, empty if the proceedings have neither number
+        """
+        summary_html = ""
+        submitted = self.proceedings.submittedPapers
+        accepted = self.proceedings.acceptedPapers
+        if submitted is not None or accepted is not None:
+            sentences = []
+            if submitted is not None:
+                sentences.append(
+                    f"""There were <span class="CEURSUBMITTEDPAPERS">{esc(submitted)}</span> papers"""
+                    """ submitted for peer-review to this workshop."""
+                )
+            if accepted is not None:
+                prefix = "Out of these, " if submitted is not None else ""
+                sentences.append(
+                    f"""{prefix}<span class="CEURACCEPTEDPAPERS">{esc(accepted)}</span> papers"""
+                    """ were accepted for this volume."""
+                )
+            summary_html = "    <p>Summary: " + "\n      ".join(sentences) + "</p>\n"
+        return summary_html
 
     def footer_as_html(self) -> str:
         """

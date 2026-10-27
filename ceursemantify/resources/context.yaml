@@ -27,6 +27,8 @@ provisional:
   - "ceur:familyName"
   - "ceur:givenName"
   - "ceur:session"
+  - "ceur:submittedPapers"
+  - "ceur:acceptedPapers"
 classes:
   Proceedings:
     type: "ceur:ProceedingsVolume"
@@ -42,6 +44,8 @@ classes:
       url: {id: "schema:url", type: "@id"}
       archive: {id: "ceur:archive", type: "@id"}
       license: {id: "dcterms:license", type: "@id"}
+      submittedPapers: {id: "ceur:submittedPapers", type: "xsd:nonNegativeInteger"}
+      acceptedPapers: {id: "ceur:acceptedPapers", type: "xsd:nonNegativeInteger"}
       publisher: {id: "dcterms:publisher"}
       event: {id: "ceur:associatedEvent"}
       editors: {id: "ceur:editor", container: "@list"}
