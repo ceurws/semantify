@@ -10,7 +10,7 @@ escapes its values first and then fills a multiline f-string.
 import html
 from dataclasses import dataclass
 from datetime import date
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 from urllib.parse import quote
 
 from lodstorage.params import Params
@@ -657,6 +657,51 @@ class PaperPage:
         item = f"""    <li>{name} {identifiers}</li>"""
         return item
 
+    def highwire_tags(self) -> List[Tuple[str, str]]:
+        """
+        get the Highwire tags of the paper for Google Scholar, see issue 50:
+        each tag is a walk from the paper node of the core entities, a walk
+        that ends in an empty field gives no tag
+
+        Returns:
+            List[Tuple[str, str]]: name and content per tag, in document order
+        """
+        proceedings = self.proceedings
+        event = proceedings.event
+        publisher = proceedings.publisher
+        tags = [("citation_title", self.paper.title)]
+        for author in self.paper.authors:
+            name = ", ".join(part for part in [author.name, author.firstName] if part)
+            tags.append(("citation_author", name))
+        tags.extend(
+            [
+                ("citation_publication_date", proceedings.pubDate),
+                ("citation_publisher", publisher.name if publisher else None),
+                ("citation_journal_title", proceedings.title),
+                ("citation_conference_title", event.title if event else None),
+                ("citation_issn", self.config.series_issn),
+                ("citation_doi", self.paper.doi),
+                ("citation_firstpage", self.paper.pageStart),
+                ("citation_lastpage", self.paper.pageEnd),
+                ("citation_pdf_url", self.paper.pdfUrl),
+                ("citation_abstract_html_url", self.paper.paperUrl),
+            ]
+        )
+        tags = [(name, str(content)) for name, content in tags if content]
+        return tags
+
+    def highwire_as_html(self) -> str:
+        """
+        get the Highwire tags as meta elements of the head
+
+        Returns:
+            str: the html meta elements, one per line
+        """
+        metas = "\n".join(
+            f"""  <meta name="{name}" content="{esc(content)}">""" for name, content in self.highwire_tags()
+        )
+        return metas
+
     def as_html(self) -> str:
         """
         get the complete page
@@ -673,6 +718,7 @@ class PaperPage:
         pdf_url = esc(self.paper.pdfUrl)
         stylesheet = esc(self.config.stylesheet)
         fence = Fence.as_html(self.jsonld_text())
+        highwire = self.highwire_as_html()
         navigation = self.navigation_as_html()
         pages = PaperView(self.paper).pages_as_html()
         doi = doi_as_html(self.paper.doi)
@@ -687,6 +733,7 @@ class PaperPage:
   <link rel="stylesheet" type="text/css" href="{stylesheet}">
   <link rel="alternate" type="application/ld+json" href="index.jsonld">
   <title>CEUR-WS.org/Vol-{number}/{paper_id} - {title}</title>
+{highwire}
 {fence}
 </head>
 
