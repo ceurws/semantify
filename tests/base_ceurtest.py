@@ -6,7 +6,9 @@ Created on 2026-10-01
 
 import json
 import os
-from typing import Any, Dict
+import re
+import tempfile
+from typing import Any, Dict, List
 
 from basemkit.basetest import Basetest
 
@@ -15,7 +17,7 @@ from ceursemantify.jsonld import JsonLd
 from ceursemantify.mapper import Mapper
 from ceursemantify.model import Proceedings
 from ceursemantify.pages import PageState
-from ceursemantify.site import CeurSpt, Site, SiteConfig
+from ceursemantify.site import CeurSpt, Site, SiteConfig, SiteReport
 
 
 class BaseCeurTest(Basetest):
@@ -60,6 +62,78 @@ class BaseCeurTest(Basetest):
         """
         proceedings = self.mapper.map_record(self.example_record(number), "Proceedings").target
         return proceedings
+
+    def chair_page(self, number: int = 4298) -> str:
+        """
+        get the chair page of the example volume with the given number: its
+        index.html without the CEURSTATE line
+
+        Args:
+            number: the volume number
+
+        Returns:
+            str: the html of the chair page
+        """
+        with open(os.path.join(self.examples_path, f"Vol-{number}", "index.html"), "r", encoding="utf-8") as page_file:
+            chair_page = re.sub(r"<!-- CEURSTATE=[^\n]*-->\n", "", page_file.read())
+        return chair_page
+
+    def chair_volume(self, volume_dir: str, marks: Dict[str, str], number: int = 4298) -> str:
+        """
+        write the chair page of the example volume with the given marks replaced
+        into the given directory
+
+        Args:
+            volume_dir: the volume directory to create
+            marks: CEUR mark -> text to put into its span
+            number: the volume number
+
+        Returns:
+            str: the volume directory
+        """
+        page = self.chair_page(number)
+        for mark, text in marks.items():
+            page = re.sub(rf'(<span class="{mark}">)[^<]*(</span>)', rf"\g<1>{text}\g<2>", page)
+        os.makedirs(volume_dir)
+        with open(os.path.join(volume_dir, "index.html"), "w", encoding="utf-8") as page_file:
+            page_file.write(page)
+        return volume_dir
+
+    def chair_reports(self, temp_dir: str, marks: Dict[str, str], number: int = 4298) -> List[SiteReport]:
+        """
+        embed and generate the chair page of the example volume with the given
+        marks replaced, each from its own copy of the page
+
+        Args:
+            temp_dir: the directory for the copies and the site
+            marks: CEUR mark -> text to put into its span
+            number: the volume number
+
+        Returns:
+            List[SiteReport]: the reports of embed and generate
+        """
+        generator = self.get_generator(os.path.join(temp_dir, "site"))
+        case_dir = tempfile.mkdtemp(prefix="case-", dir=temp_dir)
+        embed_report = generator.embed_volumes([self.chair_volume(os.path.join(case_dir, "embed"), marks, number)])
+        generate_report = generator.generate_paths(
+            [self.chair_volume(os.path.join(case_dir, "generate"), marks, number)]
+        )
+        reports = [embed_report, generate_report]
+        return reports
+
+    def problems(self, report: SiteReport, mark: str) -> List[str]:
+        """
+        get the problems of the given report that name the given mark
+
+        Args:
+            report: the report
+            mark: the CEUR mark
+
+        Returns:
+            List[str]: the problems
+        """
+        problems = [problem for problem in report.problems if f"{mark}:" in problem]
+        return problems
 
     def get_generator(self, output_dir: str) -> Generator:
         """

@@ -33,6 +33,8 @@ class VolumeHtml:
     publisher_name = "CEUR-WS.org"
     # no volume was published before, the plausible range of CEURPUBDATE starts here, see issue 58
     first_pub_date = "1995-01-01"
+    # a year, an ordinal or the YYYY placeholder of the Vol-XXX template, see issue 22
+    edition_pattern = re.compile(r"\b(?:(?:19|20)\d\d|\d+(?:st|nd|rd|th)|YYYY)\b")
     # tried after the declared charset; latin-1 decodes every byte
     fallback_encodings = ["utf-8", "cp1252", "latin-1"]
     # an embedded or generated page announces its state and carries its JSON-LD in a fence with a
@@ -412,6 +414,11 @@ class VolumeHtml:
             proceedings.archive = f"{self.base_url}/ftp-dir/Vol-{proceedings.volumeNumber}.zip"
         proceedings.urn = self.required("CEURURN", result)
         proceedings.title = self.required("CEURFULLTITLE", result) or self.mark_text("CEURVOLTITLE")
+        # the title names the edition by year or ordinal, see issue 22
+        if proceedings.title and not self.edition_pattern.search(proceedings.title):
+            result.issues.append(
+                MappingIssue("Proceedings", "CEURFULLTITLE", f"neither year nor ordinal in {proceedings.title}")
+            )
         pub_date = self.required("CEURPUBDATE", result)
         if pub_date:
             try:

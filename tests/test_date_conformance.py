@@ -4,13 +4,9 @@ Created on 2026-10-27
 @author: wf
 """
 
-import os
-import re
 import shutil
 import tempfile
-from typing import List
 
-from ceursemantify.site import SiteReport
 from tests.base_ceurtest import BaseCeurTest
 
 
@@ -58,74 +54,16 @@ class TestDateConformance(BaseCeurTest):
     def setUp(self, debug: bool = False, profile: bool = True) -> None:
         BaseCeurTest.setUp(self, debug=debug, profile=profile)
         self.temp_dir = tempfile.mkdtemp(prefix="date-conformance-")
-        with open(os.path.join(self.examples_path, "Vol-4298", "index.html"), "r", encoding="utf-8") as page_file:
-            self.chair_page = re.sub(r"<!-- CEURSTATE=[^\n]*-->\n", "", page_file.read())
-        self.count = 0
 
     def tearDown(self) -> None:
         shutil.rmtree(self.temp_dir, ignore_errors=True)
-
-    def chair_volume(self, loctime: str = None, pubdate: str = None) -> str:
-        """
-        write a chair page of Vol-4298 with the given marks replaced
-
-        Args:
-            loctime: the CEURLOCTIME text, the original if None
-            pubdate: the CEURPUBDATE text, the original if None
-
-        Returns:
-            str: the volume directory
-        """
-        page = self.chair_page
-        if loctime is not None:
-            page = re.sub(r'(<span class="CEURLOCTIME">)[^<]*(</span>)', rf"\g<1>{loctime}\g<2>", page)
-        if pubdate is not None:
-            page = re.sub(r'(<span class="CEURPUBDATE">)[^<]*(</span>)', rf"\g<1>{pubdate}\g<2>", page)
-        self.count += 1
-        volume_dir = os.path.join(self.temp_dir, f"case{self.count}", "Vol-4298")
-        os.makedirs(volume_dir)
-        with open(os.path.join(volume_dir, "index.html"), "w", encoding="utf-8") as page_file:
-            page_file.write(page)
-        return volume_dir
-
-    def reports(self, loctime: str = None, pubdate: str = None) -> List[SiteReport]:
-        """
-        embed and generate a chair page of Vol-4298 with the given marks replaced,
-        each from its own copy of the chair page
-
-        Args:
-            loctime: the CEURLOCTIME text, the original if None
-            pubdate: the CEURPUBDATE text, the original if None
-
-        Returns:
-            List[SiteReport]: the reports of embed and generate
-        """
-        generator = self.get_generator(os.path.join(self.temp_dir, "site"))
-        embed_report = generator.embed_volumes([self.chair_volume(loctime, pubdate)])
-        generate_report = generator.generate_paths([self.chair_volume(loctime, pubdate)])
-        reports = [embed_report, generate_report]
-        return reports
-
-    def problems(self, report: SiteReport, mark: str) -> List[str]:
-        """
-        get the problems of the given report that name the given mark
-
-        Args:
-            report: the report
-            mark: the CEUR mark
-
-        Returns:
-            List[str]: the problems
-        """
-        problems = [problem for problem in report.problems if f"{mark}:" in problem]
-        return problems
 
     def test_loctime_reported(self) -> None:
         """
         a CEURLOCTIME without extractable dates is reported by embed and generate
         """
         for loctime in self.loctime_unparsed:
-            for report in self.reports(loctime=loctime):
+            for report in self.chair_reports(self.temp_dir, {"CEURLOCTIME": loctime}):
                 with self.subTest(loctime=loctime, report=report.problems):
                     self.assertEqual(1, len(self.problems(report, "CEURLOCTIME")))
 
@@ -134,7 +72,7 @@ class TestDateConformance(BaseCeurTest):
         a CEURLOCTIME with extractable dates, e.g. the em-dash of Vol-3904, is not reported
         """
         for loctime in self.loctime_parsed:
-            for report in self.reports(loctime=loctime):
+            for report in self.chair_reports(self.temp_dir, {"CEURLOCTIME": loctime}):
                 with self.subTest(loctime=loctime, report=report.problems):
                     self.assertEqual([], self.problems(report, "CEURLOCTIME"))
 
@@ -143,7 +81,7 @@ class TestDateConformance(BaseCeurTest):
         a CEURPUBDATE that is not ISO or out of the plausible range is reported by embed and generate
         """
         for pubdate in self.pubdate_not_iso + self.pubdate_out_of_range:
-            for report in self.reports(pubdate=pubdate):
+            for report in self.chair_reports(self.temp_dir, {"CEURPUBDATE": pubdate}):
                 with self.subTest(pubdate=pubdate, report=report.problems):
                     self.assertEqual(1, len(self.problems(report, "CEURPUBDATE")))
 
@@ -151,7 +89,7 @@ class TestDateConformance(BaseCeurTest):
         """
         the CEURPUBDATE of the chair page of Vol-4298 is not reported
         """
-        for report in self.reports():
+        for report in self.chair_reports(self.temp_dir, {}):
             with self.subTest(report=report.problems):
                 self.assertEqual([], self.problems(report, "CEURPUBDATE"))
                 self.assertEqual([], self.problems(report, "CEURLOCTIME"))
