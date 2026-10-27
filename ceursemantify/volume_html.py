@@ -233,7 +233,8 @@ class VolumeHtml:
             homepage=self.link_of(acronym_element),
         )
         colocated = self.mark_text("CEURCOLOCATED")
-        if colocated:
+        # NONE is the template's value for a volume that is not co-located, see issue 55
+        if colocated and colocated.strip().upper() != "NONE":
             event.colocated_with = Event(acronym=colocated)
         loctime_text = self.required("CEURLOCTIME", result)
         if loctime_text:

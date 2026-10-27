@@ -4,11 +4,12 @@ Created on 2026-10-27
 @author: wf
 """
 
+import json
 import os
 import re
 import shutil
 import tempfile
-from typing import Dict, List
+from typing import Any, Dict, List, Optional
 
 from ceursemantify.ceursemantify_cmd import main
 from tests.base_ceurtest import BaseCeurTest
@@ -71,28 +72,75 @@ class TestTemplateConformance(BaseCeurTest):
         values = [value.strip() for value in re.findall(rf'<span[^>]*class="{mark}"[^>]*>([^<]*)</span>', page)]
         return values
 
-    def generate(self, volume: str) -> Dict[str, str]:
+    def generate(self, volume: str, colocated: Optional[str] = None) -> Dict[str, str]:
         """
         embed and generate the volume page in place from the chair page of the
         example, the page without its CEURSTATE line and without index.jsonld
 
         Args:
             volume: the volume directory name in the examples, e.g. Vol-4298
+            colocated: if given, the co-located line of the chair page is replaced by
+                the template line with this CEURCOLOCATED text
 
         Returns:
-            Dict[str, str]: the chair page and the generated page
+            Dict[str, str]: the chair page, the generated page and its index.jsonld
         """
         volume_dir = os.path.join(self.temp_dir, volume)
         os.makedirs(volume_dir)
         example_page = self.read_page(os.path.join(self.examples_path, volume, "index.html"))
         chair_page = re.sub(r"<!-- CEURSTATE=[^\n]*-->\n", "", example_page)
+        if colocated is not None:
+            chair_page = re.sub(
+                r'[^\n]*<span class="CEURCOLOCATED">[^<]*</span>\)?',
+                f'co-located with <span class="CEURCOLOCATED">{colocated}</span>',
+                chair_page,
+            )
         page_path = os.path.join(volume_dir, "index.html")
         with open(page_path, "w", encoding="utf-8") as page_file:
             page_file.write(chair_page)
         main(["--embed", volume_dir, "-q"])
         main(["--generate", volume_dir, "--in-place", "-q"])
-        pages = {"chair": chair_page, "generated": self.read_page(os.path.join(volume_dir, "index.html"))}
+        pages = {
+            "chair": chair_page,
+            "generated": self.read_page(os.path.join(volume_dir, "index.html")),
+            "jsonld": self.read_page(os.path.join(volume_dir, "index.jsonld")),
+        }
         return pages
+
+    def test_colocated_none(self) -> None:
+        """
+        issue 55: CEURCOLOCATED NONE, the template's value for a volume that is not
+        co-located, gives no co-located event in index.jsonld and no co-located line on the page
+        """
+        pages = self.generate("Vol-4298", colocated="NONE")
+        self.assertIn('<span class="CEURCOLOCATED">NONE</span>', pages["chair"])
+        self.assertNotIn("colocated_with", self.event_of(pages["jsonld"]))
+        self.assertNotIn("co-located with", pages["generated"])
+        self.assertNotIn("CEURCOLOCATED", pages["generated"])
+
+    def test_colocated_kept(self) -> None:
+        """
+        a real CEURCOLOCATED acronym stays a co-located event on the page
+        """
+        pages = self.generate("Vol-4298")
+        self.assertIn('<span class="CEURCOLOCATED">ICL-GNSS 2026</span>', pages["chair"])
+        self.assertEqual("ICL-GNSS 2026", self.event_of(pages["jsonld"])["colocated_with"]["acronym"])
+        self.assertIn('co-located with <span class="CEURCOLOCATED">ICL-GNSS 2026</span>', pages["generated"])
+
+    def event_of(self, jsonld_text: str) -> Dict[str, Any]:
+        """
+        get the event node of the given index.jsonld text
+
+        Args:
+            jsonld_text: the JSON-LD of the volume
+
+        Returns:
+            Dict[str, Any]: the event of the proceedings
+        """
+        document = json.loads(jsonld_text)
+        proceedings = document["@graph"][0] if "@graph" in document else document
+        event = proceedings["event"]
+        return event
 
     def test_template_has_18_marks(self) -> None:
         """
