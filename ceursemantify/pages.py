@@ -36,6 +36,22 @@ def esc(value: Any) -> str:
     return escaped
 
 
+def voldoi_as_html(doi: Any) -> str:
+    """
+    get the DOI for the volume header linked to its resolver
+
+    Args:
+        doi: the DOI, None gives the empty string
+
+    Returns:
+        str: the html span, empty if there is no DOI
+    """
+    doi_html = ""
+    if doi:
+        doi_text = esc(doi)
+        doi_html = f"""<span class="CEURVOLDOI"><a href="https://doi.org/{doi_text}">{doi_text}</a></span>"""
+    return doi_html
+
 def doi_as_html(doi: Any) -> str:
     """
     get the DOI linked to its resolver, see issue 14
@@ -372,7 +388,7 @@ class VolumePage:
         urn = esc(self.proceedings.urn)
         pub_year = esc(self.proceedings.pubYear)
         license_html = self.license_as_html()
-        doi = doi_as_html(self.proceedings.doi)
+        doi = voldoi_as_html(self.proceedings.doi)
         if doi:
             doi = f""" <br>
           {doi}"""
