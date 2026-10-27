@@ -12,6 +12,7 @@ import json
 import os
 import posixpath
 import re
+from datetime import date
 from typing import List, Optional, Tuple
 from urllib.parse import urljoin, urlparse
 
@@ -30,6 +31,8 @@ class VolumeHtml:
     """
 
     publisher_name = "CEUR-WS.org"
+    # no volume was published before, the plausible range of CEURPUBDATE starts here, see issue 58
+    first_pub_date = "1995-01-01"
     # tried after the declared charset; latin-1 decodes every byte
     fallback_encodings = ["utf-8", "cp1252", "latin-1"]
     # an embedded or generated page announces its state and carries its JSON-LD in a fence with a
@@ -413,6 +416,16 @@ class VolumeHtml:
         if pub_date:
             try:
                 proceedings.pubDate = Convert.iso_date(pub_date)
+                # the plausible range of a publication date, see issue 58
+                today = date.today().isoformat()
+                if not self.first_pub_date <= proceedings.pubDate <= today:
+                    result.issues.append(
+                        MappingIssue(
+                            "Proceedings",
+                            "CEURPUBDATE",
+                            f"{proceedings.pubDate} is not between {self.first_pub_date} and {today}",
+                        )
+                    )
             except ValueError as error:
                 result.issues.append(MappingIssue("Proceedings", "CEURPUBDATE", str(error)))
         pub_year = self.mark_text("CEURPUBYEAR")
