@@ -102,14 +102,16 @@ class Generator:
             report.problems.append(f"Vol-{number}: {self.spt.volume_url(number)}: {error}")
         return proceedings
 
-    def read_proceedings(self, path: str, report: SiteReport) -> Optional[Proceedings]:
+    def read_proceedings(self, path: str, report: SiteReport, yaml: bool = False) -> Optional[Proceedings]:
         """
         read the proceedings from the local volume page at the given path, an
-        embedded page from its JSON-LD, see issues 33 and 34
+        embedded page from its JSON-LD, see issues 33 and 34; with yaml from
+        the index.yaml next to the page, the human-editable record, see issue 59
 
         Args:
             path: the index.html of the volume or its directory
             report: the report to add problems to
+            yaml: if True read the index.yaml next to the page
 
         Returns:
             Optional[Proceedings]: the proceedings, None if the page could not be read
@@ -118,16 +120,33 @@ class Generator:
             path = os.path.join(path, "index.html")
         proceedings = None
         try:
-            volume_html = VolumeHtml.of_file(path, self.config.original_url)
-            result = volume_html.proceedings()
-            proceedings = result.target
+            if yaml:
+                proceedings = Proceedings.load_from_yaml_file(self.yaml_path(path))
+            else:
+                volume_html = VolumeHtml.of_file(path, self.config.original_url)
+                result = volume_html.proceedings()
+                proceedings = result.target
+                for issue in result.issues:
+                    report.problems.append(f"{path}: {issue}")
             for paper in proceedings.papers:
                 paper.publishedIn = proceedings.url
-            for issue in result.issues:
-                report.problems.append(f"{path}: {issue}")
         except OSError as error:
             report.problems.append(f"{path}: {error}")
         return proceedings
+
+    @classmethod
+    def yaml_path(cls, path: str) -> str:
+        """
+        get the path of the index.yaml next to the given index.html
+
+        Args:
+            path: the path of the index.html
+
+        Returns:
+            str: the path of the index.yaml
+        """
+        yaml_path = os.path.join(os.path.dirname(path), "index.yaml")
+        return yaml_path
 
     def write_volume(self, proceedings: Proceedings, report: SiteReport, volume_dir: Optional[str] = None) -> None:
         """
@@ -189,7 +208,9 @@ class Generator:
         report.seconds = time.perf_counter() - start
         return report
 
-    def generate_paths(self, paths: List[str], progress: bool = False, in_place: bool = False) -> SiteReport:
+    def generate_paths(
+        self, paths: List[str], progress: bool = False, in_place: bool = False, yaml: bool = False
+    ) -> SiteReport:
         """
         generate the pages of the volumes from their local volume pages
         instead of ceur-spt, see issues 33 and 34; the volume pages are not
@@ -204,6 +225,7 @@ class Generator:
             paths: the index.html files of the volumes or their directories
             progress: if True show a progress bar
             in_place: if True write into the volume directories of the given pages
+            yaml: if True read each volume from its index.yaml, see issue 59
 
         Returns:
             SiteReport: the written files, the problems and the time used
@@ -211,7 +233,7 @@ class Generator:
         report = SiteReport()
         start = time.perf_counter()
         for path in tqdm(paths, desc="volumes", unit="vol", disable=not progress):
-            proceedings = self.read_proceedings(path, report)
+            proceedings = self.read_proceedings(path, report, yaml=yaml)
             if proceedings is None:
                 continue
             if proceedings.year() is None:
@@ -265,7 +287,7 @@ class Generator:
         report.seconds += year_report.seconds
         return report
 
-    def embed_volume(self, path: str, report: SiteReport) -> None:
+    def embed_volume(self, path: str, report: SiteReport, yaml: bool = False) -> None:
         """
         embed the JSON-LD into the volume page of the proceedings chair at
         the given path and write index.jsonld next to it, see issue 28
@@ -277,6 +299,7 @@ class Generator:
         Args:
             path: the index.html of the volume or its directory
             report: the report to add the written files and problems to
+            yaml: if True also write index.yaml, the human-editable record, see issue 59
         """
         if os.path.isdir(path):
             path = os.path.join(path, "index.html")
@@ -302,14 +325,19 @@ class Generator:
             return
         self.site.write(os.path.join(os.path.dirname(path), "index.jsonld"), jsonld_text + "\n", report)
         self.site.write(path, embedded, report)
+        if yaml:
+            yaml_path = self.yaml_path(path)
+            proceedings.save_to_yaml_file(yaml_path)
+            report.written.append(yaml_path)
 
-    def embed_volumes(self, paths: List[str], progress: bool = False) -> SiteReport:
+    def embed_volumes(self, paths: List[str], progress: bool = False, yaml: bool = False) -> SiteReport:
         """
         embed the JSON-LD into the volume pages at the given paths
 
         Args:
             paths: the index.html files of the volumes or their directories
             progress: if True show a progress bar
+            yaml: if True also write index.yaml per volume, see issue 59
 
         Returns:
             SiteReport: the written files, the problems and the time used
@@ -317,7 +345,7 @@ class Generator:
         report = SiteReport()
         start = time.perf_counter()
         for path in tqdm(paths, desc="volumes", unit="vol", disable=not progress):
-            self.embed_volume(path, report)
+            self.embed_volume(path, report, yaml=yaml)
         report.seconds = time.perf_counter() - start
         return report
 

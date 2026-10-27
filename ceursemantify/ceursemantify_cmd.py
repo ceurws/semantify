@@ -92,6 +92,12 @@ class CeurSemantifyCmd(BaseCmd):
             help="with --generate: write the volume page, its index.jsonld and the paper pages into the volume"
             " directory itself instead of the year tree of the output directory; the volume page is overwritten",
         )
+        parser.add_argument(
+            "--yaml",
+            action="store_true",
+            help="with --embed: also write index.yaml, the human-editable record of the volume, next to index.jsonld;"
+            " with --generate: read the volume from its index.yaml instead of its page or index.jsonld",
+        )
         parser.add_argument("--progress", action="store_true", help="show a progress bar while generating volumes")
         parser.add_argument(
             "--serve",
@@ -140,11 +146,13 @@ class CeurSemantifyCmd(BaseCmd):
             config = SiteConfig.of_yaml(args.config)
             generator = Generator.of_output(args.output, config)
             if args.embed:
-                report = generator.embed_volumes(args.embed, progress=args.progress)
+                report = generator.embed_volumes(args.embed, progress=args.progress, yaml=args.yaml)
                 self.show_report(f"{len(args.embed)} volume pages", report, args)
                 handled = True
             if args.generate:
-                report = generator.generate_paths(args.generate, progress=args.progress, in_place=args.in_place)
+                report = generator.generate_paths(
+                    args.generate, progress=args.progress, in_place=args.in_place, yaml=args.yaml
+                )
                 self.show_report(f"{len(args.generate)} volume pages", report, args)
                 handled = True
             if args.volumes:

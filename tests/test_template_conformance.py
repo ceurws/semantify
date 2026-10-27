@@ -12,6 +12,7 @@ import tempfile
 from typing import Any, Dict, List, Optional
 
 from ceursemantify.ceursemantify_cmd import main
+from ceursemantify.model import Proceedings
 from tests.base_ceurtest import BaseCeurTest
 
 
@@ -126,6 +127,32 @@ class TestTemplateConformance(BaseCeurTest):
         self.assertIn('<span class="CEURCOLOCATED">ICL-GNSS 2026</span>', pages["chair"])
         self.assertEqual("ICL-GNSS 2026", self.event_of(pages["jsonld"])["colocated_with"]["acronym"])
         self.assertIn('co-located with <span class="CEURCOLOCATED">ICL-GNSS 2026</span>', pages["generated"])
+
+    def test_yaml_record(self) -> None:
+        """
+        issue 59: --embed --yaml writes index.yaml next to index.jsonld with the
+        yamlable standard of the model, and --generate --yaml takes an edit of the
+        yaml to the page and to index.jsonld
+        """
+        volume_dir = os.path.join(self.temp_dir, "Vol-4298")
+        os.makedirs(volume_dir)
+        example_page = self.read_page(os.path.join(self.examples_path, "Vol-4298", "index.html"))
+        with open(os.path.join(volume_dir, "index.html"), "w", encoding="utf-8") as page_file:
+            page_file.write(re.sub(r"<!-- CEURSTATE=[^\n]*-->\n", "", example_page))
+        main(["--embed", volume_dir, "--yaml", "-q"])
+        yaml_path = os.path.join(volume_dir, "index.yaml")
+        self.assertTrue(os.path.isfile(yaml_path))
+        from_yaml = Proceedings.load_from_yaml_file(yaml_path)
+        from_jsonld = self.jsonld.proceedings(json.loads(self.read_page(os.path.join(volume_dir, "index.jsonld"))))
+        self.assertEqual(from_jsonld, from_yaml)
+        # the human's correction: the volume is co-located with another event
+        from_yaml.event.colocated_with.acronym = "ICL-GNSS 2027"
+        from_yaml.save_to_yaml_file(yaml_path)
+        main(["--generate", volume_dir, "--yaml", "--in-place", "-q"])
+        page = self.read_page(os.path.join(volume_dir, "index.html"))
+        self.assertIn('co-located with <span class="CEURCOLOCATED">ICL-GNSS 2027</span>', page)
+        event = self.event_of(self.read_page(os.path.join(volume_dir, "index.jsonld")))
+        self.assertEqual("ICL-GNSS 2027", event["colocated_with"]["acronym"])
 
     def event_of(self, jsonld_text: str) -> Dict[str, Any]:
         """
