@@ -325,6 +325,7 @@ class VolumeHtml:
                     publishedIn=url,
                     authors=[self.scholar(element) for element in item.find_all(class_="CEURAUTHOR")],
                 )
+                paper.publish_in(url)
                 pages = self.mark_text("CEURPAGES", item)
                 if pages:
                     paper.pageStart = Convert.page_start(pages)

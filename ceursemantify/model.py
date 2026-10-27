@@ -14,6 +14,7 @@ have a term in neither are listed as provisional in resources/context.yaml.
 
 from dataclasses import field
 from typing import List, Optional
+from urllib.parse import urljoin
 
 from basemkit.yamlable import lod_storable
 
@@ -133,6 +134,9 @@ class Paper:
     wikidataid: Optional[str] = None
     doi: Optional[str] = None
     title: Optional[str] = None
+    # the landing page of the paper, the paper as a node with its metadata and links, see issue 32
+    paperUrl: Optional[str] = None
+    # the file
     pdfUrl: Optional[str] = None
     pageStart: Optional[str] = None
     pageEnd: Optional[str] = None
@@ -140,6 +144,18 @@ class Paper:
     session: Optional[str] = None
     publishedIn: Optional[str] = None
     authors: List[Scholar] = field(default_factory=list)
+
+    def publish_in(self, url: str) -> None:
+        """
+        set the volume the paper is published in and the landing page of the
+        paper under it, the directory named by the paper id, see issue 32
+
+        Args:
+            url: the url of the volume e.g. https://ceur-ws.org/Vol-4298/
+        """
+        self.publishedIn = url
+        if self.id:
+            self.paperUrl = urljoin(url, f"{self.id}/")
 
 
 @lod_storable

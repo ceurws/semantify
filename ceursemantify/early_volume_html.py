@@ -102,7 +102,8 @@ class EarlyVolumeHtml(VolumeHtml):
                 result.issues.append(MappingIssue("Paper", stem, "no title"))
             if ".pdf" not in extensions[stem]:
                 result.issues.append(MappingIssue("Paper", stem, "PostScript only"))
-            paper = Paper(id=stem, title=title, pdfUrl=urljoin(url, f"{stem}.pdf"), publishedIn=url, authors=[])
+            paper = Paper(id=stem, title=title, pdfUrl=urljoin(url, f"{stem}.pdf"), authors=[])
+            paper.publish_in(url)
             papers.append(paper)
         return papers
 

@@ -29,6 +29,7 @@ provisional:
   - "ceur:session"
   - "ceur:submittedPapers"
   - "ceur:acceptedPapers"
+  - "ceur:pdfUrl"
 classes:
   Proceedings:
     type: "ceur:ProceedingsVolume"
@@ -67,12 +68,13 @@ classes:
       colocated_with: {id: "ceur:colocatedWith"}
   Paper:
     type: "ceur:Paper"
-    id_field: pdfUrl
+    id_field: paperUrl
     terms:
       id: {id: "dcterms:identifier"}
       wikidataid: {id: "ceur:wikidataId"}
       title: {id: "dcterms:title"}
-      pdfUrl: {id: "schema:url", type: "@id"}
+      paperUrl: {id: "schema:url", type: "@id"}
+      pdfUrl: {id: "ceur:pdfUrl", type: "@id"}
       pageStart: {id: "bibo:pageStart"}
       pageEnd: {id: "bibo:pageEnd"}
       dblpPublicationId: {id: "ceur:dblpPublicationId"}

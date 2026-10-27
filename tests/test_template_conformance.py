@@ -154,6 +154,31 @@ class TestTemplateConformance(BaseCeurTest):
         event = self.event_of(self.read_page(os.path.join(volume_dir, "index.jsonld")))
         self.assertEqual("ICL-GNSS 2027", event["colocated_with"]["acronym"])
 
+    def test_paper_url(self) -> None:
+        """
+        issue 32: every paper of the record has paperUrl, the landing page of the
+        paper under the volume, as its identity next to pdfUrl, the file; in
+        index.jsonld and in index.yaml
+        """
+        volume_dir = os.path.join(self.temp_dir, "Vol-4298")
+        os.makedirs(volume_dir)
+        with open(os.path.join(volume_dir, "index.html"), "w", encoding="utf-8") as page_file:
+            page_file.write(self.chair_page())
+        main(["--embed", volume_dir, "--yaml", "-q"])
+        document = json.loads(self.read_page(os.path.join(volume_dir, "index.jsonld")))
+        proceedings = document["@graph"][0] if "@graph" in document else document
+        self.assertGreater(len(proceedings["papers"]), 0)
+        for paper in proceedings["papers"]:
+            with self.subTest(paper=paper["id"]):
+                paper_url = f"https://ceur-ws.org/Vol-4298/{paper['id']}/"
+                self.assertEqual(paper_url, paper["paperUrl"])
+                self.assertEqual(paper_url, paper["@id"])
+                self.assertEqual(f"https://ceur-ws.org/Vol-4298/{paper['id']}.pdf", paper["pdfUrl"])
+        from_yaml = Proceedings.load_from_yaml_file(os.path.join(volume_dir, "index.yaml"))
+        self.assertEqual(
+            [paper["paperUrl"] for paper in proceedings["papers"]], [paper.paperUrl for paper in from_yaml.papers]
+        )
+
     def event_of(self, jsonld_text: str) -> Dict[str, Any]:
         """
         get the event node of the given index.jsonld text

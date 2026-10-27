@@ -95,7 +95,7 @@ class Generator:
             result = self.mapper.map_record(record, "Proceedings")
             proceedings = result.target
             for paper in proceedings.papers:
-                paper.publishedIn = proceedings.url
+                paper.publish_in(proceedings.url)
             for issue in result.issues:
                 report.problems.append(f"Vol-{number}: {issue}")
         except (OSError, ValueError) as error:
@@ -129,7 +129,7 @@ class Generator:
                 for issue in result.issues:
                     report.problems.append(f"{path}: {issue}")
             for paper in proceedings.papers:
-                paper.publishedIn = proceedings.url
+                paper.publish_in(proceedings.url)
         except OSError as error:
             report.problems.append(f"{path}: {error}")
         return proceedings

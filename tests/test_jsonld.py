@@ -82,7 +82,7 @@ SELECT ?subject ?doi WHERE { ?subject ceur:doi ?doi . } ORDER BY ?doi"""
         self.assertEqual(
             [
                 ("http://ceur-ws.org/Vol-3889/", "10.83095/ceurws_03889"),
-                (proceedings.papers[1].pdfUrl, "10.83095/ceurws_03889_001"),
+                (proceedings.papers[1].paperUrl, "10.83095/ceurws_03889_001"),
             ],
             rows,
         )
@@ -115,12 +115,14 @@ SELECT ?number ?start (COUNT(DISTINCT ?paper) AS ?papers) WHERE {
         self.assertEqual(XSD.positiveInteger, row.number.datatype)
         self.assertEqual(XSD.date, row.start.datatype)
         self.assertEqual(8, int(row.papers))
-        author_query = """
+        # the paper node is its landing page, see issue 32
+        paper1 = next(paper for paper in proceedings.papers if paper.id == "paper1")
+        author_query = f"""
 PREFIX ceur: <https://ceur-ws.org/rdf/schema#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-SELECT ?family WHERE {
-  <https://ceur-ws.org/Vol-3889/paper1.pdf> ceur:author/rdf:rest*/rdf:first ?author .
+SELECT ?family WHERE {{
+  <{paper1.paperUrl}> ceur:author/rdf:rest*/rdf:first ?author .
   ?author ceur:familyName ?family .
-}"""
+}}"""
         families = [str(author_row.family) for author_row in graph.query(author_query)]
         self.assertEqual(["Kachroudi", "Faïz", "Baazouzi"], families)

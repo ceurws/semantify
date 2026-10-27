@@ -61,6 +61,9 @@ class BaseCeurTest(Basetest):
             Proceedings: the mapped proceedings
         """
         proceedings = self.mapper.map_record(self.example_record(number), "Proceedings").target
+        # as the generator does after mapping: the volume and the landing page of each paper
+        for paper in proceedings.papers:
+            paper.publish_in(proceedings.url)
         return proceedings
 
     def chair_page(self, number: int = 4298) -> str:
