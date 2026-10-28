@@ -10,9 +10,12 @@ import re
 import shutil
 import tempfile
 from typing import Any, Dict, List, Optional
+from unittest.mock import patch
 
 from ceursemantify.ceursemantify_cmd import main
+from ceursemantify.index_check import IndexCheck
 from ceursemantify.model import Proceedings
+from ceursemantify.pages import VolumePage
 from tests.base_ceurtest import BaseCeurTest
 
 
@@ -121,6 +124,48 @@ class TestTemplateConformance(BaseCeurTest):
         visible = re.sub(r"<!--.*?-->", "", pages["generated"], flags=re.S)
         self.assertNotIn("co-located with", visible)
         self.assertIn('<!-- co-located with <span class="CEURCOLOCATED">NONE</span> -->', pages["generated"])
+
+    def with_index_check(self) -> None:
+        """
+        put the check-index-errors of scripts on the PATH, skip where it can not run
+        """
+        scripts_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "scripts")
+        env_patch = patch.dict(os.environ, {"PATH": scripts_dir + os.pathsep + os.environ.get("PATH", "")})
+        env_patch.start()
+        self.addCleanup(env_patch.stop)
+        probe = IndexCheck("check-index-errors").run(os.path.join(self.examples_path, "Vol-4298"))
+        if not probe.ran:
+            self.skipTest(f"check-index-errors does not run here: {probe.output.strip()[:80]}")
+
+    def test_gate_passes(self) -> None:
+        """
+        issue 62: the 0.0.6 page of the Vol-4298 chair page adds no report of
+        check-index-errors to those of the chair page, so it replaces the chair page
+        """
+        self.with_index_check()
+        pages = self.generate("Vol-4298")
+        self.assertIn("CEURSTATE=generated", pages["generated"])
+        self.assertFalse(os.path.exists(os.path.join(self.temp_dir, "Vol-4298", "index.html.rejected")))
+
+    def test_gate_rejects(self) -> None:
+        """
+        issue 62: a page that loses CEURVOLTITLE as 0.0.4 did is reported by
+        check-index-errors, the chair page is kept and the generated page set aside
+        """
+        self.with_index_check()
+        title_as_html = VolumePage.title_as_html
+
+        def without_voltitle(page: VolumePage) -> str:
+            return re.sub(r'<br>\n    <span class="CEURVOLTITLE">[^<]*</span>', "", title_as_html(page))
+
+        with patch.object(VolumePage, "title_as_html", without_voltitle):
+            pages = self.generate("Vol-4298")
+        volume_dir = os.path.join(self.temp_dir, "Vol-4298")
+        # the page kept is the chair page as --embed left it
+        self.assertIn("CEURSTATE=embedded", pages["generated"])
+        self.assertIn('class="CEURVOLTITLE"', pages["generated"])
+        self.assertNotIn("CEURVOLTITLE", self.read_page(os.path.join(volume_dir, "index.html.rejected")))
+        self.assertIn("ERROR (A17)", self.read_page(os.path.join(volume_dir, "index.html.rejected.txt")))
 
     def test_no_blank_before_closing_span(self) -> None:
         """

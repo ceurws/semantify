@@ -15,3 +15,8 @@ series_title: "CEUR Workshop Proceedings"
 series_issn: "1613-0073"
 # the checker linked from each page
 validator_url: "https://validator.w3.org/nu/"
+# the check of the CEUR-WS team, the gate of --generate --in-place where it is on the PATH
+index_check: "check-index-errors"
+# rules the gate ignores: 42 and A34 report the namespace IRIs of the JSON-LD,
+# see https://github.com/ceurws/semantify/discussions/64
+index_check_ignore: ["42", "A34"]

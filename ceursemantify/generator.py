@@ -13,6 +13,7 @@ from sem3.extractor import Extractor
 from tqdm import tqdm
 
 from ceursemantify.embed import Embedder
+from ceursemantify.index_check import IndexCheck
 from ceursemantify.jsonld import JsonLd
 from ceursemantify.mapper import Mapper
 from ceursemantify.model import Paper, Proceedings
@@ -160,9 +161,33 @@ class Generator:
         in_place = volume_dir is not None
         if volume_dir is None:
             volume_dir = self.site.volume_dir(proceedings)
+        page_path = os.path.join(volume_dir, "index.html")
+        # the check of the CEUR-WS team as gate of a page that replaces the chair page, see issue 62
+        check = IndexCheck(self.config.index_check, self.config.index_check_ignore)
+        chair_page = None
+        chair_errors = None
+        if in_place and check.available and os.path.isfile(page_path):
+            with open(page_path, "r", encoding="utf-8") as page_file:
+                chair_page = page_file.read()
+            chair_errors = check.errors(volume_dir)
+            if chair_errors is None:
+                report.problems.append(f"{page_path}: {check.command} did not run, no gate")
         page = VolumePage(proceedings, self.config, self.jsonld, self.state, in_place=in_place)
-        self.site.write(os.path.join(volume_dir, "index.html"), page.as_html(), report)
+        self.site.write(page_path, page.as_html(), report)
         self.site.write(os.path.join(volume_dir, "index.jsonld"), page.jsonld_text() + "\n", report)
+        if chair_errors is not None:
+            generated_errors = check.errors(volume_dir)
+            added = sorted(generated_errors - chair_errors) if generated_errors is not None else ["no run"]
+            if added:
+                os.replace(page_path, page_path + ".rejected")
+                with open(page_path + ".rejected.txt", "w", encoding="utf-8") as check_file:
+                    check_file.write(check.last_output)
+                with open(page_path, "w", encoding="utf-8") as page_file:
+                    page_file.write(chair_page)
+                report.problems.append(
+                    f"{page_path}: {check.command} reports {', '.join(added)} beyond the chair page,"
+                    f" the chair page is kept, the generated page is index.html.rejected"
+                )
         for paper in proceedings.papers:
             if paper.id:
                 self.write_paper(proceedings, paper, report, os.path.join(volume_dir, paper.id))

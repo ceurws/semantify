@@ -32,6 +32,9 @@ class SiteConfig:
     series_title: str = ""
     series_issn: str = ""
     validator_url: str = ""
+    # the check of the CEUR-WS team run as gate of --generate --in-place and the rules it ignores, see issue 62
+    index_check: str = ""
+    index_check_ignore: List[str] = field(default_factory=list)
 
     @classmethod
     def default_path(cls) -> str:
