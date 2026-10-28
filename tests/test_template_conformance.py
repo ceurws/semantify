@@ -122,6 +122,16 @@ class TestTemplateConformance(BaseCeurTest):
         self.assertNotIn("co-located with", visible)
         self.assertIn('<!-- co-located with <span class="CEURCOLOCATED">NONE</span> -->', pages["generated"])
 
+    def test_no_blank_before_closing_span(self) -> None:
+        """
+        issue 61: no line of the generated page matches rule 27 of check-index-errors-after,
+        A20 of check-index-errors, as the rule is written, line by line
+        """
+        rule_27 = re.compile(r'class="CEUR(?!TOC)[^"]*">\s+|\s+</span>')
+        pages = self.generate("Vol-4298")
+        hits = [line for line in pages["generated"].split("\n") if rule_27.search(line)]
+        self.assertEqual([], hits)
+
     def test_version_and_submission(self) -> None:
         """
         issue 63: the generated page keeps the CEURVERSION comment and the submitted by

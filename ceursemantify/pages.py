@@ -564,8 +564,8 @@ class VolumePage:
     metadata incl. bibliographic data published under <a href="https://creativecommons.org/publicdomain/zero/1.0/">Creative Commons CC0</a><br>"""
         footer = f"""  <span class="unobtrusive">{submitted}
     <span class="CEURPUBDATE">{pub_date}</span>: published on {series_title} (CEUR-WS.org, ISSN {series_issn})
-    |<a href="{validator_url}">valid HTML5</a>|
-  </span>"""
+    |<a href="{validator_url}">valid HTML5</a>|</span>"""
+        # the closing tag on the line of the validator link as on the chair page, see issue 61
         return footer
 
     def as_html(self) -> str:
