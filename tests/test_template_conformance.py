@@ -76,7 +76,9 @@ class TestTemplateConformance(BaseCeurTest):
         values = [value.strip() for value in re.findall(rf'<span[^>]*class="{mark}"[^>]*>([^<]*)</span>', page)]
         return values
 
-    def generate(self, volume: str, colocated: Optional[str] = None) -> Dict[str, str]:
+    def generate(
+        self, volume: str, colocated: Optional[str] = None, generate_args: Optional[List[str]] = None
+    ) -> Dict[str, str]:
         """
         embed and generate the volume page in place from the chair page of the
         example, the page without its CEURSTATE line and without index.jsonld
@@ -85,6 +87,7 @@ class TestTemplateConformance(BaseCeurTest):
             volume: the volume directory name in the examples, e.g. Vol-4298
             colocated: if given, the co-located line of the chair page is replaced by
                 the template line with this CEURCOLOCATED text
+            generate_args: further arguments of the --generate call, e.g. --no-gate
 
         Returns:
             Dict[str, str]: the chair page, the generated page and its index.jsonld
@@ -103,7 +106,7 @@ class TestTemplateConformance(BaseCeurTest):
         with open(page_path, "w", encoding="utf-8") as page_file:
             page_file.write(chair_page)
         main(["--embed", volume_dir, "-q"])
-        main(["--generate", volume_dir, "--in-place", "-q"])
+        main(["--generate", volume_dir, "--in-place", "-q"] + (generate_args or []))
         pages = {
             "chair": chair_page,
             "generated": self.read_page(os.path.join(volume_dir, "index.html")),
@@ -166,6 +169,24 @@ class TestTemplateConformance(BaseCeurTest):
         self.assertIn('class="CEURVOLTITLE"', pages["generated"])
         self.assertNotIn("CEURVOLTITLE", self.read_page(os.path.join(volume_dir, "index.html.rejected")))
         self.assertIn("ERROR (A17)", self.read_page(os.path.join(volume_dir, "index.html.rejected.txt")))
+
+    def test_no_gate(self) -> None:
+        """
+        issue 65: with --no-gate the page that the gate rejects replaces the chair
+        page anyway, and no index.html.rejected is written
+        """
+        self.with_index_check()
+        title_as_html = VolumePage.title_as_html
+
+        def without_voltitle(page: VolumePage) -> str:
+            return re.sub(r'<br>\n    <span class="CEURVOLTITLE">[^<]*</span>', "", title_as_html(page))
+
+        with patch.object(VolumePage, "title_as_html", without_voltitle):
+            pages = self.generate("Vol-4298", generate_args=["--no-gate"])
+        volume_dir = os.path.join(self.temp_dir, "Vol-4298")
+        self.assertIn("CEURSTATE=generated", pages["generated"])
+        self.assertNotIn('class="CEURVOLTITLE"', pages["generated"])
+        self.assertFalse(os.path.exists(os.path.join(volume_dir, "index.html.rejected")))
 
     def test_no_blank_before_closing_span(self) -> None:
         """

@@ -93,6 +93,11 @@ class CeurSemantifyCmd(BaseCmd):
             " directory itself instead of the year tree of the output directory; the volume page is overwritten",
         )
         parser.add_argument(
+            "--no-gate",
+            action="store_true",
+            help="with --generate --in-place: replace the volume page without running check-index-errors as gate",
+        )
+        parser.add_argument(
             "--yaml",
             action="store_true",
             help="with --embed: also write index.yaml, the human-editable record of the volume, next to index.jsonld;"
@@ -151,7 +156,11 @@ class CeurSemantifyCmd(BaseCmd):
                 handled = True
             if args.generate:
                 report = generator.generate_paths(
-                    args.generate, progress=args.progress, in_place=args.in_place, yaml=args.yaml
+                    args.generate,
+                    progress=args.progress,
+                    in_place=args.in_place,
+                    yaml=args.yaml,
+                    gate=not args.no_gate,
                 )
                 self.show_report(f"{len(args.generate)} volume pages", report, args)
                 handled = True

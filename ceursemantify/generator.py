@@ -149,7 +149,9 @@ class Generator:
         yaml_path = os.path.join(os.path.dirname(path), "index.yaml")
         return yaml_path
 
-    def write_volume(self, proceedings: Proceedings, report: SiteReport, volume_dir: Optional[str] = None) -> None:
+    def write_volume(
+        self, proceedings: Proceedings, report: SiteReport, volume_dir: Optional[str] = None, gate: bool = True
+    ) -> None:
         """
         write the page and the JSON-LD file of the given proceedings
 
@@ -157,6 +159,7 @@ class Generator:
             proceedings: the proceedings, with a year
             report: the report to add the written files to
             volume_dir: the directory to write to, the year tree of the site if None
+            gate: if False a page written in place replaces the chair page without the check, see issue 65
         """
         in_place = volume_dir is not None
         if volume_dir is None:
@@ -166,7 +169,7 @@ class Generator:
         check = IndexCheck(self.config.index_check, self.config.index_check_ignore)
         chair_page = None
         chair_errors = None
-        if in_place and check.available and os.path.isfile(page_path):
+        if gate and in_place and check.available and os.path.isfile(page_path):
             with open(page_path, "r", encoding="utf-8") as page_file:
                 chair_page = page_file.read()
             chair_errors = check.errors(volume_dir)
@@ -234,7 +237,7 @@ class Generator:
         return report
 
     def generate_paths(
-        self, paths: List[str], progress: bool = False, in_place: bool = False, yaml: bool = False
+        self, paths: List[str], progress: bool = False, in_place: bool = False, yaml: bool = False, gate: bool = True
     ) -> SiteReport:
         """
         generate the pages of the volumes from their local volume pages
@@ -251,6 +254,7 @@ class Generator:
             progress: if True show a progress bar
             in_place: if True write into the volume directories of the given pages
             yaml: if True read each volume from its index.yaml, see issue 59
+            gate: if False replace the chair pages without check-index-errors, see issue 65
 
         Returns:
             SiteReport: the written files, the problems and the time used
@@ -267,7 +271,7 @@ class Generator:
             volume_dir = None
             if in_place:
                 volume_dir = path if os.path.isdir(path) else os.path.dirname(os.path.abspath(path))
-            self.write_volume(proceedings, report, volume_dir)
+            self.write_volume(proceedings, report, volume_dir, gate=gate)
         report.seconds = time.perf_counter() - start
         return report
 
