@@ -238,12 +238,14 @@ then echo " ";
 fi
 
 # Check if any CEUR span element (except CEURTOC) starts or ends with whitespace
-if grep -P 'class="CEUR(?!TOC)[^"]*">\s+|\s+</span>' index.html > /dev/null; then
+# a blank right after the opening or right before the closing tag of the CEUR span itself
+CEURBLANK='class="CEUR(?!TOC)[^"]*">(\s|[^<]*\s</span>)'
+if grep -P "$CEURBLANK" index.html > /dev/null; then
      echo " "
      echo " ==========> ERROR (A20) in index.html!!!!"
      echo "index.html contains CEUR tag elements that start or end with a blank character."
      echo "This creates unwanted leading or trailing spaces in metadata labels. Remove the leading and trailing blanks!"
-     grep -n -P 'class="CEUR(?!TOC)[^"]*">\s+|\s+</span>' index.html
+     grep -n -P "$CEURBLANK" index.html
      ((INDEXERRCOUNT++))
 fi
 
@@ -397,7 +399,8 @@ then echo " ";
      ((INDEXERRCOUNT++))
 fi
 
-if grep -q "http://" index.html;
+# the JSON-LD fence of pyCEURsemantify holds namespace IRIs, which are http by definition
+if sed '/^```json-ld/,/^```$/d' index.html | grep -q "http://";
 then echo " ";
      echo " ==========> ERROR (A34) in index.html!!!!";
      echo "Change occurrences of 'http://' to 'https://' if the URL is also working with https://";
