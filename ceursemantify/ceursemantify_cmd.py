@@ -26,7 +26,7 @@ class Version:
     name: str = "pyCEURsemantify"
     version: str = ceursemantify.__version__
     date: str = "2026-10-01"
-    updated: str = "2026-10-27"
+    updated: str = "2026-10-28"
     description: str = "Semantification of the CEUR-WS publication workflow"
     authors: str = "Wolfgang Fahl"
     doc_url: str = "https://github.com/ceurws/semantify"
