@@ -30,6 +30,8 @@ provisional:
   - "ceur:submittedPapers"
   - "ceur:acceptedPapers"
   - "ceur:pdfUrl"
+  - "ceur:templateVersion"
+  - "ceur:submittedBy"
 classes:
   Proceedings:
     type: "ceur:ProceedingsVolume"
@@ -47,6 +49,9 @@ classes:
       license: {id: "dcterms:license", type: "@id"}
       submittedPapers: {id: "ceur:submittedPapers", type: "xsd:nonNegativeInteger"}
       acceptedPapers: {id: "ceur:acceptedPapers", type: "xsd:nonNegativeInteger"}
+      templateVersion: {id: "ceur:templateVersion", type: "xsd:date"}
+      dateSubmitted: {id: "dcterms:dateSubmitted", type: "xsd:date"}
+      submittedBy: {id: "ceur:submittedBy"}
       publisher: {id: "dcterms:publisher"}
       event: {id: "ceur:associatedEvent"}
       editors: {id: "ceur:editor", container: "@list"}

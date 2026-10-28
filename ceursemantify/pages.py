@@ -556,7 +556,13 @@ class VolumePage:
         series_issn = esc(self.config.series_issn)
         checked_url = quote(self.page_url(), safe="")
         validator_url = esc(f"{self.config.validator_url}?doc={checked_url}")
-        footer = f"""  <span class="unobtrusive">
+        # the submitted by line of the Vol-XXX template, see issue 63
+        submitted = ""
+        if self.proceedings.dateSubmitted and self.proceedings.submittedBy:
+            submitted = f"""
+    {esc(self.proceedings.dateSubmitted)}: submitted by {esc(self.proceedings.submittedBy)},
+    metadata incl. bibliographic data published under <a href="https://creativecommons.org/publicdomain/zero/1.0/">Creative Commons CC0</a><br>"""
+        footer = f"""  <span class="unobtrusive">{submitted}
     <span class="CEURPUBDATE">{pub_date}</span>: published on {series_title} (CEUR-WS.org, ISSN {series_issn})
     |<a href="{validator_url}">valid HTML5</a>|
   </span>"""
@@ -577,8 +583,12 @@ class VolumePage:
         editors = self.editors_as_html()
         toc = self.toc_as_html()
         footer = self.footer_as_html()
+        # the template version of the chair page, see issue 63
+        version = ""
+        if self.proceedings.templateVersion:
+            version = f"\n<!-- CEURVERSION={esc(self.proceedings.templateVersion)} -->"
         page = f"""<!DOCTYPE html>
-{state}
+{state}{version}
 <html lang="en">
 
 {head}

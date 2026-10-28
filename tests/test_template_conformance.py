@@ -122,6 +122,22 @@ class TestTemplateConformance(BaseCeurTest):
         self.assertNotIn("co-located with", visible)
         self.assertIn('<!-- co-located with <span class="CEURCOLOCATED">NONE</span> -->', pages["generated"])
 
+    def test_version_and_submission(self) -> None:
+        """
+        issue 63: the generated page keeps the CEURVERSION comment and the submitted by
+        footer of the chair page, check-index-errors A17 and A28; the record holds both
+        """
+        pages = self.generate("Vol-4298")
+        self.assertIn("<!-- CEURVERSION=2026-02-04 -->", pages["chair"])
+        self.assertIn("<!-- CEURVERSION=2026-02-04 -->", pages["generated"])
+        self.assertIn("2026-10-18: submitted by Jari Nurmi,", pages["generated"])
+        self.assertIn("Creative Commons CC0", pages["generated"])
+        record = json.loads(pages["jsonld"])
+        proceedings = record if "templateVersion" in record else record.get("@graph", [record])[0]
+        self.assertEqual("2026-02-04", proceedings["templateVersion"])
+        self.assertEqual("2026-10-18", proceedings["dateSubmitted"])
+        self.assertEqual("Jari Nurmi", proceedings["submittedBy"])
+
     def test_colocated_kept(self) -> None:
         """
         a real CEURCOLOCATED acronym stays a co-located event on the page

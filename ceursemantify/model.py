@@ -176,6 +176,10 @@ class Proceedings:
     license: Optional[str] = None
     submittedPapers: Optional[int] = None
     acceptedPapers: Optional[int] = None
+    # the CEURVERSION of the Vol-XXX template and the submitted by footer of the chair page, see issue 63
+    templateVersion: Optional[str] = None
+    dateSubmitted: Optional[str] = None
+    submittedBy: Optional[str] = None
     publisher: Optional[Publisher] = None
     event: Optional[Event] = None
     editors: List[Scholar] = field(default_factory=list)

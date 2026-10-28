@@ -40,6 +40,9 @@ class VolumeHtml:
     # an embedded or generated page announces its state and carries its JSON-LD in a fence with a
     # marker line, see issues 28 and 49
     embedded_pattern = re.compile(r"<!-- CEURSTATE=(embedded|generated)[^\n]*-->")
+    # the template version and the submitted by footer of the Vol-XXX template, see issue 63
+    version_pattern = re.compile(r"<!-- CEURVERSION=(\S+) -->")
+    submitted_pattern = re.compile(r"(\d{4}-\d{2}-\d{2}): submitted by ([^,<]+?)\s*,")
     fence_pattern = re.compile(r"```json-ld\n(?:[^\n{\[]*\n)?(.*?)\n```", re.DOTALL)
     _jsonld: Optional[JsonLd] = None
 
@@ -453,6 +456,13 @@ class VolumeHtml:
                     setattr(proceedings, field_name, Convert.integer(count))
                 except ValueError as error:
                     result.issues.append(MappingIssue("Proceedings", css_class, str(error)))
+        version_match = self.version_pattern.search(self.text)
+        if version_match:
+            proceedings.templateVersion = version_match.group(1)
+        submitted_match = self.submitted_pattern.search(self.text)
+        if submitted_match:
+            proceedings.dateSubmitted = submitted_match.group(1)
+            proceedings.submittedBy = " ".join(submitted_match.group(2).split())
         license_element = self.mark("CEURLIC")
         if license_element is not None:
             proceedings.license = self.link_of(license_element) or self.mark_text("CEURLIC")
