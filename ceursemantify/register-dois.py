@@ -8,7 +8,7 @@
 # Call:
 # python3 register-dois.py -c config-file -v -t
 # -v: verbose - more output
-# -t: test run - no registration, no file changes
+# -t: test run - no doi registration, no file changes
 #
 # Requirements:
 # pip install requests
@@ -34,6 +34,8 @@ apiUrl = ""
 apiUsername = ""
 apiPassword = ""
 doiPrefix = ""
+
+verbose = False
 
 
 ######################################################################################
@@ -66,43 +68,21 @@ def submit_doi(doi):
             },
         }
     }
+    attributes = data.get("data").get("attributes")
 
     if doi.get("volumeTitle"):
-        relatedItems = [
-            {
-                "title": [{doi["volumeTitle"]}],
-                "relationType": "IsPublishedIn",
-                "relatedItemType": "ConferenceProceedings",
-                "relatedItemIdentifier": {
-                    "relatedItemIdentifier": doi["volumeDOI"],
-                    "relatedItemIdentifierType": "DOI",
-                },
-            }
-        ]
-        # data['data'].attributes.relatedItems = relatedItems
-        print(data)
-
-    """
-"relatedItems": [
-        {
-          "titles": [
-            {
-              "title": "Physics letters B"
-            }
-          ],
-          "volume": "776",
-          "lastPage": "264",
-          "firstPage": "249",
-          "relationType": "IsPublishedIn",
-          "publicationYear": "2018",
-          "relatedItemType": "Journal",
-          "relatedItemIdentifier": {
-            "relatedItemIdentifier": "0370-2693",
-            "relatedItemIdentifierType": "ISSN"
-          }
-        }
-      ],
-    """
+        relatedItems = [ {
+            "relationType": "IsPublishedIn",
+            "relatedItemType": "ConferenceProceeding",
+            "relatedItemIdentifier": {
+                "relatedItemIdentifier": doi["volumeDOI"],
+                "relatedItemIdentifierType": "DOI"
+            },
+            "titles": [ {
+                "title": doi["volumeTitle"]
+            } ],
+        } ]
+        attributes['relatedItems'] = relatedItems
 
     json_data = json.dumps(data, ensure_ascii=False)
     response = requests.post(
@@ -112,9 +92,11 @@ def submit_doi(doi):
         auth=(apiUsername, apiPassword),
     )
     response_text = json.loads(response.text)
-    print("{0} processed, response: {1}".format(doi["doi"], response.status_code))
-    if "errors" in response_text and "title" in response_text["errors"][0]:
-        print(response_text["errors"][0]["title"])
+    if (verbose):
+        print("{0} processed, response: {1}".format(doi["doi"], response.status_code))
+    else:
+        if (response.status_code > 299):
+            print("{0} processed, response: {1}".format(doi["doi"], response.status_code))
 
     if response.status_code == 422 or response.status_code == 409:  # doi has already been taken, try update
         print("doi is already taken - trying to update it")
@@ -125,9 +107,11 @@ def submit_doi(doi):
             auth=(apiUsername, apiPassword),
         )
         response_text = json.loads(response.text)
-        print("{0} processed, response: {1}".format(doi["doi"], response.status_code))
-        if "errors" in response_text and "title" in response_text["errors"][0]:
-            print(response_text["errors"][0]["title"])
+        if (verbose):
+            print("{0} processed, response: {1}".format(doi["doi"], response.status_code))
+        else:
+            if (response.status_code > 299):
+                print("{0} processed, response: {1}".format(doi["doi"], response.status_code))
 
     return response.status_code
 
@@ -143,7 +127,6 @@ def loadMetadataFromIndexJSONLD():
         with open("index.jsonld", "r") as file:
             jsonldcontent = file.read()
             data_json = json.loads(jsonldcontent)
-            # print(data_json)
     except FileNotFoundError:
         print("ERROR - no file index.jsonld")
         sys.exit()
@@ -155,8 +138,6 @@ def loadMetadataFromIndexJSONLD():
 
 
 def saveMetadataToIndexJSONLD(data_json):
-
-    os.system("mv index.jsonld index.jsonld.bak")
 
     text_file = open("index.jsonld", "w")
     json.dump(data_json, text_file, ensure_ascii=False, indent=4)
@@ -205,6 +186,8 @@ configFile = "register-dois.cfg"
 if args.config:
     configFile = args.config
 
+verbose = args.verbose
+
 if args.verbose:
     print("Loading configuration from " + configFile)
 
@@ -250,7 +233,7 @@ data_json = loadMetadataFromIndexJSONLD()
 everythingFine = True
 tmps = data_json["title"]
 if not tmps:
-    print("ERROR: no ceedings title defined")
+    print("ERROR: no proceedings title defined")
     everythingFine = False
 tmps = data_json["publisher"]
 if not tmps:
@@ -322,18 +305,23 @@ for paper in papers:
     tmps = paper.get("doi", "")
     if tmps:
         if not tmps == doiPaper:
-            print("WARN: There is already a paper doi defined: " + tmps)
+            print("WARN: There is already a paper doi " + tmps + " defined for paper " + paperID)
             print("WARN: Do not overwrite this with new value: " + doiPaper)
             doiPaper = tmps
-        # else ... nothing to do, instead of registering the do it will be updated later
-        # check if there is a landingPage attribute in the metadata - if not set it
-        if not paper.get("landingPage"):
-            paper["landingPage"] = landingPage
+        # else ... nothing to do, instead of registering the doi will be updated later
+        # check if there is a paperUrl/landingPage attribute in the metadata - if not set it
+        tmps = paper.get("paperUrl")
+        if not tmps:
+            tmps = paper.get("landingPage")
+        if not tmps:
+            paper["paperUrl"] = landingPage
+        else:
+            paper["paperUrl"] = tmps
     else:
         if args.verbose:
             print("DOI for paper " + paperID + " is " + doiPaper)
         paper["doi"] = doiPaper
-        paper["landingPage"] = landingPage
+        paper["paperUrl"] = landingPage
 
     count = count + 1
 
@@ -388,6 +376,7 @@ for paper in papers:
     paperdoi = paper.get("doi")
     if not paperdoi:
         continue
+    paperurl = paper.get("paperUrl")
 
     # create data structure for registering doi for volume
     doi = {
@@ -411,7 +400,7 @@ for paper in papers:
     doi["creators"] = creator_arr
     doi["title"] = paper["title"]
     doi["year"] = pubYear
-    doi["url"] = paper["landingPage"]
+    doi["url"] = paperurl
 
     if not args.test:
         submit_doi(doi)
