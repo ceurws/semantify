@@ -52,6 +52,7 @@ def voldoi_as_html(doi: Any) -> str:
         doi_html = f"""<span class="CEURVOLDOI"><a href="https://doi.org/{doi_text}">{doi_text}</a></span>"""
     return doi_html
 
+
 def doi_as_html(doi: Any) -> str:
     """
     get the DOI linked to its resolver, see issue 14
@@ -433,9 +434,11 @@ class VolumePage:
         get the event the event of the proceedings is co-located with
 
         Returns:
-            str: the html text, empty if the event is not co-located
+            str: the html text; for an event that is not co-located the comment line
+                of the Vol-XXX template, so that the CEURCOLOCATED tag stays, see issue 55
         """
-        colocated_html = ""
+        colocated_html = """<br>
+    <!-- co-located with <span class="CEURCOLOCATED">NONE</span> -->"""
         colocated_with = self.proceedings.event.colocated_with
         if colocated_with:
             acronym = esc(colocated_with.acronym)

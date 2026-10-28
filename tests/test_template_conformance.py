@@ -111,13 +111,16 @@ class TestTemplateConformance(BaseCeurTest):
     def test_colocated_none(self) -> None:
         """
         issue 55: CEURCOLOCATED NONE, the template's value for a volume that is not
-        co-located, gives no co-located event in index.jsonld and no co-located line on the page
+        co-located, gives no co-located event in index.jsonld and no visible co-located line;
+        the page keeps the CEURCOLOCATED tag in the comment line of the Vol-XXX template,
+        which check-index-errors A44 prescribes
         """
         pages = self.generate("Vol-4298", colocated="NONE")
         self.assertIn('<span class="CEURCOLOCATED">NONE</span>', pages["chair"])
         self.assertNotIn("colocated_with", self.event_of(pages["jsonld"]))
-        self.assertNotIn("co-located with", pages["generated"])
-        self.assertNotIn("CEURCOLOCATED", pages["generated"])
+        visible = re.sub(r"<!--.*?-->", "", pages["generated"], flags=re.S)
+        self.assertNotIn("co-located with", visible)
+        self.assertIn('<!-- co-located with <span class="CEURCOLOCATED">NONE</span> -->', pages["generated"])
 
     def test_colocated_kept(self) -> None:
         """
