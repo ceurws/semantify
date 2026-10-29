@@ -400,6 +400,7 @@ class VolumePage:
           <a href="../"><div id="CEURWSLOGO"></div></a>
         </td>
         <td style="text-align: right; vertical-align: middle">
+          <div style="float:left" id="CEURCCBY"></div>
           <span class="CEURVOLNR">Vol-{number}</span> <br>
           <span class="CEURURN">{urn}</span>{doi}
           <p class="unobtrusive copyright" style="text-align: justify">Copyright &copy; {pub_year} for
