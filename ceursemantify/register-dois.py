@@ -62,7 +62,7 @@ def submit_doi(doi):
                 "titles": [{"title": doi["title"]}],
                 "publisher": doi["publisher"],
                 "publicationYear": doi["year"],
-                "types": {"resourceTypeGeneral": "Text", "resourceType": doi["type"]},
+                "types": {"resourceTypeGeneral": doi["type"], "resourceType": doi["type"]},
                 "schemaVersion": "http://datacite.org/schema/kernel-4",
                 "url": doi["url"],
             },
@@ -83,6 +83,13 @@ def submit_doi(doi):
             } ],
         } ]
         attributes['relatedItems'] = relatedItems
+        relatedIdentifiers = [ {
+            "relationType": "IsPublishedIn",
+            "relatedIdentifier": "10.83095/ceurws_04309",
+            "resourceTypeGeneral": "ConferenceProceeding",
+            "relatedIdentifierType": "DOI",
+        } ]
+        attributes['relatedIdentifiers'] = relatedIdentifiers
 
     json_data = json.dumps(data, ensure_ascii=False)
     response = requests.post(
@@ -276,8 +283,12 @@ tmps = data_json.get("doi", "")
 if tmps:
     if not tmps == doiVolume:
         print("WARN: There is already a doi defined: " + tmps)
-        print("WARN: Do not overwrite this with new value: " + doiVolume)
-        doiVolume = tmps
+        # check if we are trying on the DataCite ceurws test server ...
+        if doiPrefix == "10.83838": 
+            print("WARN: Overwriting doi for making it work on test server: " + doiVolume)
+        else:
+            print("WARN: Do not overwrite this with new value: " + doiVolume)
+            doiVolume = tmps
 else:
     if args.verbose:
         print("DOI for volume is " + doiVolume)
@@ -306,8 +317,13 @@ for paper in papers:
     if tmps:
         if not tmps == doiPaper:
             print("WARN: There is already a paper doi " + tmps + " defined for paper " + paperID)
-            print("WARN: Do not overwrite this with new value: " + doiPaper)
-            doiPaper = tmps
+            # check if we are trying on the DataCite ceurws test server ...
+            if doiPrefix == "10.83838": 
+                print("WARN: Overwriting doi for making it work on test server: " + doiPaper)
+                paper["doi"] = doiPaper
+            else:
+                print("WARN: Do not overwrite this with new value: " + doiPaper)
+                doiPaper = tmps
         # else ... nothing to do, instead of registering the doi will be updated later
         # check if there is a paperUrl/landingPage attribute in the metadata - if not set it
         tmps = paper.get("paperUrl")
