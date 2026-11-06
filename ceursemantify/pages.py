@@ -238,23 +238,40 @@ class PaperView:
         title = esc(self.paper.title)
         pages = self.pages_as_html()
         doi = doi_as_html(self.paper.doi)
-        authors = ",\n        ".join(ScholarView(author).as_html("CEURAUTHOR") for author in self.paper.authors)
+        # the preface and other frontmatter carry no paper metadata marks, check-index-errors A47, see issue 73
+        if self.is_frontmatter():
+            title_html = title
+            authors = ",\n        ".join(esc(author.full_name()) for author in self.paper.authors)
+        else:
+            title_html = f"""<span class="CEURTITLE">{title}</span>"""
+            authors = ",\n        ".join(ScholarView(author).as_html("CEURAUTHOR") for author in self.paper.authors)
         # the line breaks after the title and its pages as in the Vol-XXX template, see issue 44
         if pages:
             pages = f" {pages}"
         if self.paper.id:
             item = f"""      <li id="{paper_id}"><a href="{paper_id}/">
-          <span class="CEURTITLE">{title}</span></a>{pages}<br>
+          {title_html}</a>{pages}<br>
         <a href="{pdf_url}">PDF</a> {doi}<br>
         {authors}
       </li>"""
         else:
             item = f"""      <li><a href="{pdf_url}">
-          <span class="CEURTITLE">{title}</span></a>{pages}<br>
+          {title_html}</a>{pages}<br>
         {doi}<br>
         {authors}
       </li>"""
         return item
+
+    def is_frontmatter(self) -> bool:
+        """
+        check whether the paper is a preface or other frontmatter, which
+        check-index-errors A47 identifies by an id containing reface
+
+        Returns:
+            bool: True if the id of the paper contains reface, case insensitive
+        """
+        frontmatter = "reface" in (self.paper.id or "").lower()
+        return frontmatter
 
 
 class VolumePage:

@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<!-- CEURVERSION=2020-07-09 --><html lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="../ceur-ws.css">
+<title>Joint Proceedings of the Workshops and Doctoral Consortium of the 42nd International Conference on Logic Programming (ICLP-WS-DC 2026)</title>
+</head>
+<!--CEURLANG=eng -->
+<body>
+
+<table style="border: 0; border-spacing: 0; border-collapse: collapse; width: 95%">
+<tbody><tr>
+<td style="text-align: left; vertical-align: middle">
+<a href="https://ceur-ws.org/"><div id="CEURWSLOGO"></div></a>
+</td>
+<td style="text-align: right; vertical-align: middle">
+<div style="float:left" id="CEURCCBY"></div>
+<span class="CEURVOLNR">Vol-4311</span> <br>
+<span class="CEURURN">urn:nbn:de:0074-4311-C</span>
+<p class="unobtrusive copyright" style="text-align: justify">Copyright © 2026 for 
+the individual papers by the papers' authors. 
+Copyright © <span class="CEURPUBYEAR">2026</span> for the volume
+as a collection by its editors.
+This volume and its papers are published under the
+Creative Commons License Attribution 4.0 International
+<a href="https://creativecommons.org/licenses/by/4.0/">(<span class="CEURLIC">CC BY 4.0</span>)</a>.</p>
+</td>
+</tr>
+</tbody></table>
+
+<hr>
+
+<br><br><br>
+
+<h1><a href="https://www.floc26.org/program"><span class="CEURVOLACRONYM">ICLP-WS-DC 2026</span></a><br>
+<span class="CEURVOLTITLE">ICLP Workshops and Doctoral Consortium 2026</span></h1>
+<br>
+
+<h2>
+<span class="CEURFULLTITLE">Joint Proceedings of the Workshops and Doctoral Consortium of the 42nd International Conference on Logic Programming (ICLP-WS-DC 2026)</span><br>
+co-located with 42nd International Conference on Logic Programming (<span class="CEURCOLOCATED">ICLP 2026</span>)<br>
+</h2>
+<h3><span class="CEURLOCTIME">Lisbon, Portugal, July 20-23, 2026</span>.</h3> 
+
+<br>
+<b> Edited by </b>
+<h3>
+  <span class="CEURVOLEDITOR">Mario Alviano</span> <sup>3</sup><br>
+  <span class="CEURVOLEDITOR">Denise Angilica</span> <sup>3</sup><br>
+  <span class="CEURVOLEDITOR">Sotirios Batsakis</span> <sup>4</sup><br>
+  <span class="CEURVOLEDITOR">Alessandro Bertagnon</span> <sup>10</sup><br>
+  <span class="CEURVOLEDITOR">Stefania Costantini</span> <sup>9</sup><br>
+  <span class="CEURVOLEDITOR">Gopal Gupta</span> <sup>8</sup><br>
+  <span class="CEURVOLEDITOR">Susana Hahn</span> <sup>6</sup><br>
+  <span class="CEURVOLEDITOR">Markus Hecher</span> <sup>5</sup><br>
+  <span class="CEURVOLEDITOR">Marco Maratea</span> <sup>3</sup><br>
+  <span class="CEURVOLEDITOR">Brais Muñiz</span> <sup>1</sup><br>
+  <span class="CEURVOLEDITOR">Luis Angel Rodriguez Reiners</span> <sup>3</sup><br>
+  <span class="CEURVOLEDITOR">Manuel Alejandro Borroto Santana</span> <sup>3</sup><br>
+  <span class="CEURVOLEDITOR">Torsten Schaub</span> <sup>6</sup><br>
+  <span class="CEURVOLEDITOR">Enrico Scala</span> <sup>11</sup><br>
+  <span class="CEURVOLEDITOR">Fabrizio Lo Scudo</span> <sup>3</sup><br>
+  <span class="CEURVOLEDITOR">Luciano Serafini</span> <sup>12</sup><br>
+  <span class="CEURVOLEDITOR">Alice Tarzariol</span> <sup>2</sup><br>
+  <span class="CEURVOLEDITOR">Mauro Vallati</span> <sup>13</sup><br>
+  <span class="CEURVOLEDITOR">Simon Vandevelde</span> <sup>7</sup><br>
+	
+</h3>
+	<sup>1</sup>University of A Coruña, Spain<br>
+	<sup>2</sup>University of Klagenfurt, Austria<br>
+	<sup>3</sup>University of Calabria, Italy<br>
+	<sup>4</sup>Hellenic Mediterranean University<br>
+	<sup>5</sup>University of Artois, CNRS, Computer Science Research Center of Lens (CRIL), France<br>
+	<sup>6</sup>University of Potsdam, Germany<br>
+	<sup>7</sup>KU Leuven, Belgium<br>
+	<sup>8</sup>The University of Texas at Dallas, USA<br>
+	<sup>9</sup>Università degli Studi dell'Aquila, Italy<br>
+	<sup>10</sup>University of Ferrara, Italy<br>
+	<sup>12</sup>University of Brescia, Italy<br>
+	<sup>13</sup>FBK, Italy<br>
+	<sup>14</sup>University of Huddersfield, United Kingdom<br>
+<br>
+
+<hr>
+
+<br><br><br>
+
+
+<div class="CEURTOC">
+<h2> Table of Contents </h2>
+
+<ul>
+<li id="preface">
+<a href="preface.pdf">Preface</a><br>
+<span class="CEURAUTHOR">Miguel Areias</span>,
+<span class="CEURAUTHOR">Vítor Santos Costa</span>,
+<span class="CEURAUTHOR">Ricardo Rocha</span>
+<br>
+This volume collects the papers accepted for publication at five
+workshops and the Doctoral Consortium associated with the 42nd
+International Conference on Logic Programming (ICLP 2026).  The events
+took place in Lisbon, Portugal, on July 20-23, 2026. There
+were <span class="CEURSUBMITTEDPAPERS">57</span> papers submitted for
+peer-review to the workshops and the Doctoral Consortium included in
+this volume.  After a thorough review
+process, <span class="CEURACCEPTEDPAPERS">55</span> papers were
+accepted for publication, 44 of which were presented at the workshops
+and 11 at the Doctoral Consortium.  Of the 44 workshop papers
+presented at
+workshops, <span class="CEURACCEPTEDREGULARPAPERS">36</span> were
+regular papers, 6 were short papers, and 2 were abstracts
+corresponding to invited talks. The Doctoral Consortium papers were
+all short papers.
+
+</li>
+</ul>
+
+<br>
+
+<h3><span class="CEURSESSION">Answer Set Programming and Other Computing Paradigms (ASPOCP)</span></h3>
+
+<h4><span class="CEURSESSION">Regular papers</span></h4>
+
+<ul>
+<li id="ASPOCP_regular_01"><a href="ASPOCP_regular_01.pdf">
+<span class="CEURTITLE">Modeling the Resource-Constrained Project Scheduling Problem with Answer Set Programming</span></a>
+<span class="CEURPAGES">1–16</span>
+<br>
+<span class="CEURAUTHOR">Mohammed M.S. El-Kholany</span>,
+<span class="CEURAUTHOR">Martin Gebser</span>,
+<span class="CEURAUTHOR">Dorde Markovic</span>,
+<span class="CEURAUTHOR">Gianluca Zavan</span>
+ </li>
+  
+<li id="ASPOCP_regular_02"><a href="ASPOCP_regular_02.pdf">
+<span class="CEURTITLE">Asplain: An ASP System for Contrastive Explanations</span></a> 
+<span class="CEURPAGES">17–32</span>
+<br>
+<span class="CEURAUTHOR">Susana Hahn</span>,
+<span class="CEURAUTHOR">Brais Muñiz</span>,
+<span class="CEURAUTHOR">Orkunt Sabuncu</span>,
+<span class="CEURAUTHOR">Torsten Schaub</span>,
+<span class="CEURAUTHOR">Tran Cao Son</span>,
+<span class="CEURAUTHOR">Hannes Weichelt</span>
+</li>
+
+<li id="ASPOCP_regular_03"><a href="ASPOCP_regular_03.pdf">
+<span class="CEURTITLE">Dynamic Equilibrium Logic for Action and Change: Abridged report</span></a> 
+<span class="CEURPAGES">33–49</span>
+<br>
+<span class="CEURAUTHOR">Arvid Becker</span>,
+<span class="CEURAUTHOR">Martín Diéguez</span>,
+<span class="CEURAUTHOR">Susana Hahn</span>,
+<span class="CEURAUTHOR">Torsten Schaub</span>
+</li>
+
+<li id="ASPOCP_regular_04"><a href="ASPOCP_regular_04.pdf">
+<span class="CEURTITLE">Flaspland: A Testbed for Routing and Scheduling in
+Answer Set Programming (Preliminary Report)</span></a> 
+<span class="CEURPAGES">50–63</span>
+<br>
+<span class="CEURAUTHOR">Ryan Murphy</span>,
+<span class="CEURAUTHOR">Amadé Nemes</span>,
+<span class="CEURAUTHOR">Javier Romero</span>,
+<span class="CEURAUTHOR">Torsten Schaub</span>
+</li>
+
+<li id="ASPOCP_regular_05"><a href="ASPOCP_regular_05.pdf">
+<span class="CEURTITLE">Finding Counterexamples for External Equivalence: Preliminary Report</span></a> 
+<span class="CEURPAGES">64–75</span>
+<br>
+<span class="CEURAUTHOR">Jorge Fandinno</span>,
+<span class="CEURAUTHOR">Jan Heuer</span>,
+<span class="CEURAUTHOR">Tomi Janhunen</span>,
+<span class="CEURAUTHOR">Javier Romero</span>,
+<span class="CEURAUTHOR">Torsten Schaub</span>
+</li>
+
+<li id="ASPOCP_regular_06"><a href="ASPOCP_regular_06.pdf">
+<span class="CEURTITLE">Solving configuration problems with unbounded
+cardinalities in COOM: Preliminary report</span></a> 
+<span class="CEURPAGES">76–95</span>
+<br>
+<span class="CEURAUTHOR">Joachim Baumeister</span>,
+<span class="CEURAUTHOR">Konstantin Herud</span>,
+<span class="CEURAUTHOR">Jan Heuer</span>,
+<span class="CEURAUTHOR">Jochen Reutelshöfer</span>,
+<span class="CEURAUTHOR">Nicolas Rühling</span>,
+<span class="CEURAUTHOR">Abdallah Saffidine</span>,
+<span class="CEURAUTHOR">Torsten Schaub</span>
+</li>
+
+<li id="ASPOCP_regular_07"><a href="ASPOCP_regular_07.pdf">
+<span class="CEURTITLE">Aspen-tree: A System for Non-ground Meta-programming in ASP</span></a> 
+<span class="CEURPAGES">96–106</span>
+<br>
+<span class="CEURAUTHOR">Amadé Nemes</span>,
+<span class="CEURAUTHOR">Torsten Schaub</span>
+</li>
+
+<li id="ASPOCP_regular_08"><a href="ASPOCP_regular_08.pdf">
+<span class="CEURTITLE">Implementing Operator-Based Semantics for Normal
+Logic Programs using Meta-Programming in ASP</span></a> 
+<span class="CEURPAGES">107–120</span>
+<br>
+<span class="CEURAUTHOR">Jesse Heyninck</span>,
+<span class="CEURAUTHOR">Spencer Killen</span>,
+<span class="CEURAUTHOR">Jeroen Spaans</span>
+</li>
+
+<li id="ASPOCP_regular_09"><a href="ASPOCP_regular_09.pdf">
+<span class="CEURTITLE">Towards ASP-Based Composition of Scientific Workflows</span></a> 
+<span class="CEURPAGES">121–135</span>
+<br>
+<span class="CEURAUTHOR">Nikolas Bertrand</span>,
+<span class="CEURAUTHOR">Charlotte Grunert</span>,
+<span class="CEURAUTHOR">Mario Frank</span>,
+<span class="CEURAUTHOR">Anna-Lena Lamprecht</span> 
+</li>
+<li id="ASPOCP_regular_10"><a href="ASPOCP_regular_10.pdf">
+<span class="CEURTITLE">Between Two Worlds: Logica Intertwines ASP and SQL</span></a> 
+<span class="CEURPAGES">136–150</span>
+<br>
+<span class="CEURAUTHOR">Evgeny Skvortsov</span>,
+<span class="CEURAUTHOR">Yilin Xia</span>,
+<span class="CEURAUTHOR">Ojaswa Garg</span>,
+<span class="CEURAUTHOR">Shawn Bowers</span>,
+<span class="CEURAUTHOR">Bertram Ludäscher</span>
+</li>
+<li id="ASPOCP_regular_11"><a href="ASPOCP_regular_11.pdf">
+<span class="CEURTITLE">Instance-Aware AMOSUM Propagator Selection in ASP</span></a> 
+<span class="CEURPAGES">151–165</span>
+<br>
+<span class="CEURAUTHOR">Mario Alviano</span>,
+<span class="CEURAUTHOR">Carmine Dodaro</span>,
+<span class="CEURAUTHOR">Thomas Eiter</span>,
+<span class="CEURAUTHOR">Salvatore Fiorentino</span>,
+<span class="CEURAUTHOR">Tobias Geibinger</span>,
+<span class="CEURAUTHOR">Megan Macrì</span>
+</li>
+
+<li id="ASPOCP_regular_12"><a href="ASPOCP_regular_12.pdf">
+<span class="CEURTITLE">Declarative Spatial Reasoning in Temporal Here-and-There
+with Constraints</span></a> 
+<span class="CEURPAGES">166–180</span>
+<br>
+<span class="CEURAUTHOR">François Olivier</span>,
+<span class="CEURAUTHOR">Martín Diéguez</span>,
+<span class="CEURAUTHOR">Carl Schultz</span>
+</li>
+</ul>
+
+<h4><span class="CEURSESSION">Short papers</span></h4>
+
+<ul>
+<li id="ASPOCP_short_01"><a href="ASPOCP_short_01.pdf">
+<span class="CEURTITLE">Neural Decision–Propagation for Answer Set Programming (Extended Abstract)</span></a> 
+<span class="CEURPAGES">181–187</span>
+<br>
+<span class="CEURAUTHOR">Thomas Eiter</span>,
+<span class="CEURAUTHOR">Katsumi Inoue</span>,
+<span class="CEURAUTHOR">Sota Moriyama</span>
+</li>
+</ul>
+
+
+
+<h4><span class="CEURSESSION">Abstract papers</span></h4>
+
+<ul>
+<li id="ASPOCP_abstract_01"><a href="ASPOCP_abstract_01.pdf">
+<span class="CEURTITLE">ASPECT: Answer Set rePresentation as vEctor graphiCs in laTex (Invited Talk)</span></a> 
+<span class="CEURPAGES">188–189</span>
+<br>
+<span class="CEURAUTHOR">Marco Gavanelli</span>
+</li>
+</ul>
+
+<h3><span class="CEURSESSION">Workshop on Cognitive Architectures for Robotics: LLMs and Logic in Action (CARLA)</span></h3>
+
+
+<h4><span class="CEURSESSION">Regular papers</span></h4>
+
+<ul>
+<li id="CARLA_regular_01"><a href="CARLA_regular_01.pdf">
+<span class="CEURTITLE">Logic-Based Multi-Robot Coordination in Digital Twins: A DALI2 + CoppeliaSim Case Study for Cooperative Search and Rescue</span></a> 
+<span class="CEURPAGES">190–202</span>
+<br>
+<span class="CEURAUTHOR">Lorenzo De Lauretis</span>, 
+<span class="CEURAUTHOR">Giovanni De Gasperis</span>,
+<span class="CEURAUTHOR">Stefania Costantini</span>
+</li>
+
+<li id="CARLA_regular_02"><a href="CARLA_regular_02.pdf">
+<span class="CEURTITLE">ASPembly: Neuro-Symbolic Knowledge Extraction of Assembly Instructions into ASP</span></a> 
+<span class="CEURPAGES">203–212</span>
+<br>
+<span class="CEURAUTHOR">Mario Alviano</span>, 
+<span class="CEURAUTHOR">Lorenzo Grillo</span>,
+<span class="CEURAUTHOR">Pierpaolo Sestito</span>
+</li>
+
+<li id="CARLA_regular_03"><a href="CARLA_regular_03.pdf">
+<span class="CEURTITLE">CoSP-TL: Common Sense enhanced Planning under Temporal Logics constraints with LLMs</span></a> 
+<span class="CEURPAGES">213–226</span>
+<br>
+<span class="CEURAUTHOR">Emanuele Musumeci</span>, 
+<span class="CEURAUTHOR">Alessio Saladino</span>, 
+<span class="CEURAUTHOR">Elena Umili</span>, 
+<span class="CEURAUTHOR">Luca Iocchi</span>,
+<span class="CEURAUTHOR">Daniele Nardi</span>
+</li>
+
+</ul>
+
+
+<h4><span class="CEURSESSION">Short papers</span></h4>
+
+<ul>
+<li id="CARLA_short_01"><a href="CARLA_short_01.pdf">
+<span class="CEURTITLE">A Neuro-Symbolic Agent for Video Anomaly Detection</span></a> 
+<span class="CEURPAGES">227–232</span>
+<br>
+<span class="CEURAUTHOR">Alessia Donata Camarda</span>, 
+<span class="CEURAUTHOR">Giovambattista Ianni</span>,
+<span class="CEURAUTHOR">Angelo Laface</span>
+</li>
+
+</ul>
+
+
+
+<h3><span class="CEURSESSION">Workshop on End-User Logic Programming (EULP)</span></h3>
+
+
+<h4><span class="CEURSESSION">Regular papers</span></h4>
+
+<ul>
+<li id="EULP_regular_01"><a href="EULP_regular_01.pdf">
+<span class="CEURTITLE">Defining Routines in DaaS: Visual Logic Programming for Mesh Network Policies - Preliminary Report</span></a> 
+<span class="CEURPAGES">233–242</span>
+<br>
+<span class="CEURAUTHOR">Lorenzo Grillo</span>, 
+<span class="CEURAUTHOR">Pierpaolo Sestito</span>
+</li>
+</ul>
+
+
+<h4><span class="CEURSESSION">Short papers</span></h4>
+
+<ul>
+<li id="EULP_short_01"><a href="EULP_short_01.pdf">
+<span class="CEURTITLE">Generating RTEC Programs with LLMs</span></a> 
+<span class="CEURPAGES">243–247</span>
+<br>
+<span class="CEURAUTHOR">Andreas Kouvaras</span>, 
+<span class="CEURAUTHOR">Periklis Mantenoglou</span>,
+<span class="CEURAUTHOR">Alexander Artikis</span>
+</li>
+
+<li id="EULP_short_02"><a href="EULP_short_02.pdf">
+<span class="CEURTITLE">LLMASP-LGX: A Lightweight Gateway to Logic-Guided Reasoning with LLMs and ASP</span></a> 
+<span class="CEURPAGES">248–252</span>
+<br>
+<span class="CEURAUTHOR">Mario Alviano</span>, 
+<span class="CEURAUTHOR">Lorenzo Grillo</span>, 
+<span class="CEURAUTHOR">Nicola Leone</span>,
+<span class="CEURAUTHOR">Fabrizio Lo Scudo</span>
+</li>
+
+<li id="EULP_short_03"><a href="EULP_short_03.pdf">
+<span class="CEURTITLE">clindocs: A system for automatic documentation of ASP programs</span></a> 
+<span class="CEURPAGES">253–259</span>
+<br>
+<span class="CEURAUTHOR">Dominik Gerndt</span>,
+<span class="CEURAUTHOR">Susana Hahn</span>
+</li>
+
+<li id="EULP_short_04"><a href="EULP_short_04.pdf">
+<span class="CEURTITLE">Verbalizing Answer Sets: the Map-Summarize Paradigm</span></a> 
+<span class="CEURPAGES">260–265</span>
+<br>
+<span class="CEURAUTHOR">Mario Alviano</span>, 
+<span class="CEURAUTHOR">Matteo Capalbo</span>,
+<span class="CEURAUTHOR">Sebastiano A. Piccolo</span>
+</li>
+
+</ul>
+
+
+<h4><span class="CEURSESSION">Abstract papers</span></h4>
+
+<ul>
+<li id="EULP_abstract_01"><a href="EULP_abstract_01.pdf">
+<span class="CEURTITLE">One more step towards Easy Answer Set Programming (Invited Talk)</span></a> 
+<span class="CEURPAGES">266–266</span>
+<br>
+<span class="CEURAUTHOR">Javier Romero</span>
+</li>
+
+</ul>
+
+
+
+<h3><span class="CEURSESSION">Prolog Education Workshop (PEG)</span></h3>
+
+
+<h4><span class="CEURSESSION">Regular papers</span></h4>
+
+<ul>
+<li id="PEG_regular_01"><a href="PEG_regular_01.pdf">
+<span class="CEURTITLE">Logical Minecraft: Teaching Logical Thinking through Games</span></a> 
+<span class="CEURPAGES">267–275</span>
+<br>
+<span class="CEURAUTHOR">Simon Vandevelde</span>
+</li>
+
+<li id="PEG_regular_02"><a href="PEG_regular_02.pdf">
+<span class="CEURTITLE">IMPLY - A Logic Learning Game for Pre-literate Children</span></a> 
+<span class="CEURPAGES">276–282</span>
+<br>
+<span class="CEURAUTHOR">Mario Wenzel</span> 
+</li>
+
+<li id="PEG_regular_03"><a href="PEG_regular_03.pdf">
+<span class="CEURTITLE">Web Platform for Symbolic AI and Knowledge</span></a> 
+<span class="CEURPAGES">283–293</span>
+<br>
+<span class="CEURAUTHOR">Magdalena Maglizhanova</span>,  
+<span class="CEURAUTHOR">Veneta Tabakova-Komsalova</span>, 
+<span class="CEURAUTHOR">Veronica Dahl</span>,  
+<span class="CEURAUTHOR">Stanimir Stoyanov</span>,  
+<span class="CEURAUTHOR">Srebrin Srebrev</span>,  
+<span class="CEURAUTHOR">Tanya Srebreva</span>
+</li>
+
+<li id="PEG_regular_04"><a href="PEG_regular_04.pdf">
+<span class="CEURTITLE">Connecting Artistic and Logical Reasoning: The Bento Box as a Conceptual Tool for Logic Programming Education in Art and Design</span></a> 
+<span class="CEURPAGES">294–303</span>
+<br>
+<span class="CEURAUTHOR">Christian Jendreiko</span>
+</li>
+
+<li id="PEG_regular_05"><a href="PEG_regular_05.pdf">
+<span class="CEURTITLE">Symbolic Artificial Intelligence for Preserving Linguistic and Cultural Diversity</span></a> 
+<span class="CEURPAGES">304–316</span>
+<br>
+<span class="CEURAUTHOR">Radomira Lazarova</span>,  
+<span class="CEURAUTHOR">Veneta Tabakova-Komsalova</span>, 
+<span class="CEURAUTHOR">Stanimir Stoyanov</span>,  
+<span class="CEURAUTHOR">Ivan Stoyanov</span>
+</li>
+
+
+<li id="PEG_regular_06"><a href="PEG_regular_06.pdf">
+<span class="CEURTITLE">ProverSLD: An Interactive Visualizer for Teaching SLD Resolution in Prolog and First-Order Logic</span></a> 
+<span class="CEURPAGES">317–328</span>
+<br>
+<span class="CEURAUTHOR">Ján Perháč</span>,  
+<span class="CEURAUTHOR">Patrik Čmil</span>,  
+<span class="CEURAUTHOR">Samuel Novotný</span>
+</li>
+
+<li id="PEG_regular_07"><a href="PEG_regular_07.pdf">
+<span class="CEURTITLE">Solving P-99 at the age of LLM – Examples and Pedagogical Considerations</span></a> 
+<span class="CEURPAGES">329–342</span>
+<br>
+<span class="CEURAUTHOR">Fred Mesnard</span>,  
+<span class="CEURAUTHOR">Thierry Marianne</span>, 
+<span class="CEURAUTHOR">Etienne Payet</span>, 
+<span class="CEURAUTHOR">Wim Vanhoof</span>
+</li>
+
+
+<li id="PEG_regular_08"><a href="PEG_regular_08.pdf">
+<span class="CEURTITLE">Using Prolog for a Compilers Course</span></a> 
+<span class="CEURPAGES">343–348</span>
+<br>
+<span class="CEURAUTHOR">Salvador Abreu</span>
+</li>
+
+<li id="PEG_regular_09"><a href="PEG_regular_09.pdf">
+<span class="CEURTITLE">Cracking Messages: Logic Programming to Secret Communication</span></a> 
+<span class="CEURPAGES">349–360</span>
+<br>
+<span class="CEURAUTHOR">Magdalena Maglizhanova</span>,  
+<span class="CEURAUTHOR">Laura A. Cecchi</span>, 
+<span class="CEURAUTHOR">Veneta Tabakova-Komsalova</span>, 
+<span class="CEURAUTHOR">Jorge P. Rodríguez</span>
+</li>
+
+<li id="PEG_regular_10"><a href="PEG_regular_10.pdf">
+<span class="CEURTITLE">Using Logica to Teach About Parallel Complexity</span></a> 
+<span class="CEURPAGES">361–369</span>
+<br>
+<span class="CEURAUTHOR">Evgeny Skvortsov</span>,  
+<span class="CEURAUTHOR">David S. Warren</span>, 
+<span class="CEURAUTHOR">Ojaswa Garg</span>,  
+<span class="CEURAUTHOR">Yilin Xia</span>, 
+<span class="CEURAUTHOR">Shawn Bowers</span>, 
+<span class="CEURAUTHOR">Bertram Ludäscher</span>
+</li>
+
+<li id="PEG_regular_11"><a href="PEG_regular_11.pdf">
+<span class="CEURTITLE">Are we intelligent enough to judge intelligence? Proposal for a New PEG Task Force to Develop AI Tests</span></a> 
+<span class="CEURPAGES">370–382</span>
+<br>
+<span class="CEURAUTHOR">Magdalena Maglizhanova</span>,  
+<span class="CEURAUTHOR">Christian Jendreiko</span>, 
+<span class="CEURAUTHOR">Jacinto A. Dávila Quintero</span>,  
+<span class="CEURAUTHOR">Veronica Dahl</span>, 
+<span class="CEURAUTHOR">Laura A. Cecchi</span>
+</li>
+
+
+<li id="PEG_regular_12"><a href="PEG_regular_12.pdf">
+<span class="CEURTITLE">Embodied Declarative Logic: Learning Logica via Orchestrating Robot Behavior</span></a> 
+<span class="CEURPAGES">383–389</span>
+<br>
+<span class="CEURAUTHOR">Evgeny Skvortsov</span>,  
+<span class="CEURAUTHOR">Ojaswa Garg</span>,  
+<span class="CEURAUTHOR">Yilin Xia</span>, 
+<span class="CEURAUTHOR">Shawn Bowers</span>, 
+<span class="CEURAUTHOR">Bertram Ludäscher</span>
+</li>
+
+<li id="PEG_regular_13"><a href="PEG_regular_13.pdf">
+<span class="CEURTITLE">Logical English 2: A Reimplementation</span></a> 
+<span class="CEURPAGES">390–397</span>
+<br>
+<span class="CEURAUTHOR">Miguel Calejo</span>, 
+<span class="CEURAUTHOR">Jacinto A. Dávila Quintero</span>
+</li>
+
+<li id="PEG_regular_14"><a href="PEG_regular_14.pdf">
+<span class="CEURTITLE">Prolog–Blockly Playgrounds for Logical Reasoning through Natural Deduction</span></a> 
+<span class="CEURPAGES">398–407</span>
+<br>
+<span class="CEURAUTHOR">Joaquín Arias</span>, 
+<span class="CEURAUTHOR">Alberto Scocco</span>
+</li>
+
+</ul>
+
+
+
+
+<h3><span class="CEURSESSION">Workshop on Experimental Evaluation of Algorithms for Solving Problems with Combinatorial Explosion (RCRA)</span></h3>
+
+
+<h4><span class="CEURSESSION">Regular papers</span></h4>
+
+<ul>
+<li id="RCRA_regular_01"><a href="RCRA_regular_01.pdf">
+<span class="CEURTITLE">Contextualizing Large Language Models Alongside Specialized Information Extraction and Question Answering Systems</span></a>
+<span class="CEURPAGES">408–422</span>
+<br>
+<span class="CEURAUTHOR">Josh Gryzen</span>,
+<span class="CEURAUTHOR">Yuliya Lierler</span>,
+<span class="CEURAUTHOR">Francisco Ramirez</span>
+</li>
+
+<li id="RCRA_regular_02"><a href="RCRA_regular_02.pdf">
+<span class="CEURTITLE">Symmetry Breaking Constraints for SAT Solving</span></a>
+<span class="CEURPAGES">423–432</span>
+<br>
+<span class="CEURAUTHOR">Martin Struk</span>,
+<span class="CEURAUTHOR">Mikoláš Janota</span>
+</li>
+
+<li id="RCRA_regular_03"><a href="RCRA_regular_03.pdf">
+<span class="CEURTITLE">Components of Information Flow Underlying Heuristic Decisions in Constraint Satisfaction Search</span></a>
+<span class="CEURPAGES">433–447</span>
+<br>
+<span class="CEURAUTHOR">Richard J. Wallace</span>
+</li>
+
+<li id="RCRA_regular_04"><a href="RCRA_regular_04.pdf">
+<span class="CEURTITLE">Neural Network Based Analysis of Amenability of CSPs to Different Heuristic Actions</span></a>
+<span class="CEURPAGES">448–459</span>
+<br>
+<span class="CEURAUTHOR">Richard J. Wallace</span>
+</li>
+
+<li id="RCRA_regular_05"><a href="RCRA_regular_05.pdf">
+<span class="CEURTITLE">Efficient Interpretability Reasoning for Decision Trees</span></a>
+<span class="CEURPAGES">460–475</span>
+<br>
+<span class="CEURAUTHOR">Joao Marques-Silva</span>,
+<span class="CEURAUTHOR">Alexey Ignatiev</span>
+</li> 
+
+<li id="RCRA_regular_06"><a href="RCRA_regular_06.pdf">
+<span class="CEURTITLE">Declarative Communication Filters for Controlled LLM Integration in Logic-Based Multi-Agent Systems</span></a>
+<span class="CEURPAGES">476–486</span>
+<br>
+<span class="CEURAUTHOR">Lorenzo De Lauretis</span>,
+<span class="CEURAUTHOR">Stefania Costantini</span>
+</li>
+
+</ul>
+
+
+<h3><span class="CEURSESSION">Doctoral Consortium on Logic Programming (DC)</span></h3>
+
+
+<h4><span class="CEURSESSION">Short papers</span></h4>
+
+<ul>
+<li id="DC_short_01"><a href="DC_short_01.pdf">
+<span class="CEURTITLE">Integrating Description Logics and Answer Set Programming for Explainable Decision-Making in Digital Health</span></a> 
+<span class="CEURPAGES">487–493</span>
+<br>
+<span class="CEURAUTHOR">Alina Vozna</span>
+</li>
+
+<li id="DC_short_02"><a href="DC_short_02.pdf">
+<span class="CEURTITLE">Computational methods for Dynamic Answer Set Programming</span></a> 
+<span class="CEURPAGES">494–501</span>
+<br>
+<span class="CEURAUTHOR">Susana Hahn</span>
+</li>
+
+<li id="DC_short_03"><a href="DC_short_03.pdf">
+<span class="CEURTITLE">Logical Foundations of Dynamical Answer Set Programming</span></a> 
+<span class="CEURPAGES">502–506</span>
+<br>
+<span class="CEURAUTHOR">Arivd Becker</span>
+</li>
+
+<li id="DC_short_04"><a href="DC_short_04.pdf">
+<span class="CEURTITLE">Hybrid Answer Set Programming: Foundations and Applications</span></a> 
+<span class="CEURPAGES">507–515</span>
+<br>
+<span class="CEURAUTHOR">Nicolas Rühling</span>
+</li>
+
+<li id="DC_short_05"><a href="DC_short_05.pdf">
+<span class="CEURTITLE">A Three-Layer Reduction Framework for Scalable Verification of Maritime Vessel Systems under Uncertainty</span></a> 
+<span class="CEURPAGES">516–521</span>
+<br>
+<span class="CEURAUTHOR">Hiba Ben Lahbib</span>
+</li>
+
+<li id="DC_short_06"><a href="DC_short_06.pdf">
+<span class="CEURTITLE">Advancing Knowledge-Based Reasoning for Automated Workflow Composition</span></a> 
+<span class="CEURPAGES">522–527</span>
+<br>
+<span class="CEURAUTHOR">Nikolas Bertrand</span>
+</li>
+
+<li id="DC_short_07"><a href="DC_short_07.pdf">
+<span class="CEURTITLE">Formal Methods for Answer Set Programming</span></a> 
+<span class="CEURPAGES">528–533</span>
+<br>
+<span class="CEURAUTHOR">Jan Heuer</span>
+</li>
+
+<li id="DC_short_08"><a href="DC_short_08.pdf">
+<span class="CEURTITLE">Modeling Railway Systems in Answer Set Programming</span></a> 
+<span class="CEURPAGES">534–539</span>
+<br>
+<span class="CEURAUTHOR">Ryan Murphy</span>
+</li>
+
+<li id="DC_short_09"><a href="DC_short_09.pdf">
+<span class="CEURTITLE">Defeasible Normative Reasoning: a Deontic Equilibrium Logic approach</span></a> 
+<span class="CEURPAGES">540–544</span>
+<br>
+<span class="CEURAUTHOR">Ovidio Manteiga</span>
+</li>
+<li id="DC_short_10"><a href="DC_short_10.pdf">
+<span class="CEURTITLE">Enhancing the Extensibility of Answer Set Programming via Meta-Programming</span></a> 
+<span class="CEURPAGES">545–549</span>
+<br>
+<span class="CEURAUTHOR">Amadé Nemes</span>
+</li>
+<li id="DC_short_11"><a href="DC_short_11.pdf">
+<span class="CEURTITLE">Differentiable Answer Set Programming for Neurosymbolic AI</span></a> 
+<span class="CEURPAGES">550–556</span>
+<br>
+<span class="CEURAUTHOR">Sota Moriyama</span>
+</li>
+</ul>
+
+</div>
+
+
+<hr>
+<span class="unobtrusive">
+2026-10-23: submitted by Miguel Areias, 
+            metadata incl. bibliographic data published under <a href="https://creativecommons.org/publicdomain/zero/1.0/">Creative Commons CC0</a><br>
+<span class="CEURPUBDATE">2026-11-03</span>: published on CEUR Workshop Proceedings (CEUR-WS.org, ISSN 1613-0073)
+	|<a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fceur-ws.org%2FVol-4311%2F">valid HTML5</a>|
+</span>
+</body></html>

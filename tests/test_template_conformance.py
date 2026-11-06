@@ -274,6 +274,22 @@ class TestTemplateConformance(BaseCeurTest):
             [paper["paperUrl"] for paper in proceedings["papers"]], [paper.paperUrl for paper in from_yaml.papers]
         )
 
+    def test_preface_without_marks(self) -> None:
+        """
+        issue 73: the preface entry of the generated page carries no CEURTITLE and no
+        CEURAUTHOR, check-index-errors A47 of V0.95f; the chair page of Vol-4312 has
+        the preface as a plain link, the one of Vol-4311 with CEURAUTHOR marks
+        """
+        preface_pattern = re.compile(r'<li id="preface">.*?</li>', re.S)
+        for volume in ["Vol-4312", "Vol-4311"]:
+            with self.subTest(volume=volume):
+                pages = self.generate(volume)
+                preface = preface_pattern.search(pages["generated"])
+                self.assertIsNotNone(preface, "no preface entry on the generated page")
+                self.assertNotIn("CEURTITLE", preface.group(0))
+                self.assertNotIn("CEURAUTHOR", preface.group(0))
+                self.assertIn("Preface</a>", preface.group(0))
+
     def event_of(self, jsonld_text: str) -> Dict[str, Any]:
         """
         get the event node of the given index.jsonld text
