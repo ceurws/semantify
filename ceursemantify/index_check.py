@@ -84,7 +84,9 @@ class IndexCheck:
 
     def errors(self, volume_dir: str) -> Optional[Set[str]]:
         """
-        get the rule ids the team check and the chair check report in the given volume directory
+        get the rule ids the check reports in the given volume directory; the
+        script chooses the team check for a published volume and the chair check
+        otherwise, the gate never forces the chair check with pre, see issue 68
 
         Args:
             volume_dir: the directory holding the index.html to check
@@ -93,8 +95,8 @@ class IndexCheck:
             Optional[Set[str]]: the rule ids, None if the check did not run
         """
         errors = None
-        runs = [self.run(volume_dir), self.run(volume_dir, pre=True)]
-        if all(run.ran for run in runs):
-            errors = runs[0].errors | runs[1].errors
-        self.last_output = "\n".join(run.output for run in runs)
+        run = self.run(volume_dir)
+        if run.ran:
+            errors = run.errors
+        self.last_output = run.output
         return errors
