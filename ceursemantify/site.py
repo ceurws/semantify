@@ -257,7 +257,10 @@ class Site:
 
     def jsonld_paths(self, year: Optional[int] = None) -> List[str]:
         """
-        get the paths of the JSON-LD files of the volumes
+        get the paths of the JSON-LD files of the volumes: in the year tree
+        <root>/<year>/Vol-N/index.jsonld of the generated site and, when no year
+        is asked for, also directly under the root as <root>/Vol-N/index.jsonld,
+        the layout of the publication host, see issue 18
 
         Args:
             year: the year to get the files for, all years if None
@@ -266,8 +269,10 @@ class Site:
             List[str]: the sorted paths of the index.jsonld files
         """
         year_pattern = str(year) if year is not None else "[0-9][0-9][0-9][0-9]"
-        pattern = os.path.join(self.root, year_pattern, "Vol-*", "index.jsonld")
-        paths = sorted(glob.glob(pattern))
+        patterns = [os.path.join(self.root, year_pattern, "Vol-*", "index.jsonld")]
+        if year is None:
+            patterns.append(os.path.join(self.root, "Vol-*", "index.jsonld"))
+        paths = sorted(path for pattern in patterns for path in glob.glob(pattern))
         return paths
 
     def volume_numbers(self, year: int) -> List[int]:

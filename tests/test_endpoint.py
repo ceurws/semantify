@@ -4,9 +4,12 @@ Created on 2026-10-01
 @author: wf
 """
 
+import os
+import shutil
 import tempfile
 
 from ceursemantify.endpoint import SptEndpoint
+from ceursemantify.site import Site
 from tests.base_ceurtest import BaseCeurTest
 
 
@@ -39,3 +42,23 @@ SELECT ?number WHERE {
 } ORDER BY ?number"""
             numbers = [int(row.number) for row in endpoint.graph.query(query)]
             self.assertEqual([3889, 4175], numbers)
+
+    def test_load_flat_layout(self) -> None:
+        """
+        issue 18: on ceur-ws.org the volumes lie directly under www as Vol-N/index.jsonld,
+        without the year level of the generated tree; --serve on that directory loads them
+        """
+        with tempfile.TemporaryDirectory() as www_dir:
+            sources = {
+                "Vol-4298": os.path.join(self.examples_path, "Vol-4298", "index.jsonld"),
+                "Vol-3889": os.path.join(self.examples_path, "Vol-3889.jsonld"),
+            }
+            for volume, source in sources.items():
+                volume_dir = os.path.join(www_dir, volume)
+                os.makedirs(volume_dir)
+                shutil.copy(source, os.path.join(volume_dir, "index.jsonld"))
+            site = Site(www_dir, self.jsonld)
+            self.assertEqual(2, len(site.jsonld_paths()))
+            report = SptEndpoint(site).load()
+            self.assertEqual(2, report.files)
+            self.assertGreater(report.triples, 100)

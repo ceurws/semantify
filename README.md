@@ -31,6 +31,8 @@ ceursemantify --year 2024 -o /tmp/ceur-ws-yyyy
 ceursemantify --year 2024 --regenerate -o /tmp/ceur-ws-yyyy --progress
 # load all JSON-LD files into memory and serve them as SPARQL endpoint, see #18
 ceursemantify --serve -o /tmp/ceur-ws-yyyy
+# the same on the publication host, where the volumes lie directly under www as Vol-N/index.jsonld
+ceursemantify --serve -o ~/www
 ```
 
 Written are `yyyy/index.html`, `yyyy/Vol-N/index.html` and `yyyy/Vol-N/paperK/index.html`, each volume and paper page with an
