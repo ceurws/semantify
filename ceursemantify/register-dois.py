@@ -89,7 +89,27 @@ def submit_doi(doi):
             "resourceTypeGeneral": "ConferenceProceeding",
             "relatedIdentifierType": "DOI",
         } ]
+    else:
         attributes['relatedIdentifiers'] = relatedIdentifiers
+        alternateIdentifiers = [ {
+            "alternateIdentifier": doi["urn"],
+            "alternateIdentifierType": "URN"
+        },
+        {
+            "alternateIdentifier": "1613-0073",
+            "alternateIdentifierType": "ISSN"
+        } ]
+        attributes['alternateIdentifiers'] = alternateIdentifiers
+    rightsList = [ {
+        "rights": "Creative Commons Attribution 4.0 International",
+        "rightsUri": "https://creativecommons.org/licenses/by/4.0/",
+        "schemeUri": "https://spdx.org/licenses/",
+        "rightsIdentifier": "CC-BY-4.0",
+        "rightsIdentifierScheme": "SPDX",
+        "lang": "en"
+    } ]
+    attributes['rightsList'] = rightsList
+
 
     json_data = json.dumps(data, ensure_ascii=False)
     response = requests.post(
@@ -373,6 +393,7 @@ doi["creators"] = creator_arr
 doi["title"] = volTitle
 doi["year"] = pubYear
 doi["url"] = urlVolume
+doi["urn"] = data_json.get("urn")
 
 if not args.test:
     submit_doi(doi)
