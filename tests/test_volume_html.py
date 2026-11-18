@@ -6,6 +6,8 @@ Created on 2026-10-13
 
 import json
 import os
+import tempfile
+from typing import List, Tuple
 
 from ceursemantify.model import Scholar
 from ceursemantify.volume_html import VolumeHtml
@@ -115,6 +117,61 @@ class TestVolumeHtml(BaseCeurTest):
                 self.assertEqual(sorted(expected), sorted(pdf_names))
                 for paper in proceedings.papers:
                     self.assertEqual(paper.pdfUrl.rsplit("/", 1)[1][: -len(".pdf")], paper.id)
+
+    def copy_example(self, target_dir: str, replacements: List[Tuple[str, str]]) -> str:
+        """
+        copy the example page of Vol-4280 into the given directory as index.html with the given replacements
+
+        Args:
+            target_dir: the volume directory to create
+            replacements: pairs of old and new text
+
+        Returns:
+            str: the path of the copied page
+        """
+        with open(os.path.join(self.examples_path, "Vol-4280.html"), "r", encoding="utf-8") as page_file:
+            text = page_file.read()
+        for old, new in replacements:
+            text = text.replace(old, new)
+        os.makedirs(target_dir)
+        path = os.path.join(target_dir, "index.html")
+        with open(path, "w", encoding="utf-8") as page_file:
+            page_file.write(text)
+        return path
+
+    def test_volume_number_of_directory(self) -> None:
+        """
+        test that a local page is the volume of its directory when its CEURVOLNR differs, see issue 80
+        """
+        with tempfile.TemporaryDirectory() as www:
+            path = self.copy_example(os.path.join(www, "Vol-4281"), [])
+            result = VolumeHtml.of_file(path).proceedings()
+            self.assertEqual(4281, result.target.volumeNumber)
+            self.assertEqual("https://ceur-ws.org/Vol-4281/", result.target.url)
+            issues = [str(issue) for issue in result.issues]
+            self.assertTrue(any("Vol-4280 differs from the directory Vol-4281" in issue for issue in issues), issues)
+
+    def test_paper_id_no_plain_name(self) -> None:
+        """
+        test that a li id with a path is replaced by the stem of the pdf file, see issue 79
+        """
+        with tempfile.TemporaryDirectory() as www:
+            path = self.copy_example(os.path.join(www, "Vol-4280"), [('<li id="paper1">', '<li id="/paper_14.">')])
+            result = VolumeHtml.of_file(path).proceedings()
+            ids = [paper.id for paper in result.target.papers]
+            self.assertNotIn("/paper_14.", ids)
+            self.assertTrue(all(VolumeHtml.is_plain_name(paper_id) for paper_id in ids), ids)
+            issues = [str(issue) for issue in result.issues]
+            self.assertTrue(any("/paper_14." in issue and "no plain name" in issue for issue in issues), issues)
+        for name, plain in [
+            ("paper1", True),
+            ("paper_14.", True),
+            ("/paper_14.", False),
+            ("papers/p1", False),
+            ("..", False),
+            ("", False),
+        ]:
+            self.assertEqual(plain, VolumeHtml.is_plain_name(name), name)
 
     def test_published_elsewhere(self) -> None:
         """

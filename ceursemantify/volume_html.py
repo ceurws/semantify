@@ -313,6 +313,13 @@ class VolumeHtml:
             # without li id only a pdf of the volume itself is taken
             if not urlparse(href).scheme and "/" not in href.strip("./"):
                 paper_id = posixpath.splitext(posixpath.basename(href))[0]
+        if link is not None and paper_id and not self.is_plain_name(paper_id):
+            # the paper id names the directory of the paper page, see issue 79
+            stem = posixpath.splitext(posixpath.basename(urlparse(link["href"]).path))[0]
+            result.issues.append(
+                MappingIssue("Paper", paper_id, f"li id is no plain name, the paper id is {stem or None}")
+            )
+            paper_id = stem if self.is_plain_name(stem) else None
         if link is not None and paper_id:
             pdf_url = urljoin(url, link["href"])
             if not self.in_volume(pdf_url, url):
@@ -338,6 +345,21 @@ class VolumeHtml:
                 if session is not None:
                     paper.session = Convert.text(session.get_text()) or None
         return paper
+
+    @classmethod
+    def is_plain_name(cls, name: str) -> bool:
+        """
+        check whether the given paper id can name a directory below the volume
+        directory: no path separator, not empty, not . or .., see issue 79
+
+        Args:
+            name: the paper id
+
+        Returns:
+            bool: True if the id is a plain name
+        """
+        plain = bool(name) and "/" not in name and "\\" not in name and name.strip(".") != ""
+        return plain
 
     @classmethod
     def in_volume(cls, pdf_url: str, url: str) -> bool:
@@ -397,6 +419,17 @@ class VolumeHtml:
                 volume_number = Convert.volume_number(volume_mark)
             except ValueError as error:
                 result.issues.append(MappingIssue("Proceedings", "CEURVOLNR", str(error)))
+        # a local page is the volume of its directory, see issue 80
+        if self.volume_number is not None and volume_number != self.volume_number:
+            if volume_number is not None:
+                result.issues.append(
+                    MappingIssue(
+                        "Proceedings",
+                        "CEURVOLNR",
+                        f"Vol-{volume_number} differs from the directory Vol-{self.volume_number}, taken is Vol-{self.volume_number}",
+                    )
+                )
+            volume_number = self.volume_number
         return volume_number
 
     def proceedings(self) -> MappingResult:

@@ -193,7 +193,14 @@ class Generator:
                 )
         for paper in proceedings.papers:
             if paper.id:
-                self.write_paper(proceedings, paper, report, os.path.join(volume_dir, paper.id))
+                paper_dir = os.path.join(volume_dir, paper.id)
+                # every paper page lies below the volume directory, see issue 79
+                if os.path.dirname(os.path.realpath(paper_dir)) != os.path.realpath(volume_dir):
+                    report.problems.append(
+                        f"{volume_dir}: paper id {paper.id} is no directory of the volume, not written"
+                    )
+                    continue
+                self.write_paper(proceedings, paper, report, paper_dir)
 
     def write_paper(self, proceedings: Proceedings, paper: Paper, report: SiteReport, paper_dir: str) -> None:
         """
