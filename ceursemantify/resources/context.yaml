@@ -32,6 +32,8 @@ provisional:
   - "ceur:pdfUrl"
   - "ceur:templateVersion"
   - "ceur:submittedBy"
+  - "ceur:inferredYear"
+  - "ceur:inferredYearSource"
 classes:
   Proceedings:
     type: "ceur:ProceedingsVolume"
@@ -52,6 +54,8 @@ classes:
       templateVersion: {id: "ceur:templateVersion", type: "xsd:date"}
       dateSubmitted: {id: "dcterms:dateSubmitted", type: "xsd:date"}
       submittedBy: {id: "ceur:submittedBy"}
+      inferredYear: {id: "ceur:inferredYear", type: "xsd:gYear"}
+      inferredYearSource: {id: "ceur:inferredYearSource"}
       publisher: {id: "dcterms:publisher"}
       event: {id: "ceur:associatedEvent"}
       editors: {id: "ceur:editor", container: "@list"}

@@ -229,6 +229,11 @@ class Generator:
             proceedings = self.fetch_proceedings(number, report)
             if proceedings is None:
                 continue
+            if proceedings.year() is None and proceedings.infer_year() is not None:
+                report.problems.append(
+                    f"Vol-{number}: no event start date, year {proceedings.inferredYear}"
+                    f" inferred from {proceedings.inferredYearSource}"
+                )
             if proceedings.year() is None:
                 report.problems.append(f"Vol-{number}: no event start date, the volume has no year")
                 continue
@@ -265,6 +270,12 @@ class Generator:
             proceedings = self.read_proceedings(path, report, yaml=yaml)
             if proceedings is None:
                 continue
+            page_dir = path if os.path.isdir(path) else os.path.dirname(os.path.abspath(path))
+            if proceedings.year() is None and proceedings.infer_year(page_dir) is not None:
+                report.problems.append(
+                    f"{path}: no event start date, year {proceedings.inferredYear}"
+                    f" inferred from {proceedings.inferredYearSource}"
+                )
             if proceedings.year() is None:
                 report.problems.append(f"{path}: no event start date, the volume has no year")
                 continue

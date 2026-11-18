@@ -12,7 +12,9 @@ have a term in neither are listed as provisional in resources/context.yaml.
 @author: wf
 """
 
+import os
 from dataclasses import field
+from datetime import datetime
 from typing import List, Optional
 from urllib.parse import urljoin
 
@@ -180,6 +182,9 @@ class Proceedings:
     templateVersion: Optional[str] = None
     dateSubmitted: Optional[str] = None
     submittedBy: Optional[str] = None
+    # the year of a volume without event start date and where it is taken from, see issue 78
+    inferredYear: Optional[int] = None
+    inferredYearSource: Optional[str] = None
     publisher: Optional[Publisher] = None
     event: Optional[Event] = None
     editors: List[Scholar] = field(default_factory=list)
@@ -187,12 +192,47 @@ class Proceedings:
 
     def year(self) -> Optional[int]:
         """
-        get the year the proceedings belong to: the year of the event
+        get the year the proceedings belong to: the year of the event, else
+        the inferred year, see issue 78
 
         Returns:
-            Optional[int]: the year, None if there is no event start date
+            Optional[int]: the year, None if there is neither an event start date nor an inferred year
         """
         year = None
         if self.event:
             year = self.event.year()
+        if year is None:
+            year = self.inferredYear
+        return year
+
+    def infer_year(self, volume_dir: Optional[str] = None) -> Optional[int]:
+        """
+        infer the year of proceedings without event start date, see issue 78:
+        the year of the publication date, of the publication year mark, of the
+        modification time of the index.html.orig of the volume directory or of
+        its oldest file; the year and its source are kept in inferredYear and
+        inferredYearSource
+
+        Args:
+            volume_dir: the directory of the local volume page, None if there is none
+
+        Returns:
+            Optional[int]: the inferred year, None if there is no source
+        """
+        year, source = None, None
+        if self.pubDate and self.pubDate[:4].isdigit():
+            year, source = int(self.pubDate[:4]), "pubDate"
+        elif self.pubYear:
+            year, source = self.pubYear, "pubYear"
+        elif volume_dir and os.path.isdir(volume_dir):
+            orig = os.path.join(volume_dir, "index.html.orig")
+            files = [os.path.join(volume_dir, name) for name in os.listdir(volume_dir)]
+            files = [path for path in files if os.path.isfile(path)]
+            if os.path.isfile(orig):
+                year, source = datetime.fromtimestamp(os.path.getmtime(orig)).year, "index.html.orig mtime"
+            elif files:
+                oldest = min(os.path.getmtime(path) for path in files)
+                year, source = datetime.fromtimestamp(oldest).year, "oldest file mtime"
+        if year is not None:
+            self.inferredYear, self.inferredYearSource = year, source
         return year

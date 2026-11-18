@@ -7,9 +7,11 @@ Created on 2026-10-01
 import json
 import os
 import tempfile
+import time
 from typing import Any, Dict
 
 from ceursemantify.ceursemantify_cmd import main
+from ceursemantify.model import Proceedings
 from ceursemantify.site import CeurSpt, VolumeRanges
 from tests.base_ceurtest import BaseCeurTest
 
@@ -106,7 +108,9 @@ class TestGenerator(BaseCeurTest):
 
     def test_no_event_date(self) -> None:
         """
-        test that a volume without event start date is not written but reported
+        test that a volume without event start date is written into the year
+        of its publication date, marked as inferred, see issue 78, and that a
+        volume without any date is not written but reported
         """
         record = self.example_record(3889)
         del record["ceur:event"]["ceur:conference_date_start"]
@@ -114,8 +118,48 @@ class TestGenerator(BaseCeurTest):
             generator = self.get_generator(output_dir)
             generator.spt = FixedRecordSpt(record)
             report = generator.generate_volumes([3889])
+            self.assertTrue(report.written)
+            self.assertEqual(1, len(report.problems))
+            self.assertIn("Vol-3889: no event start date, year", report.problems[0])
+            self.assertIn("inferred from pubDate", report.problems[0])
+            year = int(record["ceur:publication_date"][:4])
+            jsonld_path = os.path.join(output_dir, str(year), "Vol-3889", "index.jsonld")
+            with open(jsonld_path, "r", encoding="utf-8") as jsonld_file:
+                proceedings = self.jsonld.proceedings(json.load(jsonld_file))
+            self.assertEqual(year, proceedings.inferredYear)
+            self.assertEqual("pubDate", proceedings.inferredYearSource)
+            self.assertEqual(year, proceedings.year())
+        for key in ("ceur:publication_date", "ceur:publication_year"):
+            record.pop(key, None)
+        with tempfile.TemporaryDirectory() as output_dir:
+            generator = self.get_generator(output_dir)
+            generator.spt = FixedRecordSpt(record)
+            report = generator.generate_volumes([3889])
             self.assertEqual([], report.written)
             self.assertEqual(["Vol-3889: no event start date, the volume has no year"], report.problems)
+
+    def test_infer_year_from_files(self) -> None:
+        """
+        test that the year of a volume without any date is taken from the
+        modification time of index.html.orig, else of the oldest file of the
+        volume directory, see issue 78
+        """
+        with tempfile.TemporaryDirectory() as volume_dir:
+            page = os.path.join(volume_dir, "index.html")
+            orig = os.path.join(volume_dir, "index.html.orig")
+            for path in (page, orig):
+                with open(path, "w", encoding="utf-8") as file:
+                    file.write("<html></html>")
+            os.utime(page, (time.mktime((2003, 6, 1, 0, 0, 0, 0, 0, -1)),) * 2)
+            os.utime(orig, (time.mktime((2005, 6, 1, 0, 0, 0, 0, 0, -1)),) * 2)
+            proceedings = Proceedings()
+            self.assertEqual(2005, proceedings.infer_year(volume_dir))
+            self.assertEqual("index.html.orig mtime", proceedings.inferredYearSource)
+            os.remove(orig)
+            proceedings = Proceedings()
+            self.assertEqual(2003, proceedings.infer_year(volume_dir))
+            self.assertEqual("oldest file mtime", proceedings.inferredYearSource)
+            self.assertIsNone(Proceedings().infer_year(None))
 
     def test_rebuild_year(self) -> None:
         """
