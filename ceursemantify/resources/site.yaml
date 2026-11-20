@@ -20,3 +20,6 @@ index_check: "check-index-errors"
 # rules the gate ignores: 42 and A34 report the namespace IRIs of the JSON-LD,
 # see https://github.com/ceurws/semantify/discussions/64
 index_check_ignore: ["42", "A34"]
+# the volumes.json of the volume browser, a source of the year of publication
+# of a volume, see https://github.com/ceurws/semantify/issues/78; not used where missing
+volumes_json: "~/.ceurws/volumes.json"

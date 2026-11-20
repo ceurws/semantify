@@ -12,7 +12,6 @@ have a term in neither are listed as provisional in resources/context.yaml.
 @author: wf
 """
 
-import os
 import re
 from dataclasses import field
 from datetime import datetime
@@ -239,46 +238,11 @@ class Proceedings:
     def year(self) -> Optional[int]:
         """
         get the year the proceedings belong to: the year of the publication on
-        CEUR-WS, the inferred year where it is set, else the year of the
-        publication date, see issue 78
+        CEUR-WS, the inferred year where the year rule set one, else the year
+        of the publication date, see issue 78
 
         Returns:
             Optional[int]: the year, None if there is neither an inferred year nor a publication date
         """
         year = self.inferredYear if self.inferredYear is not None else self.publication_year()
-        return year
-
-    def infer_year(self, volume_dir: Optional[str] = None) -> Optional[int]:
-        """
-        infer the year of proceedings without plausible publication date, see
-        issue 78: the year of the modification time of the index.html.orig of
-        the volume directory, of the date of the submitted by line or of the
-        modification time of the oldest file of the volume directory; the year
-        and its source are kept in inferredYear and inferredYearSource
-
-        Args:
-            volume_dir: the directory of the local volume page, None if there is none
-
-        Returns:
-            Optional[int]: the inferred year, None if there is no source
-        """
-        candidates = []
-        has_dir = volume_dir is not None and os.path.isdir(volume_dir)
-        if has_dir:
-            orig = os.path.join(volume_dir, "index.html.orig")
-            if os.path.isfile(orig):
-                candidates.append((datetime.fromtimestamp(os.path.getmtime(orig)).year, "index.html.orig mtime"))
-        candidates.append((self.year_of(self.dateSubmitted), "submitted by"))
-        if has_dir:
-            files = [os.path.join(volume_dir, name) for name in os.listdir(volume_dir)]
-            files = [path for path in files if os.path.isfile(path)]
-            if files:
-                oldest = min(os.path.getmtime(path) for path in files)
-                candidates.append((datetime.fromtimestamp(oldest).year, "oldest file mtime"))
-        year = None
-        for candidate_year, source in candidates:
-            if self.plausible_year(candidate_year):
-                year = candidate_year
-                self.inferredYear, self.inferredYearSource = year, source
-                break
         return year

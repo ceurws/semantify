@@ -974,6 +974,7 @@ class YearPage:
         if next_years:
             next_year = min(next_years)
             parts.append(f"""<a href="../{next_year}/" rel="next">{next_year} &raquo;</a>""")
+        parts.append("""<a href="../years/">all years</a>""")
         links = " | ".join(parts)
         navigation = f"""  <p>Year: {links}</p>"""
         return navigation
@@ -1025,6 +1026,88 @@ class YearPage:
     Mirror: <a href="/">{base_url}/</a></p>
 
 {entries}
+</body>
+
+</html>
+"""
+        return page
+
+
+class YearsPage:
+    """
+    the overview of the years that have a page, see issue 81
+    """
+
+    def __init__(self, numbers_by_year: Dict[int, List[int]], config: SiteConfig, state: PageState):
+        """
+        constructor
+
+        Args:
+            numbers_by_year: the sorted volume numbers of each year
+            config: the site configuration
+            state: the state to announce
+        """
+        self.numbers_by_year = numbers_by_year
+        self.config = config
+        self.state = state
+
+    def rows_as_html(self) -> str:
+        """
+        get one table row per year, the newest year first: the year, its
+        number of volumes and its lowest and highest volume number
+
+        Returns:
+            str: the html table rows
+        """
+        rows = []
+        for year in sorted(self.numbers_by_year, reverse=True):
+            numbers = self.numbers_by_year[year]
+            first = f"Vol-{numbers[0]}" if numbers else ""
+            last = f"Vol-{numbers[-1]}" if numbers else ""
+            rows.append(
+                f"""    <tr><td><a href="../{year}/">{year}</a></td><td>{len(numbers)}</td>"""
+                f"""<td>{first}</td><td>{last}</td></tr>"""
+            )
+        rows_html = "\n".join(rows)
+        return rows_html
+
+    def as_html(self) -> str:
+        """
+        get the complete page
+
+        Returns:
+            str: the html document
+        """
+        volumes = sum(len(numbers) for numbers in self.numbers_by_year.values())
+        years = len(self.numbers_by_year)
+        state = self.state.as_html(f"the JSON-LD of {volumes} volumes")
+        stylesheet = esc(self.config.stylesheet)
+        series_title = esc(self.config.series_title)
+        original_url = esc(self.config.original_url)
+        base_url = esc(self.config.base_url)
+        header = Header(self.config).as_html(f"{self.config.series_title} by year of publication")
+        rows = self.rows_as_html()
+        page = f"""<!DOCTYPE html>
+{state}
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="{stylesheet}">
+  <title>CEUR-WS.org - {series_title} by year of publication</title>
+</head>
+
+<body>
+{header}
+  <p>{volumes} volumes in {years} years</p>
+  <p class="unobtrusive">Original: <a href="{original_url}/">{original_url}/</a> |
+    Mirror: <a href="/">{base_url}/</a></p>
+
+  <table>
+    <tr><th>Year</th><th>Volumes</th><th>First</th><th>Last</th></tr>
+{rows}
+  </table>
 </body>
 
 </html>

@@ -7,6 +7,7 @@ Created on 2026-10-01
 import glob
 import json
 import os
+import shutil
 import urllib.request
 from dataclasses import field
 from typing import Any, Dict, List, Optional
@@ -35,6 +36,8 @@ class SiteConfig:
     # the check of the CEUR-WS team run as gate of --generate --in-place and the rules it ignores, see issue 62
     index_check: str = ""
     index_check_ignore: List[str] = field(default_factory=list)
+    # the volumes.json of the volume browser, a source of the year of publication, see issue 78
+    volumes_json: str = ""
 
     @classmethod
     def default_path(cls) -> str:
@@ -240,6 +243,37 @@ class Site:
         """
         paper_dir = os.path.join(self.volume_dir(proceedings), paper_id)
         return paper_dir
+
+    def overview_path(self) -> str:
+        """
+        get the path of the overview of the years, see issue 81
+
+        Returns:
+            str: the path of years/index.html
+        """
+        path = os.path.join(self.root, "years", "index.html")
+        return path
+
+    def remove_other_years(self, proceedings: Proceedings) -> None:
+        """
+        remove the directory of the given proceedings from every year but
+        their own, and a year that is left without volumes, see issue 78
+
+        Args:
+            proceedings: the proceedings, with a year and a volume number
+        """
+        name = f"Vol-{proceedings.volumeNumber}"
+        for year in self.years():
+            other_dir = os.path.join(self.year_dir(year), name)
+            if year != proceedings.year() and os.path.isdir(other_dir):
+                shutil.rmtree(other_dir)
+                year_dir = self.year_dir(year)
+                if not [entry for entry in os.listdir(year_dir) if entry.startswith("Vol-")]:
+                    year_page = os.path.join(year_dir, "index.html")
+                    if os.path.isfile(year_page):
+                        os.remove(year_page)
+                    if not os.listdir(year_dir):
+                        os.rmdir(year_dir)
 
     def write(self, path: str, content: str, report: SiteReport) -> None:
         """

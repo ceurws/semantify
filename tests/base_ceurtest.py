@@ -150,6 +150,8 @@ class BaseCeurTest(Basetest):
         """
         config = SiteConfig.of_yaml()
         config.spt_url = f"file://{self.examples_path}"
+        # the tests do not read the volume browser data of the host
+        config.volumes_json = ""
         generator = Generator(
             site=Site(output_dir, self.jsonld),
             config=config,

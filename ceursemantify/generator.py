@@ -7,7 +7,7 @@ Created on 2026-10-01
 import json
 import os
 import time
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional
 
 from sem3.extractor import Extractor
 from tqdm import tqdm
@@ -17,9 +17,10 @@ from ceursemantify.index_check import IndexCheck
 from ceursemantify.jsonld import JsonLd
 from ceursemantify.mapper import Mapper
 from ceursemantify.model import Paper, Proceedings
-from ceursemantify.pages import PageState, PaperPage, VolumePage, YearPage
+from ceursemantify.pages import PageState, PaperPage, VolumePage, YearPage, YearsPage
 from ceursemantify.site import CeurSpt, Site, SiteConfig, SiteReport
 from ceursemantify.volume_html import VolumeHtml
+from ceursemantify.year_rule import YearRule
 
 
 class Generator:
@@ -53,28 +54,17 @@ class Generator:
         self.jsonld = jsonld
         self.spt = spt
         self.state = state if state is not None else PageState.today()
-        # volume number -> year and its source, decided outside, see issue 78
-        self.year_map: Dict[int, Tuple[int, str]] = {}
-
-    def load_year_map(self, path: str) -> None:
-        """
-        load the year map, a JSON object of volume numbers to year and source
-
-        Args:
-            path: the JSON file, e.g. {"1": {"year": 1995, "source": "volume browser"}}
-        """
-        with open(path, "r", encoding="utf-8") as map_file:
-            entries = json.load(map_file)
-        self.year_map = {int(number): (entry["year"], entry["source"]) for number, entry in entries.items()}
+        # the rule for the year of publication of a volume, see issue 78
+        self.year_rule = YearRule(config.volumes_json)
 
     def assign_year(
         self, proceedings: Proceedings, label: str, report: SiteReport, volume_dir: Optional[str] = None
     ) -> Optional[int]:
         """
-        assign the year of publication on CEUR-WS to the given proceedings, see
-        issue 78: the year map decides where it differs from the publication
-        date, else the publication date, else the inferred year; an inferred
-        year and a missing year are reported
+        assign the year of publication on CEUR-WS to the given proceedings by
+        the year rule, see issue 78; a year that is not the year of the
+        publication date of the proceedings is kept as inferred with its
+        source and reported, a missing year is reported
 
         Args:
             proceedings: the proceedings
@@ -86,18 +76,15 @@ class Generator:
             Optional[int]: the year, None if the volume has no year
         """
         proceedings.inferredYear, proceedings.inferredYearSource = None, None
-        entry = self.year_map.get(proceedings.volumeNumber)
-        if entry is not None and entry[0] != proceedings.publication_year():
-            proceedings.inferredYear, proceedings.inferredYearSource = entry
-        elif entry is None and proceedings.publication_year() is None:
-            proceedings.infer_year(volume_dir)
-        year = proceedings.year()
-        if proceedings.inferredYear is not None:
-            report.problems.append(
-                f"{label}: year {proceedings.inferredYear} inferred from {proceedings.inferredYearSource}"
-            )
-        if year is None:
+        decision = self.year_rule.decide(proceedings, volume_dir)
+        year = None
+        if decision is None:
             report.problems.append(f"{label}: no publication year, the volume has no year")
+        else:
+            year, source = decision
+            if source != "CEURPUBDATE" or proceedings.publication_year() != year:
+                proceedings.inferredYear, proceedings.inferredYearSource = year, source
+                report.problems.append(f"{label}: year {year} inferred from {source}")
         return year
 
     @classmethod
@@ -210,6 +197,8 @@ class Generator:
         in_place = volume_dir is not None
         if volume_dir is None:
             volume_dir = self.site.volume_dir(proceedings)
+            # a volume is in one year only, see issue 78
+            self.site.remove_other_years(proceedings)
         page_path = os.path.join(volume_dir, "index.html")
         # the check of the CEUR-WS team as gate of a page that replaces the chair page, see issue 62
         check = IndexCheck(self.config.index_check, self.config.index_check_ignore)
@@ -345,6 +334,21 @@ class Generator:
             self.site.write(os.path.join(self.site.year_dir(year), "index.html"), page.as_html(), report)
         else:
             report.problems.append(f"{year}: no volumes in {self.site.year_dir(year)}")
+        report.seconds = time.perf_counter() - start
+        return report
+
+    def rebuild_overview(self) -> SiteReport:
+        """
+        rebuild the overview of the years from the years present, see issue 81
+
+        Returns:
+            SiteReport: the written file and the time used
+        """
+        report = SiteReport()
+        start = time.perf_counter()
+        numbers_by_year = {year: self.site.volume_numbers(year) for year in self.site.years()}
+        page = YearsPage(numbers_by_year, self.config, self.state)
+        self.site.write(self.site.overview_path(), page.as_html(), report)
         report.seconds = time.perf_counter() - start
         return report
 

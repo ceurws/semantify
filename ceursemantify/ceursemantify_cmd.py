@@ -65,7 +65,7 @@ class CeurSemantifyCmd(BaseCmd):
             type=int,
             action="append",
             dest="years",
-            help="rebuild the page of the given year from the volumes present (can be given several times)",
+            help="rebuild the page of the given year from the volumes present and the overview of the years (can be given several times)",
         )
         parser.add_argument(
             "--regenerate",
@@ -118,11 +118,6 @@ class CeurSemantifyCmd(BaseCmd):
             help="directory that holds the year directories (default: current directory)",
         )
         parser.add_argument("--config", help="site configuration yaml file (default: the packaged site.yaml)")
-        parser.add_argument(
-            "--yearmap",
-            help="JSON file of volume numbers to year and source that decides the year of publication"
-            " where it differs from the publication date, see issue 78",
-        )
 
     def show_report(self, title: str, report: SiteReport, args: Namespace) -> None:
         """
@@ -155,8 +150,6 @@ class CeurSemantifyCmd(BaseCmd):
         if not handled:
             config = SiteConfig.of_yaml(args.config)
             generator = Generator.of_output(args.output, config)
-            if args.yearmap:
-                generator.load_year_map(args.yearmap)
             if args.embed:
                 report = generator.embed_volumes(args.embed, progress=args.progress, yaml=args.yaml)
                 self.show_report(f"{len(args.embed)} volume pages", report, args)
@@ -183,6 +176,10 @@ class CeurSemantifyCmd(BaseCmd):
                     report = generator.rebuild_year(year)
                 self.show_report(f"year {year}", report, args)
                 handled = True
+            if args.years:
+                # every year call rewrites the overview of the years, see issue 81
+                report = generator.rebuild_overview()
+                self.show_report("years overview", report, args)
             if args.serve:
                 endpoint = SptEndpoint(generator.site)
                 load_report = endpoint.load()

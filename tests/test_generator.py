@@ -7,13 +7,12 @@ Created on 2026-10-01
 import json
 import os
 import tempfile
-import time
 from typing import Any, Dict
 
 from ceursemantify.ceursemantify_cmd import main
-from ceursemantify.model import Proceedings
 from ceursemantify.pages import YearPage
 from ceursemantify.site import CeurSpt, VolumeRanges
+from ceursemantify.year_rule import YearRule
 from tests.base_ceurtest import BaseCeurTest
 
 
@@ -110,10 +109,11 @@ class TestGenerator(BaseCeurTest):
     def test_publication_year(self) -> None:
         """
         test that a volume is written into the year of its publication date,
-        not of its event, see issue 78; that a year map decides before the
-        publication date and its year is marked inferred with its source; that a
-        publication date outside the range of CEUR-WS is not taken and that a
-        volume without any year is not written but reported
+        not of its event, see issue 78; that a publication date outside the
+        range of CEUR-WS falls to the next source of the year rule and the year
+        is marked inferred with its source; that the copy of the volume in
+        another year is removed and that a volume without any year is not
+        written but reported
         """
         record = self.example_record(3889)
         event_year = int(record["ceur:event"]["ceur:conference_date_start"][:4])
@@ -127,10 +127,13 @@ class TestGenerator(BaseCeurTest):
             self.assertEqual([], report.problems)
             self.assertTrue(os.path.isfile(os.path.join(output_dir, str(year), "Vol-3889", "index.jsonld")))
             self.assertFalse(os.path.exists(os.path.join(output_dir, str(event_year))))
-        with tempfile.TemporaryDirectory() as output_dir:
-            generator = self.get_generator(output_dir)
-            generator.spt = FixedRecordSpt(record)
-            generator.year_map = {3889: (2023, "volume browser")}
+            generator.rebuild_year(year)
+            record["ceur:publication_date"] = "2104-10-15"
+            record.pop("ceur:publication_year", None)
+            volumes_json = os.path.join(output_dir, "volumes.json")
+            with open(volumes_json, "w", encoding="utf-8") as json_file:
+                json.dump([{"number": 3889, "published": "2023-12-30"}], json_file)
+            generator.year_rule = YearRule(volumes_json)
             report = generator.generate_volumes([3889])
             self.assertEqual(["Vol-3889: year 2023 inferred from volume browser"], report.problems)
             jsonld_path = os.path.join(output_dir, "2023", "Vol-3889", "index.jsonld")
@@ -139,8 +142,9 @@ class TestGenerator(BaseCeurTest):
             self.assertEqual(2023, proceedings.inferredYear)
             self.assertEqual("volume browser", proceedings.inferredYearSource)
             self.assertEqual(2023, proceedings.year())
-        record["ceur:publication_date"] = "2104-10-15"
-        record.pop("ceur:publication_year", None)
+            # the volume is in one year only, a year without volumes has no directory
+            self.assertFalse(os.path.exists(os.path.join(output_dir, str(year))))
+            self.assertEqual([2023], generator.site.years())
         proceedings = self.mapper.map_record(record, "Proceedings").target
         self.assertIsNone(proceedings.year())
         with tempfile.TemporaryDirectory() as output_dir:
@@ -149,33 +153,6 @@ class TestGenerator(BaseCeurTest):
             report = generator.generate_volumes([3889])
             self.assertEqual([], report.written)
             self.assertEqual(["Vol-3889: no publication year, the volume has no year"], report.problems)
-
-    def test_infer_year_from_files(self) -> None:
-        """
-        test that the year of a volume without publication date is taken from
-        the modification time of index.html.orig, else of the date of the
-        submitted by line, else of the oldest file of the volume directory, see
-        issue 78
-        """
-        with tempfile.TemporaryDirectory() as volume_dir:
-            page = os.path.join(volume_dir, "index.html")
-            orig = os.path.join(volume_dir, "index.html.orig")
-            for path in (page, orig):
-                with open(path, "w", encoding="utf-8") as file:
-                    file.write("<html></html>")
-            os.utime(page, (time.mktime((2003, 6, 1, 0, 0, 0, 0, 0, -1)),) * 2)
-            os.utime(orig, (time.mktime((2005, 6, 1, 0, 0, 0, 0, 0, -1)),) * 2)
-            proceedings = Proceedings(dateSubmitted="2004-05-01")
-            self.assertEqual(2005, proceedings.infer_year(volume_dir))
-            self.assertEqual("index.html.orig mtime", proceedings.inferredYearSource)
-            os.remove(orig)
-            proceedings = Proceedings(dateSubmitted="2004-05-01")
-            self.assertEqual(2004, proceedings.infer_year(volume_dir))
-            self.assertEqual("submitted by", proceedings.inferredYearSource)
-            proceedings = Proceedings()
-            self.assertEqual(2003, proceedings.infer_year(volume_dir))
-            self.assertEqual("oldest file mtime", proceedings.inferredYearSource)
-            self.assertIsNone(Proceedings().infer_year(None))
 
     def test_rebuild_year(self) -> None:
         """
@@ -229,7 +206,8 @@ class TestGenerator(BaseCeurTest):
 
     def test_cmd(self) -> None:
         """
-        test the command line: volumes first, the year as a separate call
+        test the command line: volumes first, the year as a separate call that
+        also writes the overview of the years
         """
         with tempfile.TemporaryDirectory() as output_dir:
             config_path = os.path.join(output_dir, "site.yaml")
@@ -241,9 +219,13 @@ class TestGenerator(BaseCeurTest):
             exit_code = main(["--year", "2025", "-o", output_dir, "--config", config_path, "--quiet"])
             self.assertEqual(0, exit_code)
             self.assertTrue(os.path.isfile(os.path.join(output_dir, "2025", "index.html")))
-            year_map_path = os.path.join(output_dir, "yearmap.json")
-            with open(year_map_path, "w", encoding="utf-8") as year_map_file:
-                json.dump({"3889": {"year": 2023, "source": "volume browser"}}, year_map_file)
-            exit_code = main(["3889", "--yearmap", year_map_path, "-o", output_dir, "--config", config_path, "--quiet"])
-            self.assertEqual(0, exit_code)
-            self.assertTrue(os.path.isfile(os.path.join(output_dir, "2023", "Vol-3889", "index.jsonld")))
+            # every --year call rewrites the overview of the years, see issue 81
+            with open(os.path.join(output_dir, "years", "index.html"), "r", encoding="utf-8") as page_file:
+                overview = page_file.read()
+            self.assertIn('<a href="../2025/">2025</a>', overview)
+            self.assertIn('<a href="../2026/">2026</a>', overview)
+            self.assertLess(overview.index("../2026/"), overview.index("../2025/"))
+            self.assertIn("Vol-3889", overview)
+            self.assertIn("2 volumes in 2 years", overview)
+            with open(os.path.join(output_dir, "2025", "index.html"), "r", encoding="utf-8") as page_file:
+                self.assertIn('<a href="../years/">all years</a>', page_file.read())
