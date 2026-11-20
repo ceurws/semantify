@@ -10,7 +10,7 @@ escapes its values first and then fills a multiline f-string.
 import html
 from dataclasses import dataclass
 from datetime import date
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import quote
 
 from lodstorage.params import Params
@@ -19,6 +19,9 @@ import ceursemantify
 from ceursemantify.jsonld import JsonLd
 from ceursemantify.model import Paper, Proceedings, Scholar
 from ceursemantify.site import SiteConfig
+
+# number and year of the previous and of the next volume of the year tree, see issue 84
+Neighbours = Tuple[Optional[Tuple[int, int]], Optional[Tuple[int, int]]]
 
 
 def esc(value: Any) -> str:
@@ -280,7 +283,13 @@ class VolumePage:
     """
 
     def __init__(
-        self, proceedings: Proceedings, config: SiteConfig, jsonld: JsonLd, state: PageState, in_place: bool = False
+        self,
+        proceedings: Proceedings,
+        config: SiteConfig,
+        jsonld: JsonLd,
+        state: PageState,
+        in_place: bool = False,
+        neighbours: Optional[Neighbours] = None,
     ):
         """
         constructor
@@ -291,7 +300,9 @@ class VolumePage:
             jsonld: the JSON-LD support of the research model
             state: the state to announce
             in_place: if True the page replaces the volume page of the original site, see issue 44
+            neighbours: number and year of the previous and of the next volume of the year tree, see issue 84
         """
+        self.neighbours = neighbours if neighbours is not None else (None, None)
         self.proceedings = proceedings
         self.config = config
         self.jsonld = jsonld
@@ -352,24 +363,45 @@ class VolumePage:
 </head>"""
         return head
 
-    def links_as_html(self) -> str:
+    def neighbour_as_html(self, neighbour: Optional[Tuple[int, int]], rel: str) -> str:
         """
-        get the links to the original volume, its copy and the year; a page
-        in place is the original and has no year tree, so it has no such links
+        get the link to the previous or next volume of the year tree, see issue 84
+
+        Args:
+            neighbour: number and year of the volume, None if there is none
+            rel: prev or next
 
         Returns:
-            str: the html paragraph, empty in place
+            str: the html link with its separator, empty if there is no such volume
+        """
+        link = ""
+        if neighbour is not None:
+            number, year = neighbour
+            target = f"../Vol-{number}/" if year == self.proceedings.year() else f"../../{year}/Vol-{number}/"
+            if rel == "prev":
+                link = f"""<a href="{esc(target)}" rel="prev">&laquo; Vol-{number}</a> | """
+            else:
+                link = f""" | <a href="{esc(target)}" rel="next">Vol-{number} &raquo;</a>"""
+        return link
+
+    def navigation_as_html(self) -> str:
+        """
+        get the links to the year, the overview of the years and the original
+        volume, see issue 84; a page in place is the original and has no year
+        tree, so it has no such links, see issue 44
+
+        Returns:
+            str: the html line of the header cell, empty in place
         """
         if self.in_place:
             return ""
         number = esc(self.proceedings.volumeNumber)
         year = esc(self.proceedings.year())
         original_url = esc(self.original_url())
-        base_url = esc(self.config.base_url)
-        links = f"""  <p class="unobtrusive">Original: <a href="{original_url}">{original_url}</a> |
-    Mirror: <a href="/Vol-{number}/">{base_url}/Vol-{number}/</a> |
-    Year: <a href="../">{year}</a></p>"""
-        return links
+        original_text = esc(self.original_url().split("//", 1)[-1].rstrip("/"))
+        navigation = f""" <br>
+          <a href="../">{year}</a> | <a href="../../years/">all years</a> | <a href="{original_url}">{original_text}</a>"""
+        return navigation
 
     # license URL of the record, name and abbreviation as in the copyright text of the Vol-XXX template
     license_names = {
@@ -410,6 +442,11 @@ class VolumePage:
         if doi:
             doi = f""" <br>
           {doi}"""
+        previous_link, next_link = "", ""
+        if not self.in_place:
+            previous_link = self.neighbour_as_html(self.neighbours[0], "prev")
+            next_link = self.neighbour_as_html(self.neighbours[1], "next")
+        navigation = self.navigation_as_html()
         header = f"""  <table style="border: 0; border-spacing: 0; border-collapse: collapse; width: 95%">
     <tbody>
       <tr>
@@ -418,8 +455,8 @@ class VolumePage:
         </td>
         <td style="text-align: right; vertical-align: middle">
           <div style="float:left" id="CEURCCBY"></div>
-          <span class="CEURVOLNR">Vol-{number}</span> <br>
-          <span class="CEURURN">{urn}</span>{doi}
+          {previous_link}<span class="CEURVOLNR">Vol-{number}</span>{next_link} <br>
+          <span class="CEURURN">{urn}</span>{doi}{navigation}
           <p class="unobtrusive copyright" style="text-align: justify">Copyright &copy; {pub_year} for
             the individual papers by the papers' authors.
             Copyright &copy; <span class="CEURPUBYEAR">{pub_year}</span> for the volume
@@ -595,7 +632,6 @@ class VolumePage:
         """
         state = self.state.as_html("the embedded JSON-LD")
         head = self.head_as_html()
-        links = self.links_as_html()
         header = self.header_as_html()
         title = self.title_as_html()
         editors = self.editors_as_html()
@@ -612,7 +648,7 @@ class VolumePage:
 {head}
 
 <body>
-{links}
+
 
 {header}
 
@@ -1062,8 +1098,8 @@ class YearsPage:
         rows = []
         for year in sorted(self.numbers_by_year, reverse=True):
             numbers = self.numbers_by_year[year]
-            first = f"Vol-{numbers[0]}" if numbers else ""
-            last = f"Vol-{numbers[-1]}" if numbers else ""
+            first = f"""<a href="../{year}/Vol-{numbers[0]}/">Vol-{numbers[0]}</a>""" if numbers else ""
+            last = f"""<a href="../{year}/Vol-{numbers[-1]}/">Vol-{numbers[-1]}</a>""" if numbers else ""
             rows.append(
                 f"""    <tr><td><a href="../{year}/">{year}</a></td><td>{len(numbers)}</td>"""
                 f"""<td>{first}</td><td>{last}</td></tr>"""

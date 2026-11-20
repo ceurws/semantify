@@ -154,6 +154,50 @@ class TestGenerator(BaseCeurTest):
             self.assertEqual([], report.written)
             self.assertEqual(["Vol-3889: no publication year, the volume has no year"], report.problems)
 
+    def volume_page(self, output_dir: str, number: int) -> str:
+        """
+        read the page of the given example volume
+
+        Args:
+            output_dir: the directory of the year tree
+            number: the volume number
+
+        Returns:
+            str: the html of the volume page
+        """
+        page_path = os.path.join(output_dir, str(self.example_years[number]), f"Vol-{number}", "index.html")
+        with open(page_path, "r", encoding="utf-8") as page_file:
+            page = page_file.read()
+        return page
+
+    def test_volume_navigation(self) -> None:
+        """
+        test the links to the previous and the next volume of a volume page,
+        see issue 84: the nearest existing volume numbers, across the year
+        directories, of the volumes of the call and of the tree
+        """
+        with tempfile.TemporaryDirectory() as output_dir:
+            generator = self.get_generator(output_dir)
+            generator.generate_volumes([3889])
+            page = self.volume_page(output_dir, 3889)
+            self.assertNotIn('rel="prev"', page)
+            self.assertNotIn('rel="next"', page)
+            self.assertIn('<span class="CEURVOLNR">Vol-3889</span>', page)
+            generator.generate_volumes(list(self.example_years.keys()))
+            previous_link = '<a href="../../2024/Vol-3887/" rel="prev">&laquo; Vol-3887</a>'
+            next_link = '<a href="../../2026/Vol-4175/" rel="next">Vol-4175 &raquo;</a>'
+            for _run in range(2):
+                page = self.volume_page(output_dir, 3889)
+                self.assertIn(previous_link, page)
+                self.assertIn(next_link, page)
+                self.assertLess(page.index(previous_link), page.index("CEURVOLNR"))
+                self.assertLess(page.index("CEURVOLNR"), page.index(next_link))
+                # a single volume written again finds its neighbours in the tree
+                generator.generate_volumes([3889])
+            self.assertNotIn('rel="prev"', self.volume_page(output_dir, 3887))
+            self.assertNotIn('rel="next"', self.volume_page(output_dir, 4184))
+            self.assertIn('<a href="../Vol-4183/" rel="prev">&laquo; Vol-4183</a>', self.volume_page(output_dir, 4184))
+
     def test_rebuild_year(self) -> None:
         """
         test that the year page lists the volumes present, the highest number
@@ -225,7 +269,7 @@ class TestGenerator(BaseCeurTest):
             self.assertIn('<a href="../2025/">2025</a>', overview)
             self.assertIn('<a href="../2026/">2026</a>', overview)
             self.assertLess(overview.index("../2026/"), overview.index("../2025/"))
-            self.assertIn("Vol-3889", overview)
+            self.assertIn('<td><a href="../2025/Vol-3889/">Vol-3889</a></td>', overview)
             self.assertIn("2 volumes in 2 years", overview)
             with open(os.path.join(output_dir, "2025", "index.html"), "r", encoding="utf-8") as page_file:
                 self.assertIn('<a href="../years/">all years</a>', page_file.read())

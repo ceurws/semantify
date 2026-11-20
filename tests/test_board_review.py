@@ -105,13 +105,16 @@ class TestBoardReview(BaseCeurTest):
 
     def test_year_tree_links(self) -> None:
         """
-        a page generated into the year tree of the site keeps the mirror link
-        and the validator checks the page on the site
+        a page generated into the year tree of the site links the original,
+        its year and the overview of the years in the header cell, has no
+        mirror link, see issue 84, and the validator checks the page on the site
         """
         output_dir = os.path.join(self.temp_dir, "site")
         main(["--generate", os.path.join(self.example_dir), "-o", output_dir, "-q"])
         with open(os.path.join(output_dir, "2026", "Vol-4298", "index.html"), "r", encoding="utf-8") as page_file:
             page = page_file.read()
-        self.assertIn("Mirror:", page)
+        self.assertNotIn("Mirror:", page)
+        self.assertIn('<a href="https://ceur-ws.org/Vol-4298/">ceur-ws.org/Vol-4298</a>', page)
+        self.assertIn('<a href="../">2026</a> | <a href="../../years/">all years</a>', page)
         checked_url = quote("https://ceur-ws.wikidata.dbis.rwth-aachen.de/2026/Vol-4298/", safe="")
         self.assertIn(f"?doc={checked_url}", page)

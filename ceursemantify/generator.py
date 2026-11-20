@@ -7,7 +7,7 @@ Created on 2026-10-01
 import json
 import os
 import time
-from typing import List, Optional
+from typing import Dict, List, Optional, Tuple
 
 from sem3.extractor import Extractor
 from tqdm import tqdm
@@ -17,7 +17,7 @@ from ceursemantify.index_check import IndexCheck
 from ceursemantify.jsonld import JsonLd
 from ceursemantify.mapper import Mapper
 from ceursemantify.model import Paper, Proceedings
-from ceursemantify.pages import PageState, PaperPage, VolumePage, YearPage, YearsPage
+from ceursemantify.pages import Neighbours, PageState, PaperPage, VolumePage, YearPage, YearsPage
 from ceursemantify.site import CeurSpt, Site, SiteConfig, SiteReport
 from ceursemantify.volume_html import VolumeHtml
 from ceursemantify.year_rule import YearRule
@@ -183,7 +183,12 @@ class Generator:
         return yaml_path
 
     def write_volume(
-        self, proceedings: Proceedings, report: SiteReport, volume_dir: Optional[str] = None, gate: bool = True
+        self,
+        proceedings: Proceedings,
+        report: SiteReport,
+        volume_dir: Optional[str] = None,
+        gate: bool = True,
+        neighbours: Optional[Neighbours] = None,
     ) -> None:
         """
         write the page and the JSON-LD file of the given proceedings
@@ -193,12 +198,15 @@ class Generator:
             report: the report to add the written files to
             volume_dir: the directory to write to, the year tree of the site if None
             gate: if False a page written in place replaces the chair page without the check, see issue 65
+            neighbours: the previous and the next volume of the year tree, looked up in the tree if None, see issue 84
         """
         in_place = volume_dir is not None
         if volume_dir is None:
             volume_dir = self.site.volume_dir(proceedings)
             # a volume is in one year only, see issue 78
             self.site.remove_other_years(proceedings)
+            if neighbours is None:
+                neighbours = self.neighbours_of(proceedings.volumeNumber, self.site.volume_years())
         page_path = os.path.join(volume_dir, "index.html")
         # the check of the CEUR-WS team as gate of a page that replaces the chair page, see issue 62
         check = IndexCheck(self.config.index_check, self.config.index_check_ignore)
@@ -210,7 +218,7 @@ class Generator:
             chair_errors = check.errors(volume_dir)
             if chair_errors is None:
                 report.problems.append(f"{page_path}: {check.command} did not run, no gate")
-        page = VolumePage(proceedings, self.config, self.jsonld, self.state, in_place=in_place)
+        page = VolumePage(proceedings, self.config, self.jsonld, self.state, in_place=in_place, neighbours=neighbours)
         self.site.write(page_path, page.as_html(), report)
         self.site.write(os.path.join(volume_dir, "index.jsonld"), page.jsonld_text() + "\n", report)
         if chair_errors is not None:
@@ -236,6 +244,58 @@ class Generator:
                     )
                     continue
                 self.write_paper(proceedings, paper, report, paper_dir)
+
+    @classmethod
+    def neighbours_of(cls, number: Optional[int], volume_years: Dict[int, int]) -> Neighbours:
+        """
+        get the previous and the next volume of the given one: the nearest
+        existing lower and higher volume number, see issue 84
+
+        Args:
+            number: the volume number
+            volume_years: the year of each volume
+
+        Returns:
+            Neighbours: number and year of the previous and of the next volume, None where there is none
+        """
+        lower = [other for other in volume_years if number is not None and other < number]
+        higher = [other for other in volume_years if number is not None and other > number]
+        previous_volume = (max(lower), volume_years[max(lower)]) if lower else None
+        next_volume = (min(higher), volume_years[min(higher)]) if higher else None
+        neighbours = (previous_volume, next_volume)
+        return neighbours
+
+    def write_volumes(
+        self, volumes: List[Tuple[Proceedings, Optional[str]]], report: SiteReport, gate: bool = True
+    ) -> None:
+        """
+        write the given volumes, each with its links to the previous and the
+        next volume: the years of all volumes of the call are known before
+        the first page is written, the other volumes are those of the tree,
+        see issue 84
+
+        Args:
+            volumes: the proceedings with a year, each with the directory to write to, the year tree if None
+            report: the report to add the written files to
+            gate: if False a page written in place replaces the chair page without the check, see issue 65
+        """
+        volume_years = self.site.volume_years()
+        for proceedings, volume_dir in volumes:
+            if volume_dir is None:
+                volume_years[proceedings.volumeNumber] = proceedings.year()
+        numbers = sorted(volume_years)
+        positions = {number: position for position, number in enumerate(numbers)}
+        for proceedings, volume_dir in volumes:
+            neighbours = None
+            position = positions.get(proceedings.volumeNumber)
+            if volume_dir is None and position is not None:
+                previous_number = numbers[position - 1] if position > 0 else None
+                next_number = numbers[position + 1] if position + 1 < len(numbers) else None
+                neighbours = (
+                    (previous_number, volume_years[previous_number]) if previous_number is not None else None,
+                    (next_number, volume_years[next_number]) if next_number is not None else None,
+                )
+            self.write_volume(proceedings, report, volume_dir, gate=gate, neighbours=neighbours)
 
     def write_paper(self, proceedings: Proceedings, paper: Paper, report: SiteReport, paper_dir: str) -> None:
         """
@@ -267,13 +327,15 @@ class Generator:
         """
         report = SiteReport()
         start = time.perf_counter()
+        volumes = []
         for number in tqdm(numbers, desc="volumes", unit="vol", disable=not progress):
             proceedings = self.fetch_proceedings(number, report)
             if proceedings is None:
                 continue
             if self.assign_year(proceedings, f"Vol-{number}", report) is None:
                 continue
-            self.write_volume(proceedings, report)
+            volumes.append((proceedings, None))
+        self.write_volumes(volumes, report)
         report.seconds = time.perf_counter() - start
         return report
 
@@ -302,6 +364,7 @@ class Generator:
         """
         report = SiteReport()
         start = time.perf_counter()
+        volumes = []
         for path in tqdm(paths, desc="volumes", unit="vol", disable=not progress):
             proceedings = self.read_proceedings(path, report, yaml=yaml)
             if proceedings is None:
@@ -312,7 +375,8 @@ class Generator:
             volume_dir = None
             if in_place:
                 volume_dir = path if os.path.isdir(path) else os.path.dirname(os.path.abspath(path))
-            self.write_volume(proceedings, report, volume_dir, gate=gate)
+            volumes.append((proceedings, volume_dir))
+        self.write_volumes(volumes, report, gate=gate)
         report.seconds = time.perf_counter() - start
         return report
 

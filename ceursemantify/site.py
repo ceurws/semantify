@@ -244,6 +244,20 @@ class Site:
         paper_dir = os.path.join(self.volume_dir(proceedings), paper_id)
         return paper_dir
 
+    def volume_years(self) -> Dict[int, int]:
+        """
+        get the year of each volume of the year tree
+
+        Returns:
+            Dict[int, int]: the year by volume number
+        """
+        volume_years = {}
+        for year in self.years():
+            for name in os.listdir(self.year_dir(year)):
+                if name.startswith("Vol-") and name[4:].isdigit():
+                    volume_years[int(name[4:])] = year
+        return volume_years
+
     def overview_path(self) -> str:
         """
         get the path of the overview of the years, see issue 81
