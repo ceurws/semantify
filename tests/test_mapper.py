@@ -14,7 +14,7 @@ class TestMapper(BaseCeurTest):
 
     def test_examples(self) -> None:
         """
-        test that the example volumes map without issues and get the year of their event
+        test that the example volumes map without issues and get the year of their publication
         """
         for number, year in self.example_years.items():
             with self.subTest(number=number):

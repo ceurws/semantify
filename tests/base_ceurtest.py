@@ -26,8 +26,8 @@ class BaseCeurTest(Basetest):
     examples directory serve as the source, read via file urls
     """
 
-    # volume number -> year of the event
-    example_years = {3887: 2023, 3889: 2024, 4175: 2024, 4183: 2026, 4184: 2025}
+    # volume number -> year of the publication on CEUR-WS, see issue 78
+    example_years = {3887: 2024, 3889: 2025, 4175: 2026, 4183: 2026, 4184: 2026}
 
     def setUp(self, debug: bool = False, profile: bool = True) -> None:
         Basetest.setUp(self, debug=debug, profile=profile)

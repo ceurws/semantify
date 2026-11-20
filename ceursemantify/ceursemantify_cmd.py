@@ -118,6 +118,11 @@ class CeurSemantifyCmd(BaseCmd):
             help="directory that holds the year directories (default: current directory)",
         )
         parser.add_argument("--config", help="site configuration yaml file (default: the packaged site.yaml)")
+        parser.add_argument(
+            "--yearmap",
+            help="JSON file of volume numbers to year and source that decides the year of publication"
+            " where it differs from the publication date, see issue 78",
+        )
 
     def show_report(self, title: str, report: SiteReport, args: Namespace) -> None:
         """
@@ -150,6 +155,8 @@ class CeurSemantifyCmd(BaseCmd):
         if not handled:
             config = SiteConfig.of_yaml(args.config)
             generator = Generator.of_output(args.output, config)
+            if args.yearmap:
+                generator.load_year_map(args.yearmap)
             if args.embed:
                 report = generator.embed_volumes(args.embed, progress=args.progress, yaml=args.yaml)
                 self.show_report(f"{len(args.embed)} volume pages", report, args)

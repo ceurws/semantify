@@ -7,7 +7,7 @@ Created on 2026-10-01
 import json
 import os
 import time
-from typing import List, Optional
+from typing import Dict, List, Optional, Tuple
 
 from sem3.extractor import Extractor
 from tqdm import tqdm
@@ -53,6 +53,52 @@ class Generator:
         self.jsonld = jsonld
         self.spt = spt
         self.state = state if state is not None else PageState.today()
+        # volume number -> year and its source, decided outside, see issue 78
+        self.year_map: Dict[int, Tuple[int, str]] = {}
+
+    def load_year_map(self, path: str) -> None:
+        """
+        load the year map, a JSON object of volume numbers to year and source
+
+        Args:
+            path: the JSON file, e.g. {"1": {"year": 1995, "source": "volume browser"}}
+        """
+        with open(path, "r", encoding="utf-8") as map_file:
+            entries = json.load(map_file)
+        self.year_map = {int(number): (entry["year"], entry["source"]) for number, entry in entries.items()}
+
+    def assign_year(
+        self, proceedings: Proceedings, label: str, report: SiteReport, volume_dir: Optional[str] = None
+    ) -> Optional[int]:
+        """
+        assign the year of publication on CEUR-WS to the given proceedings, see
+        issue 78: the year map decides where it differs from the publication
+        date, else the publication date, else the inferred year; an inferred
+        year and a missing year are reported
+
+        Args:
+            proceedings: the proceedings
+            label: the volume or path the report names
+            report: the report to add problems to
+            volume_dir: the directory of the local volume page, None if there is none
+
+        Returns:
+            Optional[int]: the year, None if the volume has no year
+        """
+        proceedings.inferredYear, proceedings.inferredYearSource = None, None
+        entry = self.year_map.get(proceedings.volumeNumber)
+        if entry is not None and entry[0] != proceedings.publication_year():
+            proceedings.inferredYear, proceedings.inferredYearSource = entry
+        elif entry is None and proceedings.publication_year() is None:
+            proceedings.infer_year(volume_dir)
+        year = proceedings.year()
+        if proceedings.inferredYear is not None:
+            report.problems.append(
+                f"{label}: year {proceedings.inferredYear} inferred from {proceedings.inferredYearSource}"
+            )
+        if year is None:
+            report.problems.append(f"{label}: no publication year, the volume has no year")
+        return year
 
     @classmethod
     def of_output(cls, output_dir: str, config: Optional[SiteConfig] = None) -> "Generator":
@@ -220,7 +266,7 @@ class Generator:
         """
         generate the pages of the volumes with the given numbers
 
-        A volume that can not be fetched or has no event start date is not
+        A volume that can not be fetched or has no publication year is not
         written and reported as a problem. Year pages are not touched.
 
         Args:
@@ -236,13 +282,7 @@ class Generator:
             proceedings = self.fetch_proceedings(number, report)
             if proceedings is None:
                 continue
-            if proceedings.year() is None and proceedings.infer_year() is not None:
-                report.problems.append(
-                    f"Vol-{number}: no event start date, year {proceedings.inferredYear}"
-                    f" inferred from {proceedings.inferredYearSource}"
-                )
-            if proceedings.year() is None:
-                report.problems.append(f"Vol-{number}: no event start date, the volume has no year")
+            if self.assign_year(proceedings, f"Vol-{number}", report) is None:
                 continue
             self.write_volume(proceedings, report)
         report.seconds = time.perf_counter() - start
@@ -258,7 +298,7 @@ class Generator:
         its index.jsonld and the paper pages are written into the volume
         directory itself and the year tree of the site is not used
 
-        A volume that can not be read or has no event start date is not
+        A volume that can not be read or has no publication year is not
         written and reported as a problem. Year pages are not touched.
 
         Args:
@@ -278,13 +318,7 @@ class Generator:
             if proceedings is None:
                 continue
             page_dir = path if os.path.isdir(path) else os.path.dirname(os.path.abspath(path))
-            if proceedings.year() is None and proceedings.infer_year(page_dir) is not None:
-                report.problems.append(
-                    f"{path}: no event start date, year {proceedings.inferredYear}"
-                    f" inferred from {proceedings.inferredYearSource}"
-                )
-            if proceedings.year() is None:
-                report.problems.append(f"{path}: no event start date, the volume has no year")
+            if self.assign_year(proceedings, path, report, page_dir) is None:
                 continue
             volume_dir = None
             if in_place:

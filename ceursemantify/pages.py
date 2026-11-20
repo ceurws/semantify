@@ -934,7 +934,7 @@ class YearEntry:
 
 class YearPage:
     """
-    the page of one year with the volumes whose event started in that year
+    the page of one year with the volumes published on CEUR-WS in that year
     """
 
     def __init__(
@@ -958,18 +958,21 @@ class YearPage:
 
     def navigation_as_html(self) -> str:
         """
-        get the links to the previous and the next year, where those exist
+        get the links to the previous and the next year that have a page, also
+        across years without one
 
         Returns:
             str: the html paragraph
         """
         parts = []
-        previous_year = self.year - 1
-        next_year = self.year + 1
-        if previous_year in self.years:
+        previous_years = [year for year in self.years if year < self.year]
+        next_years = [year for year in self.years if year > self.year]
+        if previous_years:
+            previous_year = max(previous_years)
             parts.append(f"""<a href="../{previous_year}/" rel="prev">&laquo; {previous_year}</a>""")
         parts.append(str(self.year))
-        if next_year in self.years:
+        if next_years:
+            next_year = min(next_years)
             parts.append(f"""<a href="../{next_year}/" rel="next">{next_year} &raquo;</a>""")
         links = " | ".join(parts)
         navigation = f"""  <p>Year: {links}</p>"""
@@ -1001,7 +1004,7 @@ class YearPage:
         series_title = esc(self.config.series_title)
         original_url = esc(self.config.original_url)
         base_url = esc(self.config.base_url)
-        header = Header(self.config).as_html(f"{self.config.series_title} of events in {self.year}")
+        header = Header(self.config).as_html(f"{self.config.series_title} published in {self.year}")
         navigation = self.navigation_as_html()
         entries = self.entries_as_html()
         page = f"""<!DOCTYPE html>
@@ -1012,7 +1015,7 @@ class YearPage:
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" type="text/css" href="{stylesheet}">
-  <title>CEUR-WS.org - {series_title} of events in {year}</title>
+  <title>CEUR-WS.org - {series_title} published in {year}</title>
 </head>
 
 <body>

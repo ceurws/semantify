@@ -13,9 +13,10 @@ have a term in neither are listed as provisional in resources/context.yaml.
 """
 
 import os
+import re
 from dataclasses import field
 from datetime import datetime
-from typing import List, Optional
+from typing import ClassVar, List, Optional
 from urllib.parse import urljoin
 
 from basemkit.yamlable import lod_storable
@@ -182,7 +183,7 @@ class Proceedings:
     templateVersion: Optional[str] = None
     dateSubmitted: Optional[str] = None
     submittedBy: Optional[str] = None
-    # the year of a volume without event start date and where it is taken from, see issue 78
+    # the year of a volume without usable publication date and where it is taken from, see issue 78
     inferredYear: Optional[int] = None
     inferredYearSource: Optional[str] = None
     publisher: Optional[Publisher] = None
@@ -190,28 +191,70 @@ class Proceedings:
     editors: List[Scholar] = field(default_factory=list)
     papers: List[Paper] = field(default_factory=list)
 
-    def year(self) -> Optional[int]:
+    # the first year of CEUR-WS
+    FIRST_YEAR: ClassVar[int] = 1995
+
+    @classmethod
+    def plausible_year(cls, year: Optional[int]) -> bool:
         """
-        get the year the proceedings belong to: the year of the event, else
-        the inferred year, see issue 78
+        check that the given year lies in the range of CEUR-WS
+
+        Args:
+            year: the year
 
         Returns:
-            Optional[int]: the year, None if there is neither an event start date nor an inferred year
+            bool: True if the year is from 1995 to the current year
+        """
+        plausible = year is not None and cls.FIRST_YEAR <= year <= datetime.now().year
+        return plausible
+
+    @classmethod
+    def year_of(cls, date_text: Optional[str]) -> Optional[int]:
+        """
+        get the plausible four digit year of the given date text
+
+        Args:
+            date_text: the date, e.g. 2024-10-24 or 28-Nov-2012
+
+        Returns:
+            Optional[int]: the year, None if there is no plausible year
         """
         year = None
-        if self.event:
-            year = self.event.year()
-        if year is None:
-            year = self.inferredYear
+        if date_text:
+            match = re.search(r"(?<!\d)(\d{4})(?!\d)", date_text)
+            if match and cls.plausible_year(int(match.group(1))):
+                year = int(match.group(1))
+        return year
+
+    def publication_year(self) -> Optional[int]:
+        """
+        get the year of the publication date, the CEURPUBDATE of the volume page
+
+        Returns:
+            Optional[int]: the year, None if there is no plausible publication date
+        """
+        year = self.year_of(self.pubDate)
+        return year
+
+    def year(self) -> Optional[int]:
+        """
+        get the year the proceedings belong to: the year of the publication on
+        CEUR-WS, the inferred year where it is set, else the year of the
+        publication date, see issue 78
+
+        Returns:
+            Optional[int]: the year, None if there is neither an inferred year nor a publication date
+        """
+        year = self.inferredYear if self.inferredYear is not None else self.publication_year()
         return year
 
     def infer_year(self, volume_dir: Optional[str] = None) -> Optional[int]:
         """
-        infer the year of proceedings without event start date, see issue 78:
-        the year of the publication date, of the publication year mark, of the
-        modification time of the index.html.orig of the volume directory or of
-        its oldest file; the year and its source are kept in inferredYear and
-        inferredYearSource
+        infer the year of proceedings without plausible publication date, see
+        issue 78: the year of the modification time of the index.html.orig of
+        the volume directory, of the date of the submitted by line or of the
+        modification time of the oldest file of the volume directory; the year
+        and its source are kept in inferredYear and inferredYearSource
 
         Args:
             volume_dir: the directory of the local volume page, None if there is none
@@ -219,20 +262,23 @@ class Proceedings:
         Returns:
             Optional[int]: the inferred year, None if there is no source
         """
-        year, source = None, None
-        if self.pubDate and self.pubDate[:4].isdigit():
-            year, source = int(self.pubDate[:4]), "pubDate"
-        elif self.pubYear:
-            year, source = self.pubYear, "pubYear"
-        elif volume_dir and os.path.isdir(volume_dir):
+        candidates = []
+        has_dir = volume_dir is not None and os.path.isdir(volume_dir)
+        if has_dir:
             orig = os.path.join(volume_dir, "index.html.orig")
+            if os.path.isfile(orig):
+                candidates.append((datetime.fromtimestamp(os.path.getmtime(orig)).year, "index.html.orig mtime"))
+        candidates.append((self.year_of(self.dateSubmitted), "submitted by"))
+        if has_dir:
             files = [os.path.join(volume_dir, name) for name in os.listdir(volume_dir)]
             files = [path for path in files if os.path.isfile(path)]
-            if os.path.isfile(orig):
-                year, source = datetime.fromtimestamp(os.path.getmtime(orig)).year, "index.html.orig mtime"
-            elif files:
+            if files:
                 oldest = min(os.path.getmtime(path) for path in files)
-                year, source = datetime.fromtimestamp(oldest).year, "oldest file mtime"
-        if year is not None:
-            self.inferredYear, self.inferredYearSource = year, source
+                candidates.append((datetime.fromtimestamp(oldest).year, "oldest file mtime"))
+        year = None
+        for candidate_year, source in candidates:
+            if self.plausible_year(candidate_year):
+                year = candidate_year
+                self.inferredYear, self.inferredYearSource = year, source
+                break
         return year
